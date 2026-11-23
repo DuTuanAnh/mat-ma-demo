@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0C2133">
+<title>MẬT MÃ — bản xem thật (AI-art)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#05101a;color:#fff;font:400 14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+.app{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0}
+.stage{position:relative;width:min(100vw,430px);max-height:100vh}
+.frame{position:relative;width:100%;user-select:none}
+.frame img{display:block;width:100%;height:auto;pointer-events:none}
+.hot{position:absolute;cursor:pointer;border-radius:10px}
+.hot:active{background:#ffffff22}
+/* top controls */
+.ctrl{position:fixed;top:10px;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 12px;z-index:10;pointer-events:none}
+.ctrl button{pointer-events:auto;width:40px;height:40px;border-radius:50%;border:1px solid #ffffff44;background:#0c2133cc;color:#fff;font-size:17px;backdrop-filter:blur(6px);cursor:pointer}
+.ctrl .mid{pointer-events:none;font-size:12px;color:#fff;background:#0c2133bb;padding:7px 14px;border-radius:99px;border:1px solid #ffffff33;backdrop-filter:blur(6px);max-width:62%;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* bottom hint */
+.tiphint{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);z-index:9;font-size:11px;color:#cfe0e0;background:#0c2133aa;padding:6px 12px;border-radius:99px;border:1px solid #ffffff22;backdrop-filter:blur(6px);pointer-events:none;animation:fadeout 4s forwards}
+@keyframes fadeout{0%,70%{opacity:1}100%{opacity:0}}
+/* menu overlay */
+.menu{position:fixed;inset:0;z-index:20;background:#05101af2;backdrop-filter:blur(4px);display:none;flex-direction:column;padding:16px}
+.menu.show{display:flex}
+.menu h3{color:#F6C66A;font-size:15px;margin-bottom:10px;text-align:center}
+.menu .grid{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-bottom:10px}
+.menu .g{background:#12293a;border:1px solid #315064;border-radius:10px;overflow:hidden;cursor:pointer;text-align:center}
+.menu .g img{width:100%;height:auto;display:block}
+.menu .g span{display:block;font-size:10px;color:#aebfc4;padding:4px 2px}
+.menu .close{margin-top:8px;align-self:center;background:#F6C66A;color:#0c2133;border:0;border-radius:12px;padding:12px 28px;font-weight:700;cursor:pointer}
+.banner{position:fixed;top:0;left:0;right:0;z-index:8;background:#A96B1E;color:#fff;font-size:11px;text-align:center;padding:4px;display:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="ctrl">
+    <button id="back" title="Quay lại">‹</button>
+    <div class="mid" id="label">MẬT MÃ</div>
+    <button id="menuBtn" title="Tất cả màn">☰</button>
+  </div>
+  <div class="stage"><div class="frame" id="frame"><img id="img" alt="" src="mockups/A1.png"><div id="hots"></div></div></div>
+  <div class="tiphint" id="tip">Chạm vào màn hình để đi tiếp · ☰ để xem tất cả màn</div>
+</div>
+
+<div class="menu" id="menu">
+  <h3>21 màn · chạm để nhảy tới</h3>
+  <div class="grid" id="mgrid"></div>
+  <button class="close" id="menuClose">Đóng</button>
+</div>
+
+<script>
+// code: {file, label, next, hotspots:[{x,y,w,h,go}] in %}
+const S={
+ A1:{f:'A1.png',l:'Khởi động',next:'A2'},
+ A2:{f:'A2.png',l:'Chào mừng',next:'A3'},
+ A3:{f:'A3.png',l:'Giới thiệu',next:'A4'},
+ A4:{f:'A4.png',l:'Hồ sơ gia đình',next:'B1'},
+ B1:{f:'B1.png',l:'Trang chủ',next:'C1',hot:[
+   {x:3,y:53,w:46,h:16,go:'C1'},   // Gia đình
+   {x:51,y:53,w:46,h:16,go:'D1'},  // Nâng cao
+   {x:2,y:71,w:31,h:9,go:'D4'},    // Phòng hôm nay
+   {x:34,y:71,w:32,h:9,go:'E3'},   // Kho thưởng
+   {x:67,y:71,w:31,h:9,go:'E5'},   // Bộ sưu tập
+   {x:38,y:92,w:24,h:8,go:'E1'}    // Pet tab
+ ]},
+ C1:{f:'C1.png',l:'Chọn kiểu chơi',next:'C2'},
+ C2:{f:'C2.png',l:'Ra gợi ý (ba/mẹ)',next:'C3'},
+ C3:{f:'C3.png',l:'Giải mã (con) · dưới nước',next:'C4'},
+ C4:{f:'C4.png',l:'Kết quả gia đình',next:'B1'},
+ D1:{f:'D1.png',l:'Bản đồ chương',next:'D2'},
+ D2:{f:'D2.png',l:'Giải quy luật',next:'D3'},
+ D3:{f:'D3.png',l:'Giải thích · WOW',next:'D4'},
+ D4:{f:'D4.png',l:'Phòng hôm nay · BXH',next:'B1'},
+ E1:{f:'E1.png',l:'Pet của nhà mình',next:'E2'},
+ E2:{f:'E2.png',l:'Pet tiến hóa',next:'E3'},
+ E3:{f:'E3.png',l:'Kho thưởng',next:'E4'},
+ E4:{f:'E4.png',l:'Phiếu thưởng thật',next:'E5'},
+ E5:{f:'E5.png',l:'Bộ sưu tập tranh',next:'E6'},
+ E6:{f:'E6.png',l:'Thẻ gia đình (khoe)',next:'B1'},
+ F1:{f:'F1.png',l:'Cài đặt',next:'F2'},
+ F2:{f:'F2.png',l:'Thông báo',next:'B1'},
+};
+const ORDER=['A1','A2','A3','A4','B1','C1','C2','C3','C4','D1','D2','D3','D4','E1','E2','E3','E4','E5','E6','F1','F2'];
+let cur='A1', hist=[];
+const img=document.getElementById('img'),hots=document.getElementById('hots'),label=document.getElementById('label');
+
+function show(code,pushHist){
+  if(pushHist!==false) hist.push(cur);
+  cur=code; const s=S[code];
+  img.src='mockups/'+s.f; label.textContent=s.l;
+  hots.innerHTML='';
+  // specific hotspots
+  (s.hot||[]).forEach(h=>{
+    const d=document.createElement('div');d.className='hot';
+    d.style.left=h.x+'%';d.style.top=h.y+'%';d.style.width=h.w+'%';d.style.height=h.h+'%';
+    d.onclick=e=>{e.stopPropagation();show(h.go);};
+    hots.appendChild(d);
+  });
+  // whole-frame default tap = next
+  preload(s.next);
+}
+function preload(code){ if(code&&S[code]){const i=new Image();i.src='mockups/'+S[code].f;} }
+
+document.getElementById('frame').addEventListener('click',()=>{ const n=S[cur].next; if(n)show(n); });
+document.getElementById('back').onclick=()=>{ if(hist.length){cur=hist.pop();show(cur,false);} };
+document.getElementById('menuBtn').onclick=()=>document.getElementById('menu').classList.add('show');
+document.getElementById('menuClose').onclick=()=>document.getElementById('menu').classList.remove('show');
+
+// build menu
+const mg=document.getElementById('mgrid');
+ORDER.forEach(code=>{const s=S[code];const g=document.createElement('div');g.className='g';
+ g.innerHTML='<img loading="lazy" src="mockups/'+s.f+'"><span>'+code+' · '+s.l+'</span>';
+ g.onclick=()=>{document.getElementById('menu').classList.remove('show');show(code);};
+ mg.appendChild(g);});
+
+show('A1',false);
+</script>
+</body>
+</html>

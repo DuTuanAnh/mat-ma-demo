@@ -19,6 +19,7 @@ button{font:inherit;cursor:pointer;color:inherit;border:0;background:none}
 .app{min-height:100vh;display:flex;justify-content:center}
 .device{position:relative;width:min(100%,420px);min-height:100vh;overflow:hidden;background:var(--bg)}
 .scene{position:absolute;inset:0;z-index:0}
+.scrim{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(8,20,28,0) 32%,rgba(8,20,28,.42) 66%,rgba(8,20,28,.8) 100%)}
 .statusbar{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:12px 18px 4px;font-size:12px;color:#fff;text-shadow:0 1px 3px #0008}
 .wrap{position:relative;z-index:2;padding:4px 16px 92px;min-height:100vh}
 .row{display:flex;align-items:center;gap:10px}
@@ -73,6 +74,7 @@ h1{font:800 26px/1.15 "Baloo 2";color:#fff;text-shadow:0 2px 8px #0007}
 .pcard:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 25%,#ffffff33,transparent 55%)}
 .pcard.sel{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold),0 4px 12px #0007}
 .pcard.ok{border-color:var(--green);box-shadow:0 0 0 3px var(--green)}
+.pcard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
 .pcard .mk{position:absolute;z-index:2;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:16px;font-weight:800;top:50%;left:50%;transform:translate(-50%,-50%)}
 .pcard.ok .mk{background:var(--green);color:#fff}
 .pcard.bad .mk{background:var(--red);color:#fff}.pcard.bad{filter:brightness(.7)}
@@ -118,6 +120,7 @@ h1{font:800 26px/1.15 "Baloo 2";color:#fff;text-shadow:0 2px 8px #0007}
 <body>
 <div class="app"><div class="device" id="device">
   <div class="scene" id="scene"></div>
+  <div class="scrim"></div>
   <div class="statusbar"><span>9:41</span><span>●●● &nbsp; 📶 &nbsp; 🔋</span></div>
   <div class="wrap" id="wrap"></div>
   <div class="tabbar" id="tabbar" style="display:none"></div>
@@ -188,10 +191,10 @@ function fox(sz){return '<span class="fxph" style="font-size:'+sz+'px;line-heigh
 
 /* ========== family rounds ========== */
 const FAM=[{clue_vi:"DƯỚI NƯỚC",clue_en:"UNDER WATER",n:3,cards:[
- {e:"🐢",r:"t"},{e:"⛵",r:"n"},{e:"🪼",r:"t"},{e:"⛰️",r:"n"},
- {e:"🪸",r:"n"},{e:"🌊",r:"t"},{e:"🏴‍☠️",r:"n"},{e:"🌺",r:"n"},
- {e:"🐧",r:"x"},{e:"🐋",r:"t"},{e:"🦀",r:"t"},{e:"🏜️",r:"n"},
- {e:"🗼",r:"n"},{e:"🏛️",r:"n"},{e:"🦈",r:"t"},{e:"🧊",r:"n"}
+ {t:"rua_bien",r:"t"},{t:"thuyen_buom",r:"n"},{t:"sua_bien",r:"t"},{t:"nui_tuyet",r:"n"},
+ {t:"san_ho",r:"t"},{t:"ca_ngua",r:"t"},{t:"ruong_bau",r:"n"},{t:"hoa",r:"n"},
+ {t:"chim_canh_cut",r:"x"},{t:"ca_voi",r:"t"},{t:"cua",r:"t"},{t:"dun_cat_sa_mac",r:"n"},
+ {t:"hai_dang",r:"n"},{t:"cong_vom_duoi_nuoc",r:"t"},{t:"ca_map",r:"t"},{t:"tang_bang",r:"n"}
 ]}];
 // t=target, n=neutral, x=trap. (demo: 6 targets but clue says 3 → chọn 3 bất kỳ target đúng)
 
@@ -248,8 +251,8 @@ function renderHome(){
   wrap.innerHTML=
    '<div class="spread"><div class="row"><div class="circle">👨‍👩‍👧</div><div><div style="font:700 14px/1.1 Be Vietnam Pro;text-shadow:0 1px 3px #0008">'+t('family_name')+' ▾</div><div style="font-size:11px;color:#dfe9e9">👥 '+t('members')+'</div></div></div><div class="row"><div class="circle" onclick="go(\'lang\')" title="lang">🌐</div><div class="circle">⚙️</div></div></div>'+
    '<div class="center" style="margin-top:14px"><div class="logo">MẬT MÃ<small>'+t('tagline')+'</small></div></div>'+
-   '<div class="center" style="margin:10px 0"><div style="filter:drop-shadow(0 8px 14px #0007)">'+fox(84)+'</div>'+
-     '<div class="pill" style="margin-top:-6px">⭐ '+t('lvl')+' · '+t('petname')+'</div></div>'+
+   '<div style="height:21vh"></div>'+
+   '<div class="center" style="margin:6px 0"><div class="pill">⭐ '+t('lvl')+' · '+t('petname')+'</div></div>'+
    '<div class="xpbar"><i style="width:'+Math.round(xp/xpMax*100)+'%"></i><span>'+xp+' / '+xpMax+' XP</span></div>'+
    '<div class="stats"><div class="stat"><span class="em">🧒</span><b>'+kid.toLocaleString()+'</b><small>'+t('pt_kid')+'</small></div>'+
      '<div class="stat"><span class="em">👨‍👩‍👧</span><b>'+par.toLocaleString()+'</b><small>'+t('pt_par')+'</small></div>'+
@@ -272,7 +275,7 @@ function renderFam(){
    '<div class="center" style="margin:10px 0"><span class="ribbon">'+clue+' · '+R.n+'</span></div>'+
    '<div class="pgrid">'+R.cards.map((c,i)=>{
       const sel=famSel.includes(i)?' sel':'';
-      return '<div class="pcard'+sel+'" id="pc'+i+'" style="background:linear-gradient(150deg,#1f6f86,#0c3a4c)" onclick="famPick('+i+')">'+c.e+'<div class="mk"></div></div>';
+      return '<div class="pcard'+sel+'" id="pc'+i+'" onclick="famPick('+i+')"><img src="assets/tiles/'+c.t+'.png" alt=""><div class="mk"></div></div>';
    }).join('')+'</div>'+
    '<div class="statusline" id="fsl"></div>'+
    '<div class="center muted">'+t('chosen',{a:famSel.length,b:R.n})+'</div>'+
@@ -318,7 +321,7 @@ function renderAdv(){
    '<div class="spread" style="margin:4px 2px"><span class="hearts">❤️❤️❤️</span><span class="pill">💡 3</span></div>'+
    '<div class="center" style="margin:6px 0"><span class="ribbon" style="font-size:14px">'+t('puz_n',{a:ai+1,b:3})+'</span></div>'+
    '<div class="parch"><div style="font:700 15px Be Vietnam Pro;text-align:center;margin-bottom:4px">'+prompt+'</div>'+puz+
-     '<div class="row" style="gap:8px;margin-top:8px;align-items:flex-start"><div style="font-size:30px">🦊</div><div style="background:#fff8e6;border:1px solid #e0cfa0;border-radius:12px;padding:8px 10px;font-size:12px;color:#5a4a2e">'+t('fox_seq')+'</div></div></div>'+
+     '<div class="row" style="gap:8px;margin-top:8px;align-items:flex-start"><img src="assets/fox.png" alt="" style="width:58px;height:auto;flex:0 0 auto;filter:drop-shadow(0 4px 6px #0006)"><div style="background:#fff8e6;border:1px solid #e0cfa0;border-radius:12px;padding:8px 10px;font-size:12px;color:#5a4a2e">'+t('fox_seq')+'</div></div></div>'+
    '<div class="answers" id="answers">'+opts.map((o,i)=>'<button class="ans'+(advSel===o?' sel':'')+'" onclick="advPick(\''+o+'\')"><span class="lt">'+letters[i]+'</span>'+o+'</button>').join('')+'</div>'+
    '<div id="advres"></div>'+
    (advDone?'':'<button class="btn" id="abtn" '+(advSel?'':'disabled')+' onclick="advCheck()">'+t('check')+'</button>');
@@ -368,7 +371,7 @@ function renderPet(){
   wrap.innerHTML=
    '<div class="spread" style="padding-top:4px"><button class="circle" onclick="go(\'home\')">‹</button><div class="logo" style="font-size:20px">MẬT MÃ</div><button class="circle">?</button></div>'+
    '<h1 class="center" style="margin-top:6px">'+t('pet_title')+'</h1>'+
-   '<div class="center"><div style="filter:drop-shadow(0 10px 18px #0007)">'+fox(110)+'</div></div>'+
+   '<div style="height:28vh"></div>'+
    '<div class="center"><span class="ribbon">'+t('petname')+' · '+t('lvl')+'</span></div>'+
    '<div class="xpbar" style="margin-top:14px"><i style="width:'+Math.round(xp/xpMax*100)+'%"></i><span>'+xp+' / '+xpMax+' XP</span></div>'+
    '<div class="center muted">'+t('to_evolve',{n:xpMax-xp})+'</div>'+
