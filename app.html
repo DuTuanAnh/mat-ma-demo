@@ -171,14 +171,20 @@ const T={vi:{
 const COUNTRIES=[{fl:"🇻🇳",nm:"Việt Nam",lg:"Tiếng Việt",lang:"vi"},{fl:"🇺🇸",nm:"United States",lg:"English",lang:"en"},{fl:"🇬🇧",nm:"United Kingdom",lg:"English",lang:"en"},{fl:"🇸🇬",nm:"Singapore",lg:"English",lang:"en"},{fl:"🇦🇺",nm:"Australia",lg:"English",lang:"en"},{fl:"🇨🇦",nm:"Canada",lg:"English",lang:"en"}];
 
 /* ========== scenes (CSS fantasy backgrounds) ========== */
+// Mỗi màn: thử ảnh nền thật ở assets/ TRƯỚC; thiếu file thì tự rơi về gradient (fallback).
+// => Khi có asset (bản B), chỉ cần bỏ file vào /assets/ là đẹp y hình, không sửa code.
 const SCENES={
- home:"radial-gradient(120% 70% at 50% 0%,#7fb4c9 0,#3f7e86 34%,#1c4a4f 68%,#0c2a30 100%),linear-gradient(180deg,#f4c98a22,transparent)",
- fam:"radial-gradient(120% 80% at 50% 10%,#2e8aa8 0,#16627e 40%,#0a3346 80%)",
- adv:"radial-gradient(120% 80% at 50% 0%,#3a5a4a 0,#243f3a 40%,#14262a 80%)",
- pet:"radial-gradient(120% 70% at 50% 0%,#8fc0d6 0,#4a86a0 35%,#1f4f5e 70%,#0c2a33 100%)",
- lang:"radial-gradient(120% 70% at 50% -10%,#2c5366 0,#163044 44%,#0c2133 80%)",
- wow:"radial-gradient(120% 80% at 50% 0%,#2f6f55 0,#1d4a3c 42%,#0f2a24 80%)"
+ home:"url('assets/bg_home.png') center/cover no-repeat, radial-gradient(120% 70% at 50% 0%,#7fb4c9 0,#3f7e86 34%,#1c4a4f 68%,#0c2a30 100%)",
+ fam:"url('assets/bg_fam.png') center/cover no-repeat, radial-gradient(120% 80% at 50% 10%,#2e8aa8 0,#16627e 40%,#0a3346 80%)",
+ adv:"url('assets/bg_adv.png') center/cover no-repeat, radial-gradient(120% 80% at 50% 0%,#3a5a4a 0,#243f3a 40%,#14262a 80%)",
+ pet:"url('assets/bg_pet.png') center/cover no-repeat, radial-gradient(120% 70% at 50% 0%,#8fc0d6 0,#4a86a0 35%,#1f4f5e 70%,#0c2a33 100%)",
+ lang:"url('assets/bg_lang.png') center/cover no-repeat, radial-gradient(120% 70% at 50% -10%,#2c5366 0,#163044 44%,#0c2133 80%)",
+ wow:"url('assets/bg_wow.png') center/cover no-repeat, radial-gradient(120% 80% at 50% 0%,#2f6f55 0,#1d4a3c 42%,#0f2a24 80%)"
 };
+// fox: dùng assets/fox.png nếu có, không thì hiện emoji 🦊
+function fox(sz){return '<span class="fxph" style="font-size:'+sz+'px;line-height:1">🦊</span>'+
+ '<img src="assets/fox.png" alt="" style="display:none;width:'+Math.round(sz*1.7)+'px;max-width:82%" '+
+ 'onload="this.style.display=\'inline-block\';this.previousElementSibling.style.display=\'none\'">';}
 
 /* ========== family rounds ========== */
 const FAM=[{clue_vi:"DƯỚI NƯỚC",clue_en:"UNDER WATER",n:3,cards:[
@@ -242,7 +248,7 @@ function renderHome(){
   wrap.innerHTML=
    '<div class="spread"><div class="row"><div class="circle">👨‍👩‍👧</div><div><div style="font:700 14px/1.1 Be Vietnam Pro;text-shadow:0 1px 3px #0008">'+t('family_name')+' ▾</div><div style="font-size:11px;color:#dfe9e9">👥 '+t('members')+'</div></div></div><div class="row"><div class="circle" onclick="go(\'lang\')" title="lang">🌐</div><div class="circle">⚙️</div></div></div>'+
    '<div class="center" style="margin-top:14px"><div class="logo">MẬT MÃ<small>'+t('tagline')+'</small></div></div>'+
-   '<div class="center" style="margin:10px 0"><div style="font-size:84px;filter:drop-shadow(0 8px 14px #0007)">🦊</div>'+
+   '<div class="center" style="margin:10px 0"><div style="filter:drop-shadow(0 8px 14px #0007)">'+fox(84)+'</div>'+
      '<div class="pill" style="margin-top:-6px">⭐ '+t('lvl')+' · '+t('petname')+'</div></div>'+
    '<div class="xpbar"><i style="width:'+Math.round(xp/xpMax*100)+'%"></i><span>'+xp+' / '+xpMax+' XP</span></div>'+
    '<div class="stats"><div class="stat"><span class="em">🧒</span><b>'+kid.toLocaleString()+'</b><small>'+t('pt_kid')+'</small></div>'+
@@ -362,7 +368,7 @@ function renderPet(){
   wrap.innerHTML=
    '<div class="spread" style="padding-top:4px"><button class="circle" onclick="go(\'home\')">‹</button><div class="logo" style="font-size:20px">MẬT MÃ</div><button class="circle">?</button></div>'+
    '<h1 class="center" style="margin-top:6px">'+t('pet_title')+'</h1>'+
-   '<div class="center"><div style="font-size:110px;filter:drop-shadow(0 10px 18px #0007)">🦊</div></div>'+
+   '<div class="center"><div style="filter:drop-shadow(0 10px 18px #0007)">'+fox(110)+'</div></div>'+
    '<div class="center"><span class="ribbon">'+t('petname')+' · '+t('lvl')+'</span></div>'+
    '<div class="xpbar" style="margin-top:14px"><i style="width:'+Math.round(xp/xpMax*100)+'%"></i><span>'+xp+' / '+xpMax+' XP</span></div>'+
    '<div class="center muted">'+t('to_evolve',{n:xpMax-xp})+'</div>'+
