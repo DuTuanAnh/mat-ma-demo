@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MẬT MÃ v3 — Nâng cao (tự tìm luật ẩn) + Nuôi pet & điểm thưởng</title>
+<style>
+  :root{
+    --bg:#0A1014; --slate:#111b20; --slate2:#0d161a; --line:#243840;
+    --cyan:#49D6C0; --cyanDim:#2a8578; --amber:#F2B340; --rune:#8FE3FF;
+    --green:#5FE08A; --red:#F0636B; --txt:#EAF4F2; --mut:#8CA6A6; --faint:#5e7474;
+    --warm:#F3E9D2; --brass:#C79A4E; --wine:#A4495A; --sage:#78A86A;
+    --mono:"SF Mono",ui-monospace,"Cascadia Code","Consolas",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:
+      radial-gradient(1100px 620px at 12% -10%, #103038 0%, transparent 55%),
+      radial-gradient(1000px 520px at 100% 0%, #1a2a16 0%, transparent 52%),
+      var(--bg);
+    color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+    line-height:1.5;padding:26px 16px 80px}
+  .wrap{max-width:1140px;margin:0 auto}
+  h1{font-size:40px;letter-spacing:12px;font-weight:800;text-transform:uppercase;
+    background:linear-gradient(90deg,var(--cyan),var(--rune),var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--mut);margin-top:8px;font-size:15px;max-width:840px}
+  .tag b{color:var(--cyan)}
+  .sect{margin:46px 0 14px;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);
+    border-top:1px solid var(--line);padding-top:20px}
+  .lead{color:var(--mut);font-size:14px;margin:-4px 0 18px;max-width:900px}
+  .lead b{color:var(--txt)}
+
+  /* ===== ADVANCED LAB ROOM ===== */
+  .lab{background:
+      linear-gradient(180deg,#0f1b20,#0a1317);
+    border:1px solid var(--line);border-radius:20px;padding:22px;position:relative;overflow:hidden;
+    box-shadow:0 30px 70px rgba(0,0,0,.5), inset 0 0 60px rgba(73,214,192,.04)}
+  .lab:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;background:
+     repeating-linear-gradient(0deg,rgba(73,214,192,.04),rgba(73,214,192,.04) 1px,transparent 1px,transparent 28px),
+     repeating-linear-gradient(90deg,rgba(73,214,192,.04),rgba(73,214,192,.04) 1px,transparent 1px,transparent 28px)}
+  .labtop{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;position:relative;z-index:2;margin-bottom:14px}
+  .roomtag{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--cyanDim);border-radius:8px;padding:4px 10px}
+  .roomtitle{font-size:21px;font-weight:800;letter-spacing:1px;margin-top:8px}
+  .roomsub{color:var(--mut);font-size:13px;max-width:560px;margin-top:4px}
+  .labmeta{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{background:#0a1418;border:1px solid var(--line);border-radius:10px;padding:7px 11px;text-align:center;min-width:70px}
+  .chip .k{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+  .chip .v{font-size:18px;font-weight:800;color:var(--amber);font-family:var(--mono)}
+  .chip .v.h{color:var(--red)}
+  .chip .v.c{color:var(--cyan)}
+
+  .labgrid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:520px;margin:18px auto 0}
+  .tile{aspect-ratio:1/1;border-radius:12px;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:30px;font-weight:700;color:#06131a;transition:transform .12s, box-shadow .15s;
+    box-shadow:inset 0 -4px 0 rgba(0,0,0,.25), inset 0 2px 4px rgba(255,255,255,.3)}
+  .tile:hover{transform:translateY(-3px)}
+  .tile .st{position:absolute;top:5px;right:6px;font-size:15px;font-weight:900}
+  .tile.known{cursor:default;box-shadow:inset 0 -4px 0 rgba(0,0,0,.25), 0 0 0 2px rgba(255,255,255,.12)}
+  .tile.known:hover{transform:none}
+  .tile.ok{box-shadow:0 0 0 3px var(--green), 0 0 22px rgba(95,224,138,.45)}
+  .tile.no{filter:brightness(.55) saturate(.6)}
+  .tile.mark{box-shadow:0 0 0 3px var(--cyan),0 0 22px rgba(73,214,192,.5);transform:translateY(-3px)}
+  .tile.reveal-ok{box-shadow:0 0 0 3px var(--green)}
+  .tile.reveal-no{filter:brightness(.5)}
+  .tile .q{position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:10px;color:#06131a;opacity:.6;font-weight:800}
+
+  .labstatus{position:relative;z-index:2;text-align:center;margin-top:18px;min-height:44px;font-size:14.5px;font-weight:600}
+  .labstatus .rule{display:inline-block;margin-top:4px;font-family:var(--mono);font-size:13px;color:var(--rune);
+    background:#0a1418;border:1px solid var(--cyanDim);border-radius:8px;padding:6px 12px}
+  .labctrls{position:relative;z-index:2;display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  button.b{background:linear-gradient(180deg,var(--cyan),var(--cyanDim));color:#04231f;border:none;border-radius:11px;
+    padding:11px 20px;font-weight:800;font-size:14px;cursor:pointer;letter-spacing:.3px}
+  button.b.amber{background:linear-gradient(180deg,var(--amber),#c98a28);color:#2a1a02}
+  button.b.ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
+  button.b:disabled{opacity:.35;cursor:not-allowed}
+  .legend{position:relative;z-index:2;margin-top:16px;font-size:12px;color:var(--mut);background:#0a1418;border:1px solid var(--line);border-radius:10px;padding:11px 14px;line-height:1.7}
+  .legend b{color:var(--txt)} .legend .g{color:var(--green)} .legend .x{color:var(--red)} .legend .c{color:var(--cyan)}
+
+  /* ladder of rooms */
+  .ladder{display:flex;gap:10px;overflow-x:auto;margin-top:18px;padding-bottom:6px;position:relative;z-index:2}
+  .lroom{flex:0 0 190px;background:#0a1418;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:12px}
+  .lroom .n{font-family:var(--mono);color:var(--cyan);font-size:11px}
+  .lroom .t{font-weight:800;margin:3px 0;font-size:13px}
+  .lroom .d{color:var(--mut);line-height:1.5}
+  .lroom.cur{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan)}
+  .lroom.lock{opacity:.62}
+  .lroom .lv{display:inline-block;margin-top:6px;font-size:10px;color:var(--amber);border:1px solid #4a3a10;border-radius:6px;padding:1px 6px}
+
+  /* ===== ECONOMY / PET ===== */
+  .eco{background:linear-gradient(180deg,#1c1710,#130f0a);border:1px solid #3a2e1e;border-radius:20px;padding:24px;position:relative;overflow:hidden}
+  .eco:before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;background:radial-gradient(circle at 50% 0%,rgba(199,154,78,.14),transparent 55%)}
+  .ecogrid{display:grid;grid-template-columns:1fr 1fr;gap:22px;position:relative;z-index:2}
+  @media(max-width:760px){.ecogrid{grid-template-columns:1fr}}
+  .petbox{background:#15110b;border:1px solid #3a2e1e;border-radius:16px;padding:20px;text-align:center}
+  .pet{font-size:88px;line-height:1;filter:drop-shadow(0 8px 20px rgba(0,0,0,.5));transition:.3s}
+  .petname{font-weight:800;font-size:16px;margin-top:6px;color:var(--warm)}
+  .petstage{font-size:12px;color:var(--mut)}
+  .growbar{height:14px;background:#0a0806;border:1px solid #3a2e1e;border-radius:8px;overflow:hidden;margin:12px 0 4px}
+  .growfill{height:100%;width:20%;background:linear-gradient(90deg,var(--brass),var(--amber));border-radius:8px;transition:width .5s ease}
+  .counters{display:flex;gap:10px;margin-top:14px}
+  .cnt{flex:1;background:#0f0c07;border:1px solid #3a2e1e;border-radius:12px;padding:10px}
+  .cnt .k{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+  .cnt .v{font-size:24px;font-weight:800;font-family:var(--mono);color:var(--amber)}
+  .cnt.kid .v{color:var(--sage)} .cnt.par .v{color:#d98a96}
+  .simrow{display:flex;gap:10px;margin-top:16px}
+  .simrow button{flex:1;font-size:13px;padding:12px 8px}
+  .flow{font-size:12px;color:var(--mut);margin-top:12px;text-align:center;line-height:1.7}
+  .flow b{color:var(--warm)} .flow .p{color:#d98a96} .flow .k{color:var(--sage)} .flow .pet{color:var(--amber)}
+  .float{position:absolute;font-weight:800;font-size:18px;pointer-events:none;animation:fl 1s ease forwards}
+  @keyframes fl{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-40px)}}
+
+  .shelf{display:flex;flex-direction:column;gap:10px}
+  .reward{background:#15110b;border:1px solid #3a2e1e;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+  .reward .ic{font-size:24px;flex:0 0 auto}
+  .reward .t{font-weight:800;font-size:14px;color:var(--warm)}
+  .reward .d{font-size:12px;color:var(--mut);line-height:1.5}
+  .reward .cost{font-size:11px;color:var(--amber);font-family:var(--mono);margin-top:3px}
+  .reward.star{border-color:var(--brass);box-shadow:0 0 0 1px rgba(199,154,78,.3)}
+  .reward.star .t:after{content:" ★ động cơ viral";color:var(--brass);font-size:10px;font-weight:700}
+
+  .foot{margin-top:46px;color:var(--mut);font-size:13px;border-top:1px solid var(--line);padding-top:20px}
+  .foot b{color:var(--txt)} .foot .w{color:var(--amber)}
+  @media(max-width:640px){h1{font-size:28px;letter-spacing:6px}.labgrid{gap:8px}.tile{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>MẬT MÃ</h1>
+  <div class="tag">Bản v3 · hai thứ mới: <b>(1) phòng NÂNG CAO</b> — mỗi phòng giấu một <b>cơ chế/luật bí mật</b>, phải tự suy ra mới giải được (không bấm bừa); <b>(2) nuôi pet chung + điểm thưởng 2:1</b> nối chế độ con và ba mẹ.</div>
+
+  <!-- ===== SECTION 1: ADVANCED ROOM ===== -->
+  <div class="sect">① Nâng cao — chơi thử: TỰ TÌM RA LUẬT ẨN mới qua được</div>
+  <div class="lead">Có một <b>luật bí mật</b> quyết định ô nào "đúng". Vài ô đã lộ sẵn (<span style="color:var(--green)">✓</span>/<span style="color:var(--red)">✗</span>) làm ví dụ. Việc của bạn: nhìn ví dụ → <b>suy ra luật</b> → đánh dấu đúng các ô "?" còn lại → bấm CHỐT. Bí thì xài 1 điểm gợi ý để lộ 1 ô. <b>Gợi ý nhỏ: đừng tin ngay "số lẻ"...</b></div>
+
+  <div class="lab">
+    <div class="labtop">
+      <div>
+        <span class="roomtag">NÂNG CAO · PHÒNG 01 / ∞</span>
+        <div class="roomtitle">🔒 Luật ẩn</div>
+        <div class="roomsub">Mỗi ô có một MÀU và một SỐ. Một luật giấu quyết định ô "đúng". Tìm ra nó.</div>
+      </div>
+      <div class="labmeta">
+        <div class="chip"><div class="k">Độ khó</div><div class="v c" id="diff">Lv 1</div></div>
+        <div class="chip"><div class="k">Mạng</div><div class="v h" id="lives">♦♦♦</div></div>
+        <div class="chip"><div class="k">Gợi ý</div><div class="v" id="hints">3</div></div>
+      </div>
+    </div>
+
+    <div class="labgrid" id="labgrid"></div>
+
+    <div class="labstatus" id="labstatus">Nhìn các ô đã lộ (✓/✗), suy ra luật, rồi đánh dấu các ô "?" bạn cho là ĐÚNG.</div>
+    <div class="labctrls">
+      <button class="b" onclick="checkRule()">CHỐT LUẬT ✓</button>
+      <button class="b amber" id="hintBtn" onclick="useHint()">💡 Dùng 1 gợi ý (lộ 1 ô)</button>
+      <button class="b ghost" onclick="resetRoom()">Chơi lại phòng</button>
+      <button class="b ghost" onclick="giveUp()">Chịu — hiện luật</button>
+    </div>
+
+    <div class="legend">
+      <b>Cách đọc:</b> <span class="g">✓</span> = ô thuộc luật · <span class="x">✗</span> = không thuộc · <span class="c">viền xanh dương</span> = ô bạn đang đánh dấu "đúng" · ô "?" = chưa biết, bạn tự quyết.
+      <br><b>Vì sao đây là "trí tuệ":</b> không có nhãn nhóm sẵn như bên trẻ con. Bạn phải QUAN SÁT ví dụ → đặt GIẢ THUYẾT về luật → KIỂM. Luật này có bẫy: nó KHÔNG đơn thuần là "số lẻ".
+    </div>
+
+    <div style="position:relative;z-index:2;margin-top:18px;font-size:11px;letter-spacing:2px;color:var(--mut);text-transform:uppercase">Thang phòng — qua phòng khó dần, mỗi phòng 1 cơ chế KHÁC</div>
+    <div class="ladder">
+      <div class="lroom cur"><div class="n">PHÒNG 01</div><div class="t">Luật ẩn</div><div class="d">Suy ra luật phân loại ô từ ví dụ. Bẫy: luật có điều kiện.</div><span class="lv">Lv 1</span></div>
+      <div class="lroom lock"><div class="n">PHÒNG 04</div><div class="t">Cỗ máy</div><div class="d">Bấm nút, nhìn đèn, suy ra dây nối (cổng AND/OR/XOR) để về đích.</div><span class="lv">Lv 4</span></div>
+      <div class="lroom lock"><div class="n">PHÒNG 07</div><div class="t">Luật quan hệ</div><div class="d">Ô "đúng" phụ thuộc ô BÊN CẠNH (vd lớn hơn ô bên trái) — không nhìn riêng từng ô ra.</div><span class="lv">Lv 7</span></div>
+      <div class="lroom lock"><div class="n">PHÒNG 10</div><div class="t">Mật thư</div><div class="d">Giải mã 1 câu — tự tìm quy luật thay chữ (dịch, đảo, thay thế).</div><span class="lv">Lv 10</span></div>
+      <div class="lroom lock"><div class="n">PHÒNG 15</div><div class="t">Luật biến đổi</div><div class="d">Luật TỰ ĐỔI sau mỗi lần bạn đoán sai. Phải đọc được cả cách nó đổi.</div><span class="lv">Lv 15</span></div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2: ECONOMY ===== -->
+  <div class="sect">② Nuôi pet chung + điểm thưởng 2:1 — cái nối con và ba mẹ</div>
+  <div class="lead">Chơi thắng 1 màn → điểm chảy về <b>cả hai bên</b> (ai chơi được +2, bên kia +1) và nuôi <b>con pet chung của cả nhà</b>. Bấm thử 2 nút dưới để thấy điểm chảy.</div>
+
+  <div class="eco">
+    <div class="ecogrid">
+      <!-- pet + simulate -->
+      <div class="petbox">
+        <div class="pet" id="pet">🥚</div>
+        <div class="petname" id="petname">Trứng bí ẩn</div>
+        <div class="petstage" id="petstage">Cả nhà cùng nuôi · càng chơi càng lớn</div>
+        <div class="growbar"><div class="growfill" id="growfill"></div></div>
+        <div class="petstage"><span id="growpct">20</span>% tới lần tiến hóa sau</div>
+
+        <div class="counters">
+          <div class="cnt kid"><div class="k">Điểm của Con</div><div class="v" id="kidPts">0</div></div>
+          <div class="cnt par"><div class="k">Điểm Ba mẹ</div><div class="v" id="parPts">0</div></div>
+        </div>
+
+        <div class="simrow">
+          <button class="b" onclick="play('kid')">🧒 Con chơi thắng 1 màn</button>
+          <button class="b amber" onclick="play('par')">🧠 Ba mẹ chơi thắng 1 màn</button>
+        </div>
+        <div class="flow">
+          Con chơi → <span class="k">Con +2</span> · <span class="p">Ba mẹ +1</span> · <span class="pet">Pet +2</span><br>
+          Ba mẹ chơi → <span class="p">Ba mẹ +2</span> · <span class="k">Con +1</span> · <span class="pet">Pet +3</span>
+          <br><span style="color:var(--faint)">(tỉ lệ chỉnh được — đây là con số, không đụng cấu trúc)</span>
+        </div>
+      </div>
+
+      <!-- reward shelf -->
+      <div>
+        <div style="font-size:12px;letter-spacing:2px;color:var(--mut);text-transform:uppercase;margin-bottom:10px">Điểm đổi được gì</div>
+        <div class="shelf">
+          <div class="reward"><div class="ic">💡</div><div><div class="t">Gợi ý khi bí</div><div class="d">Lộ 1 ô / bỏ 1 bẫy / thêm thời gian. Ba mẹ cày Nâng cao → tích gợi ý cho con.</div><div class="cost">5 điểm / gợi ý</div></div></div>
+          <div class="reward star"><div class="ic">🎟️</div><div><div class="t">Phiếu thưởng THẬT</div><div class="d">Ba mẹ tự cài phần thưởng ngoài đời (đi ăn kem, thêm giờ chơi...). Con tích đủ điểm là đổi. Cầu nối game→đời thật. <b style="color:var(--mut)">Không dính tiền thật trong app (có trẻ con).</b></div><div class="cost">do ba mẹ đặt mốc</div></div></div>
+          <div class="reward"><div class="ic">🖼️</div><div><div class="t">Sưu tầm tranh AI</div><div class="d">Mỗi màn thắng tặng 1 bức tranh đẹp vào album. Trẻ lẫn người lớn đều mê sưu tầm + khoe.</div><div class="cost">rơi ngẫu nhiên khi thắng</div></div></div>
+          <div class="reward"><div class="ic">🔓</div><div><div class="t">Mở khóa cơ chế / chủ đề</div><div class="d">Mở phòng Nâng cao kiểu khó hơn + bộ tranh chủ đề mới cho Family.</div><div class="cost">30–100 điểm</div></div></div>
+          <div class="reward"><div class="ic">🤝</div><div><div class="t">Khóa HỢP TÁC</div><div class="d">Tiến hóa đặc biệt của pet + "phòng bí mật" CHỈ mở khi CẢ con lẫn ba mẹ cùng đạt mốc. Không ai chơi một mình mà xong.</div><div class="cost">cần cả 2 bên</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <b>Tóm cho sếp:</b> Nâng cao giờ là dòng "tự tìm ra luật ẩn" (như The Witness) — mỗi phòng 1 cơ chế, qua phòng khó dần, có bẫy; phải suy luận mới qua, không bấm bừa. Hai chế độ nối nhau bằng <b class="w">túi điểm 2:1 + con pet chung</b>: ba mẹ cày Nâng cao rót gợi ý cho con; con chơi cũng cộng ngược +1 cho ba mẹ; điểm dồn nuôi pet cả nhà. Thưởng còn có phiếu-thật ba mẹ tự đặt (cầu game→đời thật) + sưu tầm tranh + khóa hợp-tác buộc cả nhà cùng chơi.
+    <br><br>
+    <b class="w">Thẳng thắn — em tự phản biện:</b>
+    <br>1. <b>Phòng chơi thử mới là Lv 1 — dễ nhất</b> cho anh cảm cái "aha". Độ khó thật nằm ở các phòng sau (luật quan hệ, mật thư, luật tự đổi) — em mới mô tả, chưa dựng. Rủi ro lớn nhất của cả hướng này = THIẾT KẾ: luật phải "đoán ra được mà không lộ, không làm người chơi bí tới mức bực". Đây là phần tốn chất xám nhất, phải playtest nhiều.
+    <br>2. <b>Pet/điểm/phiếu-thật</b> mới là khung mô phỏng; con số 2:1 chỉnh sau. Phiếu-thật phải giữ ngoài đời (ba mẹ tự trao), không gắn tiền trong app vì có trẻ em → tránh đụng luật store.
+    <br>3. <b>"Có thể viral" — em không hứa.</b> Ý tưởng mở cửa; nổ hay không do CHẤT LƯỢNG câu đố + độ đẹp tranh. Em chỉ cam kết thiết kế sẵn móc-khoe (pet + thẻ gia đình) để không bỏ lỡ nếu có cửa.
+    <br><br>
+    <span class="muted">Mockup: phòng Nâng cao ở trên CHƠI THẬT (luật có thật, kiểm đúng/sai chính xác). Pet + điểm là mô phỏng bấm-để-thấy-luồng. Tranh/đồ hoạ bản thật sẽ là AI-art hoàn chỉnh.</span>
+  </div>
+</div>
+
+<script>
+/* ================= ADVANCED ROOM: HIDDEN RULE ================= */
+/* Luật ẩn: ô KHÔNG đỏ -> đúng khi SỐ LẺ ; ô ĐỎ -> đúng khi SỐ CHẴN (đảo).
+   Bẫy: người chơi dễ đoán "số lẻ", nhưng các ô ĐỎ đảo luật. */
+const COLORS={red:'#c9594f',blue:'#3f79c0',green:'#4aa066',yellow:'#d2a73c'};
+const COLNAME={red:'Đỏ',blue:'Xanh dương',green:'Xanh lá',yellow:'Vàng'};
+// state: 'known' (ví dụ lộ sẵn) hoặc 'unknown' (người chơi phải quyết)
+const TILES=[
+ {c:'blue',n:3,known:true},  {c:'green',n:4,known:true}, {c:'red',n:4,known:true},  {c:'red',n:5,known:true},
+ {c:'yellow',n:7,known:true},{c:'blue',n:6,known:true},  {c:'red',n:2,known:false}, {c:'red',n:3,known:false},
+ {c:'green',n:9,known:false},{c:'yellow',n:8,known:false},{c:'blue',n:5,known:false},{c:'red',n:8,known:false},
+ {c:'green',n:2,known:false},{c:'yellow',n:1,known:false},{c:'red',n:6,known:false},{c:'blue',n:2,known:false},
+];
+function isTrue(t){ return t.c==='red' ? (t.n%2===0) : (t.n%2===1); }
+let lives=3, hints=3, marks={}, solved=false;
+
+function renderLab(){
+  const g=document.getElementById('labgrid'); g.innerHTML='';
+  TILES.forEach((t,i)=>{
+    const d=document.createElement('div'); d.className='tile'; d.dataset.i=i;
+    d.style.background='linear-gradient(150deg,'+COLORS[t.c]+','+shade(COLORS[t.c],-16)+')';
+    let st='';
+    if(t.known){ d.classList.add('known'); const ok=isTrue(t);
+      d.classList.add(ok?'ok':'no'); st='<div class="st" style="color:'+(ok?'#063':'#400')+'">'+(ok?'✓':'✗')+'</div>'; }
+    else if(t.revealed){ const ok=isTrue(t); d.classList.add(ok?'reveal-ok':'reveal-no');
+      st='<div class="st" style="color:'+(ok?'#063':'#400')+'">'+(ok?'✓':'✗')+'</div>'; }
+    else { if(marks[i]) d.classList.add('mark'); st='<div class="q">'+(marks[i]?'bạn chọn ✓':'?')+'</div>'; }
+    d.innerHTML=t.n+st;
+    if(!t.known && !t.revealed && !solved) d.onclick=()=>{ marks[i]=!marks[i]; renderLab(); };
+    g.appendChild(d);
+  });
+}
+function shade(hex,p){const n=parseInt(hex.slice(1),16);let R=(n>>16)+Math.round(255*p/100),G=((n>>8)&255)+Math.round(255*p/100),B=(n&255)+Math.round(255*p/100);R=Math.max(0,Math.min(255,R));G=Math.max(0,Math.min(255,G));B=Math.max(0,Math.min(255,B));return '#'+(R<<16|G<<8|B).toString(16).padStart(6,'0');}
+function setLab(html){document.getElementById('labstatus').innerHTML=html;}
+
+function useHint(){
+  if(solved) return;
+  if(hints<=0){ setLab('Hết gợi ý rồi. Ở bản thật, ba mẹ cày Nâng cao để tích thêm gợi ý.'); return; }
+  const cand=TILES.map((t,i)=>i).filter(i=>!TILES[i].known && !TILES[i].revealed && !marks[i]);
+  const pool=cand.length?cand:TILES.map((t,i)=>i).filter(i=>!TILES[i].known && !TILES[i].revealed);
+  if(!pool.length){ setLab('Không còn ô nào để lộ.'); return; }
+  const pick=pool[0]; TILES[pick].revealed=true; hints--;
+  document.getElementById('hints').textContent=hints;
+  const ok=isTrue(TILES[pick]);
+  setLab('💡 Đã lộ 1 ô: '+COLNAME[TILES[pick].c]+' '+TILES[pick].n+' → '+(ok?'<b style="color:var(--green)">ĐÚNG ✓</b>':'<b style="color:var(--red)">SAI ✗</b>')+'. Ô này tính thẳng vào đáp án, không cần bạn đánh dấu nữa.');
+  renderLab();
+}
+function checkRule(){
+  if(solved) return;
+  let wrong=0, missed=0, correct=0;
+  TILES.forEach((t,i)=>{
+    if(t.known||t.revealed) return;
+    const truth=isTrue(t), claim=!!marks[i];
+    if(claim&&truth) correct++;
+    else if(claim&&!truth) wrong++;
+    else if(!claim&&truth) missed++;
+  });
+  if(wrong===0 && missed===0){
+    solved=true;
+    setLab('🎉 <b style="color:var(--green)">BẠN PHÁ ĐƯỢC CƠ CHẾ!</b> Đánh dấu chuẩn hết.<br><span class="rule">Luật ẩn = ô KHÔNG đỏ thì SỐ LẺ · ô ĐỎ thì đảo lại (SỐ CHẴN)</span>');
+    document.querySelectorAll('.labctrls .b').forEach(b=>{if(b.textContent.includes('CHỐT')||b.textContent.includes('gợi ý'))b.disabled=true;});
+    renderLab();
+  } else {
+    lives--; document.getElementById('lives').textContent='♦'.repeat(Math.max(0,lives))+'♢'.repeat(3-Math.max(0,lives));
+    if(lives<=0){
+      setLab('💔 Hết mạng. '+(wrong?wrong+' ô đánh dấu SAI. ':'')+(missed?missed+' ô ĐÚNG mà bỏ sót. ':'')+'Để em hiện luật.');
+      giveUp();
+    } else {
+      setLab('❌ Chưa đúng: '+(wrong?'<b>'+wrong+'</b> ô bạn chọn mà không thuộc luật; ':'')+(missed?'<b>'+missed+'</b> ô thuộc luật mà bạn bỏ sót. ':'')
+        +'Còn '+lives+' mạng. <b>Gợi ý: để ý mấy ô ĐỎ — luật với ô đỏ có gì khác?</b>');
+    }
+  }
+}
+function giveUp(){
+  solved=true;
+  TILES.forEach(t=>{ if(!t.known) t.revealed=true; });
+  setLab('Luật ẩn đã lộ:<br><span class="rule">ô KHÔNG đỏ → đúng khi SỐ LẺ · ô ĐỎ → đúng khi SỐ CHẴN (đảo)</span>');
+  renderLab();
+}
+function resetRoom(){
+  lives=3;hints=3;marks={};solved=false;
+  TILES.forEach(t=>delete t.revealed);
+  document.getElementById('lives').textContent='♦♦♦';
+  document.getElementById('hints').textContent='3';
+  document.querySelectorAll('.labctrls .b').forEach(b=>b.disabled=false);
+  setLab('Nhìn các ô đã lộ (✓/✗), suy ra luật, rồi đánh dấu các ô "?" bạn cho là ĐÚNG.');
+  renderLab();
+}
+renderLab();
+
+/* ================= ECONOMY / PET ================= */
+let kid=0, par=0, grow=20, stage=0;
+const STAGES=[
+ {e:'🥚',name:'Trứng bí ẩn'},{e:'🐣',name:'Vừa nở'},{e:'🦊',name:'Hồ ly con'},{e:'🐲',name:'Rồng nhỏ'},{e:'🦁',name:'Thần thú'}
+];
+function play(who){
+  if(who==='kid'){ kid+=2; par+=1; bump('kid','+2'); bump('par','+1'); grow+=14; }
+  else { par+=2; kid+=1; bump('par','+2'); bump('kid','+1'); grow+=18; }
+  document.getElementById('kidPts').textContent=kid;
+  document.getElementById('parPts').textContent=par;
+  while(grow>=100 && stage<STAGES.length-1){ grow-=100; stage++; evolve(); }
+  grow=Math.min(grow,100);
+  document.getElementById('growfill').style.width=grow+'%';
+  document.getElementById('growpct').textContent=Math.round(grow);
+}
+function evolve(){
+  const p=document.getElementById('pet'); p.style.transform='scale(1.4)';
+  setTimeout(()=>{p.textContent=STAGES[stage].e;p.style.transform='scale(1)';},180);
+  document.getElementById('petname').textContent='✨ '+STAGES[stage].name+'!';
+  document.getElementById('petstage').textContent='Pet vừa TIẾN HÓA — thứ cả nhà sẽ khoe 🎉';
+}
+function bump(which,txt){
+  const el=document.querySelector('.cnt.'+which); if(!el) return;
+  const f=document.createElement('div'); f.className='float'; f.textContent=txt;
+  f.style.color = which==='kid'?'var(--sage)':'#d98a96';
+  f.style.left=(el.offsetLeft+el.offsetWidth/2-10)+'px'; f.style.top=(el.offsetTop-6)+'px';
+  el.parentElement.appendChild(f); setTimeout(()=>f.remove(),1000);
+}
+</script>
+</body>
+</html>

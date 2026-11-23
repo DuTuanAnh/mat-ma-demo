@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MẬT MÃ v2 — Phòng tranh suy luận</title>
+<style>
+  :root{
+    --wall:#211a16; --wall2:#1a1410; --panel:#2a211b; --line:#473a2e;
+    --cream:#F3E9D2; --ink:#2b2017; --brass:#C79A4E; --brassLt:#E7C377;
+    --wine:#8E2F3A; --sage:#6E8E5A; --spot:rgba(231,195,119,.22);
+    --green:#5AA56A; --red:#C44A4A; --mut:#A99A82; --faint:#80725f;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1200px 700px at 50% -8%, #3a2c1f 0%, transparent 60%),
+      radial-gradient(900px 500px at 10% 30%, rgba(199,154,78,.08), transparent 55%),
+      linear-gradient(180deg,#241c17,#17110d);
+    color:var(--cream);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+    line-height:1.5;padding:0 16px 80px}
+  .wrap{max-width:1140px;margin:0 auto}
+
+  /* picture rail at top like a gallery */
+  .rail{height:14px;margin:0 -16px 0;background:linear-gradient(180deg,#3a2c1f,#17110d);
+    border-bottom:1px solid #4a3827;box-shadow:0 2px 10px rgba(0,0,0,.5)}
+  header{text-align:center;padding:40px 10px 10px}
+  h1{font-family:var(--serif);font-size:50px;letter-spacing:10px;font-weight:600;color:var(--cream);
+    text-shadow:0 2px 0 #0006, 0 0 30px rgba(231,195,119,.18)}
+  h1 .amp{color:var(--brassLt)}
+  .kicker{font-size:12px;letter-spacing:5px;text-transform:uppercase;color:var(--brass);margin-bottom:10px}
+  .tag{color:var(--mut);margin-top:12px;font-size:15px;max-width:760px;margin-left:auto;margin-right:auto}
+  .tag b{color:var(--brassLt)}
+  .rulebar{margin-top:14px;display:inline-flex;gap:18px;flex-wrap:wrap;justify-content:center;
+    font-size:12.5px;color:var(--mut);background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:30px;padding:8px 20px}
+  .rulebar b{color:var(--cream)} .rulebar .g{color:var(--green)} .rulebar .r{color:#e08a8a}
+
+  .sect{margin:48px 0 6px;font-family:var(--serif);font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--brass);
+    border-top:1px solid var(--line);padding-top:22px;text-align:center}
+
+  /* mode tabs */
+  .modes{display:flex;gap:0;justify-content:center;margin:20px auto 6px;max-width:560px;
+    border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(0,0,0,.25)}
+  .mtab{flex:1;padding:14px 12px;text-align:center;cursor:pointer;transition:.18s;border-right:1px solid var(--line)}
+  .mtab:last-child{border-right:none}
+  .mtab .t{font-family:var(--serif);font-size:17px;font-weight:600}
+  .mtab .d{font-size:11px;color:var(--mut);margin-top:2px}
+  .mtab.on{background:linear-gradient(180deg,rgba(199,154,78,.22),rgba(199,154,78,.06))}
+  .mtab.on .t{color:var(--brassLt)}
+  .mtab.fam.on{box-shadow:inset 0 -3px 0 var(--sage)}
+  .mtab.pro.on{box-shadow:inset 0 -3px 0 var(--wine)}
+
+  /* exhibition placard (clue) */
+  .stage{max-width:980px;margin:18px auto 0}
+  .placard{background:linear-gradient(180deg,#f6eccf,#e6d6ad);color:#3a2c17;border-radius:12px;
+    padding:16px 22px;position:relative;box-shadow:0 14px 34px rgba(0,0,0,.5), inset 0 0 0 2px rgba(255,255,255,.4);
+    max-width:520px;margin:0 auto;text-align:center;border:1px solid #cBAE7a}
+  .placard .lab{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#8a6f3e}
+  .placard .word{font-family:var(--serif);font-size:34px;font-weight:700;letter-spacing:3px;color:#5a2630;line-height:1.1;margin:2px 0}
+  .placard .sub{font-size:12.5px;color:#6a553a}
+  .placard .seal{position:absolute;top:-16px;left:50%;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,var(--brassLt),var(--brass));color:#3a2608;display:flex;align-items:center;justify-content:center;
+    font-family:var(--serif);font-weight:800;font-size:17px;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+
+  .hud{display:flex;gap:12px;justify-content:center;margin:16px 0 6px;flex-wrap:wrap}
+  .chip{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:11px;padding:8px 16px;text-align:center;min-width:84px}
+  .chip .k{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+  .chip .v{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--brassLt)}
+  .chip .v.h{font-size:17px}
+  .pdots{display:flex;gap:6px;justify-content:center;align-items:center;margin:4px 0 0}
+  .pd{width:24px;height:7px;border-radius:5px;background:#3a2c1f}
+  .pd.on{background:linear-gradient(90deg,var(--brass),var(--brassLt))}
+
+  /* gallery grid of paintings */
+  .gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 20px;max-width:880px;margin:22px auto 0;padding:6px}
+  .frame{position:relative;cursor:pointer;transition:transform .16s ease;padding:10px 10px 0;
+    background:linear-gradient(145deg,#d9ab5c,#9c7636);border-radius:6px;
+    box-shadow:0 14px 30px rgba(0,0,0,.55), inset 0 0 0 2px rgba(255,255,255,.18), inset 0 0 0 7px #6e5324}
+  .frame:before{content:"";position:absolute;left:50%;top:-30px;transform:translateX(-50%);
+    width:120%;height:140%;background:radial-gradient(ellipse at 50% 0%, var(--spot), transparent 60%);pointer-events:none;z-index:-1}
+  .frame:hover{transform:translateY(-6px)}
+  .mat{background:linear-gradient(180deg,#f4ead1,#e7d8b6);border-radius:3px;padding:9px 9px 6px;box-shadow:inset 0 2px 6px rgba(0,0,0,.18)}
+  .art{aspect-ratio:1/1;border-radius:2px;position:relative;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+  .art:after{content:"";position:absolute;inset:0;background:
+     radial-gradient(circle at 30% 24%, rgba(255,255,255,.35), transparent 45%),
+     radial-gradient(circle at 72% 92%, rgba(0,0,0,.35), transparent 55%);mix-blend-mode:soft-light}
+  .subj{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;
+    filter:drop-shadow(0 3px 5px rgba(0,0,0,.45))}
+  .plaque{margin:7px auto 9px;background:#2a2016;color:#e9d3a3;font-size:11px;font-weight:600;letter-spacing:.4px;
+    text-align:center;padding:3px 8px;border-radius:3px;max-width:88%;box-shadow:0 2px 5px rgba(0,0,0,.4);font-family:var(--serif)}
+  .stamp{position:absolute;top:8px;right:8px;z-index:3;width:30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;opacity:0;transform:scale(.3) rotate(-18deg);transition:.22s}
+  .frame.found .stamp{opacity:1;transform:scale(1) rotate(-12deg);background:var(--green);color:#0b2e14;box-shadow:0 3px 10px rgba(0,0,0,.5)}
+  .frame.found{box-shadow:0 0 0 3px var(--green),0 16px 34px rgba(90,165,106,.4)}
+  .frame.miss{filter:grayscale(.7) brightness(.42);transform:none}
+  .frame.miss:hover{transform:none}
+  .frame.miss .mat:after{content:"TRẬT";position:absolute}
+  .frame.trap{box-shadow:0 0 0 3px var(--red),0 16px 36px rgba(196,74,74,.5);animation:shake .4s}
+  .frame.trap .stamp{opacity:1;transform:scale(1) rotate(-12deg);background:var(--red);color:#2a0606}
+  .frame.done{cursor:default}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+  .status{max-width:760px;margin:22px auto 0;text-align:center;font-size:15.5px;min-height:28px;font-weight:600;font-family:var(--serif)}
+  .ctrls{display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+  button.b{background:linear-gradient(180deg,var(--brassLt),var(--brass));color:#2e2007;border:none;border-radius:11px;
+    padding:12px 24px;font-weight:700;font-size:14px;cursor:pointer;letter-spacing:.5px;font-family:var(--serif);box-shadow:0 8px 20px rgba(0,0,0,.45)}
+  button.b.ghost{background:transparent;color:var(--mut);border:1px solid var(--line);box-shadow:none}
+  button.b:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+  .note{max-width:820px;margin:22px auto 0;font-size:12.5px;color:var(--mut);background:rgba(0,0,0,.25);
+    border:1px solid var(--line);border-radius:10px;padding:12px 16px;line-height:1.75}
+  .note b{color:var(--cream)}
+
+  /* phones + foot reuse */
+  .phones{display:flex;flex-wrap:wrap;gap:30px 26px;margin-top:14px;justify-content:center}
+  .fig{width:268px;display:flex;flex-direction:column}
+  .phone{width:268px;height:560px;background:#120d09;border-radius:34px;border:9px solid #2a2016;
+    box-shadow:0 18px 44px rgba(0,0,0,.6);position:relative;overflow:hidden}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:116px;height:22px;background:#2a2016;border-radius:0 0 16px 16px;z-index:9}
+  .scr{position:absolute;inset:0;background:linear-gradient(180deg,#241c15,#15100b);display:flex;flex-direction:column;padding:30px 13px 14px;overflow:hidden}
+  .cap{margin-top:12px;font-size:13px;color:var(--mut)} .cap b{color:var(--cream);display:block;font-size:14px;margin-bottom:2px}
+  .cap .n{color:var(--brass);font-weight:800}
+  .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}
+  .muted{color:var(--mut);font-size:12px}
+  .h3{font-size:15px;font-weight:700;font-family:var(--serif)}
+  .card2{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;padding:10px}
+  .lb{display:flex;justify-content:space-between;font-size:12px;padding:7px 2px;border-bottom:1px solid var(--line)} .lb .r{color:var(--brassLt);font-weight:800}
+  .mini{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .mc{aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid #9c7636}
+  .btnbig{background:linear-gradient(180deg,var(--brassLt),var(--brass));color:#2e2007;font-weight:700;text-align:center;padding:12px;border-radius:12px;font-size:14px;font-family:var(--serif)}
+  .btn2{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--cream);text-align:center;padding:11px;border-radius:12px;font-size:13px}
+  .row{display:flex;gap:8px}.col{display:flex;flex-direction:column;gap:8px}
+  .foot{margin-top:46px;color:var(--mut);font-size:13px;border-top:1px solid var(--line);padding-top:20px;max-width:900px;margin-left:auto;margin-right:auto}
+  .foot b{color:var(--cream)} .foot .w{color:var(--brassLt)}
+  @media(max-width:640px){h1{font-size:34px;letter-spacing:6px}.gallery{grid-template-columns:repeat(2,1fr);gap:16px 14px}
+    .phone,.fig{width:100%;max-width:300px}.phone{height:600px}.subj{font-size:32px}}
+</style>
+</head>
+<body>
+<div class="rail"></div>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">Phòng tranh suy luận</div>
+    <h1>MẬT MÃ</h1>
+    <div class="tag">Một người cho <b>một từ gợi ý</b>, người kia luận ra <b>đúng những bức tranh dính tới từ đó</b> — né bẫy, tránh bức "đồ giả" (tử thần). Mỗi bức là một <b>tác phẩm AI-art</b> treo trên tường. <span style="color:var(--faint)">(Tên "MẬT MÃ" chỉ tạm.)</span></div>
+    <div class="rulebar"><span><b class="g">Xanh</b> = đúng</span><span><b>Xám</b> = trật, mất tim</span><span><b class="r">💀 Đồ giả</b> = thua ngay</span></div>
+  </header>
+
+  <div class="sect">Chọn chế độ — rồi chơi thử ngay</div>
+
+  <div class="modes" id="modes">
+    <div class="mtab fam on" data-m="family" onclick="setMode('family')">
+      <div class="t">👨‍👩‍👧 Gia đình</div><div class="d">Gợi ý theo nhóm rõ ràng · 3 tim · cho trẻ + cả nhà</div>
+    </div>
+    <div class="mtab pro" data-m="pro" onclick="setMode('pro')">
+      <div class="t">🧠 Nâng cao</div><div class="d">Gợi ý lắt léo, bẫy tư duy · 2 tim · cho người lớn</div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="placard">
+      <div class="seal" id="seal">3</div>
+      <div class="lab">Chủ đề triển lãm</div>
+      <div class="word" id="clueWord">—</div>
+      <div class="sub" id="clueSub">Tìm 3 tác phẩm dính tới chủ đề này</div>
+    </div>
+
+    <div class="hud">
+      <div class="chip"><div class="k">Tìm được</div><div class="v" id="foundCt">0/3</div></div>
+      <div class="chip"><div class="k">Tim</div><div class="v h" id="hearts">❤️❤️❤️</div></div>
+      <div class="chip"><div class="k">Điểm</div><div class="v" id="score">0</div></div>
+      <div class="chip"><div class="k">Phòng</div><div class="v" id="roundName">1/3</div></div>
+    </div>
+    <div class="pdots" id="pdots"></div>
+
+    <div class="gallery" id="gallery"></div>
+
+    <div class="status" id="status">Chọn chế độ ở trên, rồi chạm bức tranh bạn nghĩ dính tới chủ đề.</div>
+    <div class="ctrls">
+      <button class="b" id="nextBtn" style="display:none" onclick="nextRound()">Phòng tiếp →</button>
+      <button class="b ghost" onclick="restart()">Chơi lại</button>
+      <button class="b ghost" onclick="reveal()">Chịu — xem đáp án</button>
+    </div>
+
+    <div class="note" id="whyNote"></div>
+  </div>
+
+  <!-- MODES / FLOW -->
+  <div class="sect">Cả nhà chơi thế nào</div>
+  <div class="phones">
+    <div class="fig"><div class="phone"><div class="notch"></div><div class="scr">
+      <div class="center">
+        <div style="width:150px;height:110px;border-radius:4px;background:linear-gradient(145deg,#d9ab5c,#9c7636);padding:8px;box-shadow:0 14px 30px rgba(0,0,0,.6),inset 0 0 0 5px #6e5324">
+          <div style="height:100%;border-radius:2px;background:linear-gradient(180deg,#ffd59e,#c75c8a 70%,#6a3f8f);display:flex;align-items:center;justify-content:center;font-size:34px">🖼️</div>
+        </div>
+        <div class="h3" style="font-size:24px;letter-spacing:6px;margin-top:6px">MẬT MÃ</div>
+        <div class="muted">PHÒNG TRANH SUY LUẬN</div>
+      </div>
+    </div></div><div class="cap"><b><span class="n">1.</span> Splash</b>Khung tranh mạ đồng, ánh đèn rọi. Sang, ấm, "người lớn" — không còn vẻ game trẻ con.</div></div>
+
+    <div class="fig"><div class="phone"><div class="notch"></div><div class="scr">
+      <div class="h3" style="text-align:center;margin-bottom:12px">Hai chế độ</div>
+      <div class="col">
+        <div class="card2" style="box-shadow:inset 0 -3px 0 var(--sage)"><div class="h3" style="font-size:14px;color:var(--sage)">👨‍👩‍👧 Gia đình</div><div class="muted" style="margin-top:4px">Ba/mẹ ra gợi ý, con suy ra tranh — hoặc đổi vai. Gợi ý theo nhóm rõ, có gợi-ý-nhỏ, 3 tim. Con 5 tuổi cũng chơi được.</div></div>
+        <div class="card2" style="box-shadow:inset 0 -3px 0 var(--wine)"><div class="h3" style="font-size:14px;color:#d98a92">🧠 Nâng cao</div><div class="muted" style="margin-top:4px">Gợi ý lắt léo: liên tưởng, chơi chữ, bẫy khoa học. 2 tim, tính giờ, bảng xếp hạng. Đây là chế độ cho NGƯỜI LỚN mê đố.</div></div>
+      </div>
+      <div class="muted" style="text-align:center;margin-top:12px">Cùng 1 bộ tranh, 2 độ khó — nhà có con nhỏ lẫn người lớn đều có cái chơi.</div>
+    </div></div><div class="cap"><b><span class="n">2.</span> 2 chế độ (ý của sếp)</b>Gia đình = nhẹ, chơi-cùng-con. Nâng cao = khó thật, cho người lớn. Thử cả 2 ở bản chạm trên.</div></div>
+
+    <div class="fig"><div class="phone"><div class="notch"></div><div class="scr">
+      <div class="muted" style="text-align:center;font-size:10px;margin-bottom:6px">Chỉ ĐỘI TRƯỞNG (ba/mẹ) thấy màn này</div>
+      <div class="mini" style="margin-bottom:10px">
+        <div class="mc" style="background:linear-gradient(180deg,#8fd0e6,#14506e);border-color:var(--sage)">🐟</div>
+        <div class="mc" style="background:linear-gradient(180deg,#bfe0b0,#2f6e3f)">🦋</div>
+        <div class="mc" style="background:linear-gradient(180deg,#ffd59e,#c75c8a)">🌵</div>
+        <div class="mc" style="background:linear-gradient(180deg,#8fd0e6,#14506e);border-color:var(--sage)">🐙</div>
+        <div class="mc" style="background:linear-gradient(180deg,#2a2b6e,#15123a)">🚗</div>
+        <div class="mc" style="background:linear-gradient(180deg,#fbe7bd,#c89a5a);border-color:var(--red)">🦆</div>
+        <div class="mc" style="background:linear-gradient(180deg,#ffd59e,#6a3f8f)">🎸</div>
+        <div class="mc" style="background:linear-gradient(180deg,#8fd0e6,#14506e);border-color:var(--sage)">🦈</div>
+      </div>
+      <div class="card2" style="text-align:center"><div class="muted" style="font-size:10px">3 tranh của bạn (viền xanh) · 💀 né bức viền đỏ</div>
+        <div style="margin-top:6px;font-weight:700;color:var(--brassLt);font-family:var(--serif)">Gõ 1 từ nối cả 3…</div></div>
+      <div class="muted" style="text-align:center;margin-top:8px">Nghĩ ra TỪ bao trùm = lúc người lớn động não nhất.</div>
+    </div></div><div class="cap"><b><span class="n">3.</span> Màn ra gợi ý (người lớn)</b>Phần khó & vui nhất cho người lớn KHÔNG phải đoán — mà là NGHĨ RA gợi ý nối đúng tranh mình, né bẫy. Đây là "trần kỹ năng" cho adults.</div></div>
+
+    <div class="fig"><div class="phone"><div class="notch"></div><div class="scr">
+      <div class="sbar" style="display:flex;justify-content:space-between;font-size:10px;color:var(--mut);margin-bottom:8px"><span>🏆 Nâng cao · tuần này</span></div>
+      <div class="card2">
+        <div class="lb"><span>🥇 Ba (Minh)</span><span class="r">Bậc thầy</span></div>
+        <div class="lb"><span>🥈 Mẹ (Lan)</span><span class="r">Cao thủ</span></div>
+        <div class="lb"><span>🥉 Cậu Khoa</span><span class="r">Thám tử</span></div>
+        <div class="lb" style="border:none"><span>👧 Bé Na (Gia đình)</span><span style="color:var(--sage);font-weight:800">Thám tử Nhí 🥈</span></div>
+      </div>
+      <div class="btn2" style="margin-top:10px">⚔️ Thách nhà khác</div>
+      <div class="muted" style="text-align:center;margin-top:10px">Người lớn leo hạng ở Nâng cao; trẻ con có huy hiệu riêng ở Gia đình. Ai cũng có đường tiến.</div>
+    </div></div><div class="cap"><b><span class="n">4.</span> Bảng hạng tách theo chế độ</b>Người lớn không "dìm" con, con không làm người lớn chán — mỗi chế độ một bảng. Cả nhà đều có động lực.</div></div>
+
+    <div class="fig"><div class="phone"><div class="notch"></div><div class="scr">
+      <div class="h3" style="text-align:center;margin-bottom:8px">Bộ tranh hôm nay</div>
+      <div class="muted" style="text-align:center;margin-bottom:8px">Chủ đề: "Đại dương sâu"</div>
+      <div class="mini" style="grid-template-columns:repeat(3,1fr)">
+        <div class="mc" style="background:linear-gradient(180deg,#2f7fa6,#09263a)">🐋</div>
+        <div class="mc" style="background:linear-gradient(180deg,#2f7fa6,#09263a)">🪼</div>
+        <div class="mc" style="background:linear-gradient(180deg,#2f7fa6,#09263a)">🦑</div>
+        <div class="mc" style="background:linear-gradient(180deg,#2f7fa6,#09263a)">🐚</div>
+        <div class="mc" style="background:linear-gradient(180deg,#2f7fa6,#09263a)">🦀</div>
+        <div class="mc" style="background:linear-gradient(180deg,#2f7fa6,#09263a)">🐠</div>
+      </div>
+      <div class="muted" style="text-align:center;margin-top:10px">Mỗi ngày một BỘ tranh AI theo chủ đề. Tranh đẹp vô tận = lý do quay lại + là MOAT đội.</div>
+    </div></div><div class="cap"><b><span class="n">5.</span> Bộ tranh AI mỗi ngày</b>Chỗ đội thắng: pipeline AI-art đẻ bộ tranh đẹp mới mỗi ngày. Bản giấy không làm được, studio khác chép không kịp.</div></div>
+  </div>
+
+  <div class="foot">
+    <b>Tóm cho sếp:</b> cùng 1 bộ tranh, <b class="w">2 chế độ</b> — Gia đình (gợi ý theo nhóm, nhẹ, chơi-với-con) và Nâng cao (gợi ý liên tưởng/chơi-chữ/bẫy khoa học, cho người lớn). Rèn suy luận ở cả hai: trẻ động não lúc ĐOÁN, người lớn động não lúc RA GỢI Ý và lúc giải câu đố lắt léo. Giao diện lần này là "phòng tranh đêm" — khung mạ đồng, tranh treo tường, chữ serif — bỏ hẳn kiểu neon-tối của mấy bản trước.
+    <br><br>
+    <b class="w">Thẳng thắn — em tự phản biện:</b>
+    <br>1. <b>"Người lớn chơi dễ chán" — sếp nói đúng.</b> Bản đầu em toàn câu nhóm trẻ con. Bản này tách Nâng cao với bẫy thật (ví dụ "CÓ GAI" → con Ong là bẫy vì nó CHÍCH chứ không có gai; "TỰ PHÁT SÁNG" → Trăng là bẫy vì nó phản chiếu, không tự phát). Nhưng độ khó người lớn thật sự đến từ chế độ RA GỢI Ý nhiều người — cái đó phải có bạn chơi, không mô phỏng trọn trong 1 máy được.
+    <br>2. <b>Mượn cơ chế Codenames.</b> Luật không bị bản quyền; tên/tranh/nhận diện tự làm 100% = đúng thế mạnh AI-art đội.
+    <br>3. <b>Chất lượng nằm ở bộ từ gợi ý + tranh rõ nghĩa.</b> Việc nội dung, phải chăm như liveops; đây là chỗ tốn công nhất về sau.
+    <br><br>
+    <span class="muted">Mockup: bản trên CHƠI THẬT cả 2 chế độ (3 phòng mỗi chế độ) để sếp cảm độ khó + độ đẹp. Tranh vẫn là placeholder (emoji + nền cảnh); bản thật mỗi khung là một bức AI-art hoàn chỉnh — lúc đó mới đủ "bắt mắt".</span>
+  </div>
+</div>
+
+<script>
+const SCENES=[
+ 'linear-gradient(180deg,#aed6ff,#dff0ff 58%,#bfe8c8)',   // sky
+ 'linear-gradient(180deg,#8fd0e6,#2f7fa6 58%,#0f405c)',    // sea
+ 'linear-gradient(180deg,#ffd59e,#ff9e7a 46%,#c75c8a 86%,#6a3f8f)', // sunset
+ 'linear-gradient(180deg,#c9e6b4,#6fae6a 52%,#2f6e3f)',    // forest
+ 'linear-gradient(180deg,#3a3b7e,#4a3f8f 55%,#15123a)',    // night
+ 'linear-gradient(180deg,#fbe7bd,#e9c88a 56%,#c89a5a)',    // sand
+];
+const MODES={
+ family:{ lives:3, blurb:'<b>Chế độ Gia đình:</b> gợi ý theo nhóm rõ ràng (sống ở đâu, màu gì). Trẻ con học phân nhóm & loại trừ; vẫn có 1 bẫy nhẹ để không nhàm. 3 tim.',
+  rounds:[
+   {clue:'DƯỚI NƯỚC',n:3,why:'Phân nhóm nơi sống. Bẫy: Vịt NỔI trên nước chứ không ở dưới nước.',cards:[
+     {e:'🐟',l:'Cá',r:'t',s:1},{e:'🦋',l:'Bướm',r:'n',s:3},{e:'🌵',l:'Xương rồng',r:'n',s:5},{e:'🐙',l:'Bạch tuộc',r:'t',s:1},
+     {e:'🚗',l:'Ô tô',r:'n',s:4},{e:'🦆',l:'Vịt',r:'x',s:1},{e:'🎸',l:'Đàn ghi-ta',r:'n',s:2},{e:'🍎',l:'Táo',r:'n',s:0},
+     {e:'🦈',l:'Cá mập',r:'t',s:1},{e:'⛰️',l:'Núi',r:'n',s:3},{e:'🎈',l:'Bóng bay',r:'n',s:0},{e:'🌙',l:'Mặt trăng',r:'n',s:4},
+     {e:'🐘',l:'Voi',r:'n',s:3},{e:'🏠',l:'Ngôi nhà',r:'n',s:5},{e:'🔥',l:'Lửa',r:'n',s:2},{e:'🌼',l:'Bông hoa',r:'n',s:0} ]},
+   {clue:'BAY ĐƯỢC',n:3,why:'Bẫy: Chim cánh cụt LÀ chim nhưng KHÔNG bay được.',cards:[
+     {e:'🦋',l:'Bướm',r:'t',s:0},{e:'🐟',l:'Cá',r:'n',s:1},{e:'🏠',l:'Ngôi nhà',r:'n',s:5},{e:'🦅',l:'Đại bàng',r:'t',s:0},
+     {e:'🚗',l:'Ô tô',r:'n',s:4},{e:'🐧',l:'Cánh cụt',r:'x',s:1},{e:'🎸',l:'Đàn',r:'n',s:2},{e:'🍎',l:'Táo',r:'n',s:3},
+     {e:'✈️',l:'Máy bay',r:'t',s:0},{e:'⛰️',l:'Núi',r:'n',s:3},{e:'🌊',l:'Sóng biển',r:'n',s:1},{e:'🌙',l:'Mặt trăng',r:'n',s:4},
+     {e:'🐘',l:'Voi',r:'n',s:3},{e:'🐍',l:'Rắn',r:'n',s:5},{e:'🔥',l:'Lửa',r:'n',s:2},{e:'🌵',l:'Xương rồng',r:'n',s:5} ]},
+   {clue:'MÀU ĐỎ',n:3,why:'Phân loại theo màu. Bẫy: quả Cam là trái cây nhưng màu CAM, không đỏ.',cards:[
+     {e:'🍎',l:'Táo',r:'t',s:3},{e:'🍋',l:'Chanh',r:'n',s:0},{e:'🫐',l:'Việt quất',r:'n',s:4},{e:'🍓',l:'Dâu tây',r:'t',s:0},
+     {e:'🐘',l:'Voi',r:'n',s:3},{e:'🍊',l:'Cam',r:'x',s:5},{e:'🎸',l:'Đàn',r:'n',s:2},{e:'🌙',l:'Mặt trăng',r:'n',s:4},
+     {e:'🌹',l:'Hoa hồng',r:'t',s:2},{e:'⛰️',l:'Núi',r:'n',s:3},{e:'🥦',l:'Bông cải',r:'n',s:3},{e:'🐧',l:'Cánh cụt',r:'n',s:1},
+     {e:'🏠',l:'Ngôi nhà',r:'n',s:5},{e:'🌊',l:'Sóng biển',r:'n',s:1},{e:'🌵',l:'Xương rồng',r:'n',s:3},{e:'🐟',l:'Cá',r:'n',s:1} ]},
+  ]},
+ pro:{ lives:2, blurb:'<b>Chế độ Nâng cao:</b> gợi ý KHÔNG theo nhóm hiển nhiên — phải liên tưởng, bắt bẫy tư duy & bẫy khoa học. 2 tim, sai 1 là căng. Đây là phần cho người lớn.',
+  rounds:[
+   {clue:'CÓ GAI',n:3,why:'Bẫy tư duy: con Ong CHÍCH bằng nọc, KHÔNG có gai. Nhím/xương rồng/hoa hồng mới thực sự có gai.',cards:[
+     {e:'🌵',l:'Xương rồng',r:'t',s:5},{e:'🍎',l:'Táo',r:'n',s:3},{e:'🦔',l:'Nhím',r:'t',s:3},{e:'🌙',l:'Mặt trăng',r:'n',s:4},
+     {e:'🐝',l:'Con ong',r:'x',s:0},{e:'🚗',l:'Ô tô',r:'n',s:4},{e:'🌹',l:'Hoa hồng',r:'t',s:2},{e:'🏠',l:'Ngôi nhà',r:'n',s:5},
+     {e:'🎸',l:'Đàn',r:'n',s:2},{e:'🐘',l:'Voi',r:'n',s:3},{e:'🦋',l:'Bướm',r:'n',s:0},{e:'🐟',l:'Cá',r:'n',s:1},
+     {e:'🔥',l:'Lửa',r:'n',s:2},{e:'🍋',l:'Chanh',r:'n',s:0},{e:'⛰️',l:'Núi',r:'n',s:3},{e:'🎈',l:'Bóng bay',r:'n',s:0} ]},
+   {clue:'SỐNG Ở SA MẠC',n:3,why:'Bẫy ngược: Chim cánh cụt sống ở nơi BĂNG GIÁ, không phải sa mạc nóng. Lạc đà/xương rồng/bọ cạp mới đúng.',cards:[
+     {e:'🐫',l:'Lạc đà',r:'t',s:5},{e:'🐟',l:'Cá',r:'n',s:1},{e:'🌵',l:'Xương rồng',r:'t',s:5},{e:'❄️',l:'Bông tuyết',r:'n',s:4},
+     {e:'🦂',l:'Bọ cạp',r:'t',s:5},{e:'🐧',l:'Cánh cụt',r:'x',s:1},{e:'🌊',l:'Sóng biển',r:'n',s:1},{e:'🏠',l:'Ngôi nhà',r:'n',s:5},
+     {e:'🎸',l:'Đàn',r:'n',s:2},{e:'🐘',l:'Voi',r:'n',s:3},{e:'🦋',l:'Bướm',r:'n',s:0},{e:'🍎',l:'Táo',r:'n',s:3},
+     {e:'🌙',l:'Mặt trăng',r:'n',s:4},{e:'🚗',l:'Ô tô',r:'n',s:4},{e:'🌲',l:'Cây thông',r:'n',s:3},{e:'🐠',l:'Cá cảnh',r:'n',s:1} ]},
+   {clue:'TỰ PHÁT SÁNG',n:3,why:'Bẫy khoa học: Mặt trăng KHÔNG tự phát sáng — nó phản chiếu ánh Mặt trời. Đèn/lửa/sao mới tự phát sáng.',cards:[
+     {e:'💡',l:'Bóng đèn',r:'t',s:4},{e:'🌙',l:'Mặt trăng',r:'x',s:4},{e:'🔥',l:'Lửa',r:'t',s:2},{e:'🪞',l:'Gương',r:'n',s:5},
+     {e:'⭐',l:'Ngôi sao',r:'t',s:4},{e:'🐟',l:'Cá',r:'n',s:1},{e:'🚗',l:'Ô tô',r:'n',s:4},{e:'🏠',l:'Ngôi nhà',r:'n',s:5},
+     {e:'🎸',l:'Đàn',r:'n',s:2},{e:'🌵',l:'Xương rồng',r:'n',s:5},{e:'🍎',l:'Táo',r:'n',s:3},{e:'❄️',l:'Tuyết',r:'n',s:4},
+     {e:'🦋',l:'Bướm',r:'n',s:0},{e:'⛰️',l:'Núi',r:'n',s:3},{e:'🌹',l:'Hoa hồng',r:'n',s:2},{e:'💎',l:'Kim cương',r:'n',s:4} ]},
+  ]},
+};
+
+let mode='family', ri=0, found=0, lives=3, score=0, over=false;
+
+function setMode(m){
+  mode=m; ri=0; score=0;
+  document.querySelectorAll('.mtab').forEach(t=>t.classList.toggle('on',t.dataset.m===m));
+  document.getElementById('score').textContent=0;
+  const nb=document.getElementById('nextBtn'); nb.onclick=nextRound;
+  loadRound();
+}
+function buildDots(){
+  const R=MODES[mode].rounds, el=document.getElementById('pdots'); el.innerHTML='';
+  R.forEach((_,i)=>{const d=document.createElement('div');d.className='pd'+(i<ri?' on':'');el.appendChild(d);});
+}
+function loadRound(){
+  const M=MODES[mode], R=M.rounds[ri];
+  found=0; lives=M.lives; over=false;
+  document.getElementById('clueWord').textContent=R.clue;
+  document.getElementById('seal').textContent=R.n;
+  document.getElementById('clueSub').textContent='Tìm '+R.n+' tác phẩm dính tới chủ đề này';
+  document.getElementById('roundName').textContent=(ri+1)+'/'+M.rounds.length;
+  document.getElementById('foundCt').textContent='0/'+R.n;
+  document.getElementById('hearts').textContent='❤️'.repeat(lives);
+  document.getElementById('nextBtn').style.display='none';
+  document.getElementById('whyNote').innerHTML=M.blurb;
+  setStatus(mode==='pro'
+    ? '🧠 Nâng cao — "'+R.clue+'". Coi chừng có bẫy, nghĩ kỹ.'
+    : '👆 Chủ đề "'+R.clue+'". Chạm '+R.n+' bức tranh bạn nghĩ dính tới nó.', 'var(--cream)');
+  buildDots();
+  const g=document.getElementById('gallery'); g.innerHTML='';
+  R.cards.forEach((c,i)=>{
+    const d=document.createElement('div'); d.className='frame'; d.dataset.i=i;
+    d.innerHTML='<div class="stamp"></div><div class="mat"><div class="art" style="background:'+SCENES[c.s]+'">'+
+      '<div class="subj">'+c.e+'</div></div></div><div class="plaque">'+c.l+'</div>';
+    d.onclick=()=>pick(i,d);
+    g.appendChild(d);
+  });
+}
+function setStatus(t,color){const s=document.getElementById('status');s.innerHTML=t;s.style.color=color||'var(--cream)';}
+function pick(i,d){
+  if(over||d.classList.contains('done')) return;
+  const R=MODES[mode].rounds[ri], c=R.cards[i], st=d.querySelector('.stamp');
+  d.classList.add('done');
+  if(c.r==='t'){
+    d.classList.add('found'); st.textContent='✓'; found++; score+=(mode==='pro'?200:120);
+    document.getElementById('foundCt').textContent=found+'/'+R.n;
+    document.getElementById('score').textContent=score;
+    if(found>=R.n){
+      score+=(mode==='pro'?150:80); document.getElementById('score').textContent=score;
+      setStatus('🎉 Giải đúng cả '+R.n+' tác phẩm! +thưởng. '+(mode==='pro'?'Ngon — câu này bẫy mà bạn không dính.':'Bạn đọc vị "ba/mẹ" quá chuẩn.'),'var(--green)');
+      endRound();
+    } else setStatus('✅ Đúng! Còn '+(R.n-found)+' bức nữa dính tới "'+R.clue+'".','var(--green)');
+  } else if(c.r==='x'){
+    d.classList.add('trap'); st.textContent='💀';
+    setStatus('💀 ĐỒ GIẢ! '+c.l+' là bẫy — '+(R.why)+' Thua phòng này.','#e08a8a');
+    endRound();
+  } else {
+    d.classList.add('miss');
+    lives--; document.getElementById('hearts').textContent='❤️'.repeat(lives)+'🖤'.repeat(MODES[mode].lives-lives);
+    if(lives<=0){ setStatus('Hết tim 💔 — '+c.l+' không dính "'+R.clue+'". Thua phòng này.','#e08a8a'); endRound(); }
+    else setStatus('❌ '+c.l+' không hợp "'+R.clue+'". Mất 1 tim, còn '+lives+'. Nghĩ lại.','#e08a8a');
+  }
+}
+function endRound(){
+  over=true;
+  const R=MODES[mode].rounds[ri];
+  document.querySelectorAll('#gallery .frame').forEach(d=>{
+    const c=R.cards[+d.dataset.i], st=d.querySelector('.stamp');
+    if(!d.classList.contains('found')&&!d.classList.contains('trap')&&!d.classList.contains('miss')){
+      if(c.r==='t'){d.classList.add('found');st.textContent='✓';}
+      else if(c.r==='x'){d.classList.add('trap');st.textContent='💀';}
+    }
+    d.classList.add('done');
+  });
+  const M=MODES[mode], nb=document.getElementById('nextBtn');
+  if(ri<M.rounds.length-1){ nb.style.display='inline-block'; nb.textContent='Phòng tiếp →'; nb.onclick=nextRound; }
+  else { nb.style.display='inline-block'; nb.textContent='🏁 Hết '+M.rounds.length+' phòng — chơi lại'; nb.onclick=restart;
+    setStatus(document.getElementById('status').innerHTML+' · Hết '+M.rounds.length+' phòng mẫu — bản thật đề VÔ TẬN theo bộ tranh mỗi ngày.','var(--brassLt)'); }
+}
+function nextRound(){ const M=MODES[mode]; if(ri<M.rounds.length-1){ri++;loadRound();} }
+function restart(){ ri=0;score=0;document.getElementById('score').textContent=0;document.getElementById('nextBtn').onclick=nextRound;loadRound(); }
+function reveal(){ if(!over){ setStatus('Đáp án đã lộ: khung ✓ là đúng, 💀 là đồ giả.','var(--brassLt)'); endRound(); } }
+
+loadRound();
+</script>
+</body>
+</html>
