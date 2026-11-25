@@ -170,7 +170,8 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
 .xpbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));transition:width .6s}
 .shelf{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;justify-content:center}
 .reward{background:rgba(10,24,36,.6);border:1px solid rgba(246,198,106,.3);border-radius:14px;
-  padding:10px 12px;font-size:13px;min-width:92px;text-align:center}
+  padding:10px 12px;font-size:13px;min-width:92px;text-align:center;cursor:pointer;transition:.1s}
+.reward:active{transform:scale(.94)}
 .reward .r-ic{font-size:26px;display:block;margin-bottom:4px}
 .reward.locked{opacity:.4}
 
@@ -240,14 +241,15 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
 .aha-opt.wrong{background:#2a1414;border-color:var(--red);opacity:.5}
 /* level map */
 .lvl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+.lvl-grid{background:rgba(6,14,22,.5);border-radius:18px;padding:14px;backdrop-filter:blur(2px)}
 .lvl-chip{aspect-ratio:1;border-radius:16px;display:grid;place-items:center;position:relative;cursor:pointer;
-  font-family:'Baloo 2';font-weight:800;font-size:24px;background:rgba(10,24,36,.6);
-  border:1.5px solid rgba(246,198,106,.3);color:var(--cream2);transition:.1s}
+  font-family:'Baloo 2';font-weight:800;font-size:24px;background:rgba(12,27,40,.92);
+  border:1.5px solid rgba(246,198,106,.35);color:var(--cream2);transition:.1s;box-shadow:0 4px 12px rgba(0,0,0,.4)}
 .lvl-chip:active{transform:scale(.94)}
-.lvl-chip.done{background:linear-gradient(160deg,#2c3a20,#17230f);border-color:var(--green)}
+.lvl-chip.done{background:linear-gradient(160deg,#2f4322,#1a2a12);border-color:var(--green)}
 .lvl-chip.done::after{content:"✓";position:absolute;top:4px;right:8px;font-size:13px;color:var(--green)}
 .lvl-chip.cur{background:linear-gradient(180deg,var(--gold),var(--gold2));color:var(--ink);box-shadow:0 0 18px rgba(246,198,106,.5)}
-.lvl-chip.lock{opacity:.4;cursor:not-allowed;font-size:20px}
+.lvl-chip.lock{background:rgba(10,20,30,.9);border-color:rgba(246,198,106,.18);color:rgba(246,198,106,.6);cursor:not-allowed;font-size:22px}
 </style>
 </head>
 <body>
@@ -449,7 +451,7 @@ const I18N={
     pickDiff:'Chọn độ khó — luật càng khéo càng "trời ơi"',easy:"Dễ",medium:"Vừa",hard:"Khó",
     playNow:"Chơi ngay",ocean:"Gói Đại Dương (tranh AI)",
     howto:"Vài ô đang sáng theo 1 LUẬT ẨN. Tìm & chạm những ô CÒN LẠI cùng luật.",
-    puzzleLbl:"Câu đố",question:"2 ô đang sáng cùng 1 LUẬT BÍ MẬT. Ô nào CÒN LẠI giống vậy? 👇",startHint:"Nhìn kỹ 2 ô sáng — chúng giống nhau ở điểm gì?",pickMode:"Ai chơi?",kidsMode:"Trẻ em",kidsSub:"Câu hỏi rõ ràng — cho bé tự chơi",advMode:"Nâng cao",advSub:"10 màn trí tuệ — tự tìm cơ chế = WOW",advMapSub:"Câu đố trí tuệ — giải xong mở màn kế tiếp",goalTitle:"Ba mẹ treo thưởng",goalHelp:"Đặt phần thưởng thật cho bé — đủ số câu thì ba mẹ tặng.",goalPh:"VD: Đi nhà banh chơi",goalBtn:"Treo thưởng",goalHung:"Đang treo",goalLeft:"còn {n} câu",goalReached:"Con đạt phần thưởng",goalDone:"Con đã đạt — ba mẹ tặng bé nhé!",goalNew:"Treo thưởng mới",goalChange:"Đổi / Gỡ thưởng",goalSet:"Đã treo thưởng!",goalUnitWord:"câu",ahaStart:"Không có luật nào được nói. Tự tìm ra cơ chế giấu!",ahaWrong:"Chưa đúng — thử nhìn kiểu khác",findTiles:"Tìm tất cả ô:",startHintKnown:"Chạm hết ô đúng luật — sai mất 1 ❤️",
+    puzzleLbl:"Câu đố",question:"2 ô đang sáng cùng 1 LUẬT BÍ MẬT. Ô nào CÒN LẠI giống vậy? 👇",startHint:"Nhìn kỹ 2 ô sáng — chúng giống nhau ở điểm gì?",pickMode:"Ai chơi?",kidsMode:"Trẻ em",kidsSub:"Câu hỏi rõ ràng — cho bé tự chơi",advMode:"Nâng cao",advSub:"10 màn trí tuệ — tự tìm cơ chế = WOW",advMapSub:"Câu đố trí tuệ — giải xong mở màn kế tiếp",goalTitle:"Ba mẹ treo thưởng",goalHelp:"Đặt phần thưởng thật cho bé — đủ số câu thì ba mẹ tặng.",goalPh:"VD: Đi nhà banh chơi",goalBtn:"Treo thưởng",goalHung:"Đang treo",goalLeft:"còn {n} câu",goalReached:"Con đạt phần thưởng",goalDone:"Con đã đạt — ba mẹ tặng bé nhé!",goalNew:"Treo thưởng mới",goalChange:"Đổi / Gỡ thưởng",goalSet:"Đã treo thưởng!",goalUnitWord:"câu",ahaStart:"Không có luật nào được nói. Tự tìm ra cơ chế giấu!",ahaWrong:"Chưa đúng — thử nhìn kiểu khác",fedPet:"Pet ăn ngon! +10 XP 🍖",lockedAt:"Mở khoá ở Cấp {n}",findTiles:"Tìm tất cả ô:",startHintKnown:"Chạm hết ô đúng luật — sai mất 1 ❤️",
     wowTitles:["WOW!","TRỜI ƠI!","XUẤT SẮC!","ĐỈNH!","THÔNG MINH!"],
     wrong:"Chưa đúng — nhìn kỹ các ô đang sáng",needMore:"Còn {n} ô nữa cùng luật",
     noHint:"Hết bước gợi ý — bạn gần ra rồi!",hintDim:"Đã tối bớt vài ô chắc chắn SAI",
@@ -472,7 +474,7 @@ const I18N={
     pickDiff:"Pick difficulty — the cleverer the rule, the bigger the aha",easy:"Easy",medium:"Medium",hard:"Hard",
     playNow:"Play now",ocean:"Ocean pack (AI art)",
     howto:"A few tiles glow by a HIDDEN RULE. Find & tap the OTHERS that follow it.",
-    puzzleLbl:"Puzzle",question:"2 tiles glow by a SECRET RULE. Which OTHER tiles match them? 👇",startHint:"Look at the 2 glowing tiles — what do they have in common?",pickMode:"Who's playing?",kidsMode:"Kids",kidsSub:"Clear question — kids play on their own",advMode:"Advanced",advSub:"10 brain levels — crack the mechanism = WOW",advMapSub:"Brain puzzles — solve to unlock the next",goalTitle:"Parents set a reward",goalHelp:"Set a real reward — reach the target and parents give it.",goalPh:"e.g. Trip to the ball pit",goalBtn:"Set reward",goalHung:"On the line",goalLeft:"{n} to go",goalReached:"Reward earned",goalDone:"Target reached — give the reward!",goalNew:"New reward",goalChange:"Change / Remove",goalSet:"Reward set!",goalUnitWord:"puzzles",ahaStart:"No rule is given. Figure out the hidden mechanism!",ahaWrong:"Not quite — try another angle",findTiles:"Find all tiles:",startHintKnown:"Tap every matching tile — a wrong tap costs 1 ❤️",
+    puzzleLbl:"Puzzle",question:"2 tiles glow by a SECRET RULE. Which OTHER tiles match them? 👇",startHint:"Look at the 2 glowing tiles — what do they have in common?",pickMode:"Who's playing?",kidsMode:"Kids",kidsSub:"Clear question — kids play on their own",advMode:"Advanced",advSub:"10 brain levels — crack the mechanism = WOW",advMapSub:"Brain puzzles — solve to unlock the next",goalTitle:"Parents set a reward",goalHelp:"Set a real reward — reach the target and parents give it.",goalPh:"e.g. Trip to the ball pit",goalBtn:"Set reward",goalHung:"On the line",goalLeft:"{n} to go",goalReached:"Reward earned",goalDone:"Target reached — give the reward!",goalNew:"New reward",goalChange:"Change / Remove",goalSet:"Reward set!",goalUnitWord:"puzzles",ahaStart:"No rule is given. Figure out the hidden mechanism!",ahaWrong:"Not quite — try another angle",fedPet:"Yum! +10 XP 🍖",lockedAt:"Unlocks at Lv.{n}",findTiles:"Find all tiles:",startHintKnown:"Tap every matching tile — a wrong tap costs 1 ❤️",
     wowTitles:["WOW!","AHA!","BRILLIANT!","NICE!","SO SMART!"],
     wrong:"Not quite — look at the glowing tiles",needMore:"{n} more tile(s) follow the rule",
     noHint:"No more hints — you're close!",hintDim:"Dimmed a few that are definitely WRONG",
@@ -879,6 +881,14 @@ function startDaily(){
 function startOceanPack(){startGame(buildOcean(Math.random),'practice',{label:t('oceanLabel'),icon:'🌊',showRule:true});}
 
 /* ---------- pet ---------- */
+const REWARDS=[{ic:'🍖',k:'reward1',lv:1},{ic:'🍦',k:'reward2',lv:2},{ic:'⏰',k:'reward3',lv:3},
+  {ic:'🖼️',k:'reward4',lv:4},{ic:'🚪',k:'reward5',lv:6},{ic:'🦊',k:'reward6',lv:9}];
+function tapReward(idx){
+  const rw=REWARDS[idx],lv=petLevel();
+  if(lv<rw.lv){toast(t('lockedAt').replace('{n}',rw.lv));return;}
+  if(rw.k==='reward1'){S.petXp+=10;save();renderPet();toast(t('fedPet'));}
+  else toast('🎁 '+t(rw.k));
+}
 function renderPet(){
   const lv=petLevel(),st=petStage(),inLv=S.petXp%100;
   document.getElementById('pet-totalxp').textContent=S.petXp;
@@ -890,10 +900,9 @@ function renderPet(){
   document.getElementById('pet-xpfill').style.width=inLv+'%';
   document.getElementById('pet-xptext').textContent=inLv+' / 100 XP';
   const shelf=document.getElementById('reward-shelf');shelf.innerHTML='';
-  [{ic:'🍖',k:'reward1',lv:1},{ic:'🍦',k:'reward2',lv:2},{ic:'⏰',k:'reward3',lv:3},
-   {ic:'🖼️',k:'reward4',lv:4},{ic:'🚪',k:'reward5',lv:6},{ic:'🦊',k:'reward6',lv:9}].forEach(rw=>{
+  REWARDS.forEach((rw,idx)=>{
     const open=lv>=rw.lv;
-    shelf.innerHTML+=`<div class="reward ${open?'':'locked'}"><span class="r-ic">${open?rw.ic:'🔒'}</span>${open?t(rw.k):'Lv.'+rw.lv}</div>`;
+    shelf.innerHTML+=`<div class="reward ${open?'':'locked'}" onclick="tapReward(${idx})"><span class="r-ic">${open?rw.ic:'🔒'}</span>${open?t(rw.k):'Lv.'+rw.lv}</div>`;
   });
 }
 
