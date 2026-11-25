@@ -159,8 +159,9 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
 @keyframes rig-tail{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(10deg)}}
 @keyframes rig-head{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-2.5deg)}}
 @keyframes rig-ear{0%,100%{transform:rotate(0)}35%{transform:rotate(-6deg)}65%{transform:rotate(4deg)}}
-.pet-aura{position:absolute;inset:-6%;border-radius:50%;z-index:-1;
-  background:radial-gradient(circle,rgba(246,198,106,.35),transparent 65%);animation:pulse 3s infinite}
+.pet-aura{position:absolute;inset:-20%;border-radius:50%;z-index:-1;animation:pulse 4s infinite;
+  background:radial-gradient(circle at 50% 44%, rgba(8,18,28,.92) 0%, rgba(8,18,28,.72) 40%, rgba(8,18,28,0) 70%)}
+.pet-aura.glow{background:radial-gradient(circle at 50% 44%, rgba(8,18,28,.9) 0%, rgba(246,198,106,.32) 44%, rgba(8,18,28,0) 72%)}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.08);opacity:1}}
 .pet-name{font-family:'Baloo 2';font-size:28px;color:var(--gold);margin-top:6px}
 .pet-lv{opacity:.85;font-size:14px}
@@ -884,7 +885,7 @@ function renderPet(){
   document.getElementById('pet-level').textContent=lv;
   document.getElementById('pet-name').textContent=st[LANG]+(st.acc?' '+st.acc:'');
   document.getElementById('pet-scale').style.transform=`scale(${st.s})`;
-  document.getElementById('pet-aura').style.display=st.aura?'block':'none';
+  const aura=document.getElementById('pet-aura');aura.style.display='block';aura.className='pet-aura'+(st.aura?' glow':'');
   mountPet();
   document.getElementById('pet-xpfill').style.width=inLv+'%';
   document.getElementById('pet-xptext').textContent=inLv+' / 100 XP';
