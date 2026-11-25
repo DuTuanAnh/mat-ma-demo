@@ -268,13 +268,17 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
   <section id="scr-lang" class="screen active" style="background-image:url('assets/bg_lang.png')">
     <div class="scrim"></div>
     <div class="wrap">
-      <div class="brand">
+      <div class="topbar">
+        <div class="sp"></div>
+        <button class="chip" style="cursor:pointer" onclick="toggleLang()">🌐 <span id="lang-cur">VI</span></button>
+      </div>
+      <div class="brand" style="margin-top:6vh">
         <div class="logo">MẬT MÃ</div>
         <div class="tag" id="lang-tag">Giải luật ẩn · Cả nhà cùng chơi</div>
       </div>
       <div class="lang-row">
-        <button class="btn" onclick="setLang('vi')"><span class="em">🇻🇳</span> Tiếng Việt</button>
-        <button class="btn sec" onclick="setLang('en')"><span class="em">🌐</span> English</button>
+        <button class="btn" onclick="enterGame()"><span class="em">▶</span> <span data-t="playNow">Chơi ngay</span></button>
+        <!-- SAU: thay bằng đăng nhập Google/Apple (iOS: GG+Apple, Android: GG+…) giống Boss app -->
       </div>
     </div>
   </section>
@@ -741,14 +745,16 @@ function mountPet(){
   test.src='assets/fox_rig/fox_body.png';
 }
 function setLang(l){LANG=l;S.lang=l;save();applyLang();refreshHome();go('scr-home');}
+function toggleLang(){LANG=(LANG==='vi')?'en':'vi';S.lang=LANG;save();applyLang();}
+function enterGame(){if(!S.lang)S.lang=LANG;save();applyLang();refreshHome();go('scr-home');}
 function applyLang(){document.documentElement.lang=LANG;
   document.querySelectorAll('[data-t]').forEach(el=>{el.textContent=t(el.getAttribute('data-t'));});
+  const lc=document.getElementById('lang-cur');if(lc)lc.textContent=(LANG==='vi')?'VI':'EN';
   document.getElementById('lang-tag').textContent=LANG==='vi'?'Giải luật ẩn · Cả nhà cùng chơi':'Crack the hidden rule · Play together';}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1700);}
 function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
 function refreshHome(){
   document.getElementById('home-streak').textContent=S.streak;
-  document.getElementById('prac-solved').textContent=S.solved;
   document.getElementById('pet-lvl-sub').textContent='Lv.'+petLevel();
   const ds=document.getElementById('daily-state');
   ds.textContent=(S.lastDaily===todayKey())?t('dailyDone')+S.streak+' 🔥':t('dailySub');
