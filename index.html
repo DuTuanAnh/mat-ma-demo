@@ -265,6 +265,18 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
 .ans-opt.right{background:linear-gradient(160deg,var(--green),#2f9a5c);color:#042;border-color:transparent}
 .ans-opt.right .ak{background:rgba(0,0,0,.18);color:#042}
 .ans-opt.wrong{background:#2a1414;border-color:var(--red);opacity:.5}
+.ans-opt.dim{opacity:.28;pointer-events:none;filter:grayscale(.6)}
+.ans-opt img{width:52px;height:52px;object-fit:contain}
+.ans-opt.pic{justify-content:center;padding:12px}
+.timer-bar{height:9px;background:rgba(10,24,36,.7);border-radius:999px;overflow:hidden;margin:2px 0 4px;border:1px solid rgba(246,198,106,.2);display:none}
+.timer-bar>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--green),var(--gold))}
+.timer-bar.warn>i{background:linear-gradient(90deg,var(--ember),var(--red))}
+.fb-flash{position:absolute;inset:0;z-index:45;display:none;align-items:center;justify-content:center;pointer-events:none}
+.fb-flash.show{display:flex;animation:fade .15s}
+.fb-flash .fb-in{font-family:'Baloo 2';font-weight:800;font-size:46px;width:96px;height:96px;border-radius:26px;display:grid;place-items:center;box-shadow:var(--shadow);animation:pop .4s}
+.fb-correct .fb-in{background:rgba(63,191,143,.96);color:#042}
+.fb-wrong .fb-in{background:rgba(232,97,76,.96);color:#2a0a05}
+.fb-time .fb-in{background:rgba(246,198,106,.96);color:var(--ink)}
 /* level map */
 .lvl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
 .lvl-grid{background:rgba(6,14,22,.5);border-radius:18px;padding:14px;backdrop-filter:blur(2px)}
@@ -373,6 +385,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
         <button class="iconbtn hint-ic" onclick="useHint()" title="Gợi ý">💡<span id="hint-count" class="hint-badge"></span></button>
         <div class="lives" id="lives"></div>
       </div>
+      <div class="timer-bar" id="timer-bar"><i></i></div>
       <div class="q-card" id="q-card"></div>
       <div class="game-goal" id="game-goal" style="display:none"></div>
       <div class="q-hint" id="q-hint"></div>
@@ -380,6 +393,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
       <div class="board" id="board"></div>
       <div class="answer-bar" id="answer-bar"></div>
     </div>
+    <div class="fb-flash" id="fb-flash"></div>
     <div class="overlay" id="wow">
       <div class="card">
         <div class="wow-big" id="wow-title">WOW!</div>
@@ -436,7 +450,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
       </div>
       <div class="goal-box" id="goal-box"></div>
       <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px;padding-top:14px;padding-bottom:6px">
-        <button class="btn" onclick="playFamilySolo()"><span class="em">🧩</span> <span data-t="playAsSel">Chơi (người đang chọn)</span></button>
+        <button class="btn" onclick="startDuel()"><span class="em">🏆</span> <span data-t="duelBtn">Đấu gia đình</span></button>
         <button class="btn sec" onclick="startDuo()"><span class="em">🤝</span> <span data-t="duo">Đề Đôi — 2 người cùng ngồi</span></button>
       </div>
     </div>
@@ -470,7 +484,7 @@ const I18N={
     famHow1:"🦊 <b>Pet chung</b> — cả nhà cùng nuôi 1 con",
     famHow2:"🧩 <b>Cùng điểm</b> — ai chơi cũng được (người chơi +2, người khác +1)",
     famHow3:"🤝 <b>Đề Đôi</b> — 2 người giải 1 câu, mỗi người thấy 1 nửa manh mối",
-    playAsSel:"Chơi (người đang chọn)",duo:"Đề Đôi — 2 người cùng ngồi",
+    playAsSel:"Chơi (người đang chọn)",duo:"Đề Đôi — 2 người cùng ngồi",whichIs:"Cái nào {r}?",needTwo:"Cần ít nhất 2 thành viên",duelBtn:"Đấu gia đình",duelTurn:"Lượt {n}",duelResult:"Kết quả trận đấu",duelTie:"Hoà nhau!",
     pickDiff:'Chọn độ khó — luật càng khéo càng "trời ơi"',easy:"Dễ",medium:"Vừa",hard:"Khó",
     playNow:"Chơi ngay",ocean:"Gói Đại Dương (tranh AI)",
     howto:"Vài ô đang sáng theo 1 LUẬT ẨN. Tìm & chạm những ô CÒN LẠI cùng luật.",
@@ -496,7 +510,7 @@ const I18N={
     famHow1:"🦊 <b>Shared pet</b> — the whole family raises one",
     famHow2:"🧩 <b>Shared points</b> — everyone earns (player +2, others +1)",
     famHow3:"🤝 <b>Duo</b> — two solve one puzzle, each sees half the clue",
-    playAsSel:"Play (selected member)",duo:"Duo puzzle — two people together",
+    playAsSel:"Play (selected member)",duo:"Duo puzzle — two people together",whichIs:"Which one {r}?",needTwo:"Need at least 2 members",duelBtn:"Family duel",duelTurn:"{n} turn",duelResult:"Match result",duelTie:"Tie!",
     pickDiff:"Pick difficulty — the cleverer the rule, the bigger the aha",easy:"Easy",medium:"Medium",hard:"Hard",
     playNow:"Play now",ocean:"Ocean pack (AI art)",
     howto:"A few tiles glow by a HIDDEN RULE. Find & tap the OTHERS that follow it.",
@@ -803,8 +817,8 @@ function startGame(puz,mode,opts={}){
   else gg.style.display='none';
   renderLives();renderHintCount();renderBoard();go('scr-game');
 }
-function renderLives(){let h='';for(let i=0;i<3;i++)h+=`<span class="${i<game.lives?'':'lost'}">❤️</span>`;document.getElementById('lives').innerHTML=h;}
-function renderHintCount(){document.getElementById('hint-count').textContent=(game.maxHints-game.hints);}
+function renderLives(){if(game&&game.mode==='duel'){document.getElementById('lives').innerHTML='';return;}let h='';for(let i=0;i<3;i++)h+=`<span class="${i<game.lives?'':'lost'}">❤️</span>`;document.getElementById('lives').innerHTML=h;}
+function renderHintCount(){document.getElementById('hint-count').textContent=(game.maxHints-game.hints);var hi=document.querySelector('.hint-ic');if(hi)hi.style.display=(game.maxHints>0)?'grid':'none';}
 function renderBoard(){
   const b=document.getElementById('board'),p=game.puz,cols=p.size<=9?3:4;
   b.style.display='grid';b.style.gridTemplateColumns=`repeat(${cols},1fr)`;b.innerHTML='';
@@ -830,6 +844,11 @@ function tapCell(i,el){
   }
 }
 function useHint(){
+  if(!game)return;
+  if(game.picQuiz){ if(game.hints>=game.maxHints){toast(t('noHint'));return;} game.hints++;renderHintCount();
+    var ws=[].slice.call(document.querySelectorAll('.ans-opt')).filter(function(x){return x.dataset.v!==game.correctVal&&!x.classList.contains('dim');});
+    sample(ws,Math.min(2,ws.length),Math.random).forEach(function(x){x.classList.add('dim');x.onclick=null;});
+    document.getElementById('q-hint').textContent=t('hintDim'); return; }
   if(game.ahaP){
     if(game.hints>=game.maxHints){toast(t('noHint'));return;}
     game.hints++;renderHintCount();
@@ -854,6 +873,7 @@ function revealRule(){const txt=game.puz.rule[LANG]||game.puz.rule.vi;document.g
 
 /* ---------- win ---------- */
 function win(){
+  stopTimer();
   const base=80+game.puz.total*8+(game.puz.size>9?20:0);
   const pts=Math.max(15,base-(game.hints*12+(3-game.lives)*8));
   const xp=Math.round(pts/4);
@@ -890,7 +910,7 @@ function win(){
 function afterWin(){
   document.getElementById('wow').classList.remove('active');refreshHome();
   const m=game?game.mode:'';game=null;
-  if(m==='family'||m==='duo'){renderFamily();go('scr-family');}
+  if(m==='family'||m==='duo'||m==='duel'||m==='duel-done'){renderFamily();go('scr-family');}
   else if(m==='advanced'){renderAdvMap();go('scr-advmap');}
   else if(m==='kids'){renderKidsMap();go('scr-kidsmap');}
   else{go('scr-home');}
@@ -898,7 +918,7 @@ function afterWin(){
 function quitGame(){
   document.getElementById('wow').classList.remove('active');
   const m=game?game.mode:'';game=null;
-  if(m==='family'||m==='duo')go('scr-family');else if(m==='advanced'){renderAdvMap();go('scr-advmap');}else if(m==='kids'){renderKidsMap();go('scr-kidsmap');}else go('scr-home');
+  stopTimer();if(m==='family'||m==='duo'||m==='duel'||m==='duel-done')go('scr-family');else if(m==='advanced'){renderAdvMap();go('scr-advmap');}else if(m==='kids'){renderKidsMap();go('scr-kidsmap');}else go('scr-home');
 }
 
 /* ---------- entry points ---------- */
@@ -949,24 +969,100 @@ function renderKidsMap(){
     g.appendChild(d);
   });
 }
+/* ===== TIMER + FEEDBACK + UNIFIED QUIZ ===== */
+let quizTimer=null;
+function startTimer(sec){
+  stopTimer();
+  const bar=document.getElementById('timer-bar');if(!bar)return;
+  bar.style.display='block';bar.classList.remove('warn');
+  const fill=bar.firstElementChild;
+  fill.style.transition='none';fill.style.width='100%';void fill.offsetWidth;
+  fill.style.transition='width '+sec+'s linear';fill.style.width='0%';
+  if(game)game.warnT=setTimeout(function(){const b=document.getElementById('timer-bar');if(b)b.classList.add('warn');},Math.max(0,sec-6)*1000);
+  quizTimer=setTimeout(function(){if(game&&!game.answered)onTimeUp();},sec*1000);
+}
+function stopTimer(){if(quizTimer){clearTimeout(quizTimer);quizTimer=null;}if(game&&game.warnT){clearTimeout(game.warnT);game.warnT=null;}const b=document.getElementById('timer-bar');if(b)b.style.display='none';}
+function flashFeedback(type,cb){
+  const el=document.getElementById('fb-flash');if(!el){if(cb)cb();return;}
+  const map={correct:['fb-correct','✓'],wrong:['fb-wrong','✗'],time:['fb-time','⏰']};
+  const m=map[type]||map.wrong;
+  el.className='fb-flash '+m[0]+' show';el.innerHTML='<div class="fb-in">'+m[1]+'</div>';
+  setTimeout(function(){el.className='fb-flash';if(cb)cb();},700);
+}
+function setModeHeader(label,icon){document.getElementById('mode-label').textContent=label;document.getElementById('mode-icon').textContent=icon;}
+function showGoalBanner(){
+  const gg=document.getElementById('game-goal');
+  if(S.goal&&S.goal.progress<S.goal.target){gg.style.display='block';gg.innerHTML='🎁 '+t('goalHung')+': <b>'+S.goal.text+'</b> — '+t('goalLeft').replace('{n}',S.goal.target-S.goal.progress);}
+  else gg.style.display='none';
+}
+function showQuiz(q){
+  document.getElementById('rule-reveal').innerHTML='';
+  document.getElementById('q-card').innerHTML='🔍 <b>'+t('puzzleLbl')+':</b> '+q.prompt;
+  document.getElementById('q-hint').textContent=q.hintStart||'';
+  const b=document.getElementById('board');
+  if(q.displayHtml){b.style.display='block';b.style.gridTemplateColumns='';b.innerHTML=q.displayHtml;}
+  else{b.style.display='none';b.innerHTML='';}
+  const KEYS=['A','B','C','D','E','F'];
+  document.getElementById('answer-bar').innerHTML=q.options.map(function(o,i){
+    return '<button class="ans-opt'+(o.pic?' pic':'')+'" data-v="'+o.v+'" onclick="answerQuiz(\''+o.v+'\',this)"><span class="ak">'+KEYS[i]+'</span>'+o.html+'</button>';
+  }).join('');
+  game.correctVal=q.correctVal;
+  const hi=document.querySelector('.hint-ic');if(hi)hi.style.display=(game.maxHints>0)?'grid':'none';
+  renderLives();renderHintCount();
+  startTimer(q.dur||28);
+}
+function disableOpts(){document.querySelectorAll('.ans-opt').forEach(function(x){x.onclick=null;});}
+function revealCorrect(){document.querySelectorAll('.ans-opt').forEach(function(x){x.onclick=null;if(x.dataset.v===game.correctVal)x.classList.add('right');});}
+function answerQuiz(v,el){
+  if(!game||game.answered)return;
+  if(v===game.correctVal){
+    game.answered=true;stopTimer();el.classList.add('right');disableOpts();
+    flashFeedback('correct',function(){quizSucceed();});
+  }else{
+    el.classList.add('wrong');el.onclick=null;flashFeedback('wrong');
+    if(game.mode==='duel'){game.answered=true;stopTimer();revealCorrect();setTimeout(duelAdvance,900);return;}
+    game.lives--;renderLives();document.getElementById('q-hint').textContent=t('ahaWrong');
+    if(game.lives<=0){game.answered=true;stopTimer();revealCorrect();setTimeout(quizFail,1000);}
+  }
+}
+function onTimeUp(){
+  if(!game||game.answered)return;
+  game.answered=true;stopTimer();
+  if(game.mode==='duel'){flashFeedback('time',function(){duelAdvance();});return;}
+  revealCorrect();flashFeedback('time',function(){setTimeout(quizFail,700);});
+}
+function quizSucceed(){ if(game.mode==='duel'){duel.players[duel.idx].score++;duelAdvance();return;} win(); }
+function quizFail(){
+  const m=game?game.mode:'';game=null;
+  if(m==='advanced'){renderAdvMap();go('scr-advmap');}
+  else if(m==='kids'){renderKidsMap();go('scr-kidsmap');}
+  else go('scr-home');
+}
+function ahaDisplay(p){
+  if(p.kind==='seq')return '<div class="aha-seq">'+p.items.map(function(x){return '<div class="aha-tok'+(x==='?'?' q':'')+'">'+x+'</div>';}).join('')+'</div>';
+  var s='<div class="aha-grid" style="grid-template-columns:repeat('+p.cols+',1fr)">';
+  for(var i=0;i<p.cols*p.rows;i++)s+='<div class="aha-cell'+(p.lit.indexOf(i)>=0?' on':'')+'"></div>';
+  return s+'</div>';
+}
+function ahaQuiz(p,dur){
+  return {prompt:(LANG==='vi'?p.pv:p.pe),displayHtml:ahaDisplay(p),
+    options:p.options.map(function(o){return {html:'<span>'+o+'</span>',v:o};}),
+    correctVal:p.answer,hintStart:t('ahaStart'),dur:dur||35};
+}
+function kidsPicQuiz(L){
+  const all=KIDS.map(function(k){return k.id;});
+  const yes=L.ids.filter(function(id){return all.indexOf(id)>=0;});
+  const no=all.filter(function(id){return yes.indexOf(id)<0;});
+  const correct=sample(yes,1,Math.random)[0];
+  const decoys=sample(no,3,Math.random);
+  const opts=shuffle([correct].concat(decoys),Math.random).map(function(id){return {html:'<img src="assets/tiles_kids/'+id+'.png" alt="">',v:id,pic:true};});
+  return {prompt:t('whichIs').replace('{r}','<b>'+(LANG==='vi'?L.vi:L.en)+'</b>'),displayHtml:'',options:opts,correctVal:correct,hintStart:'',dur:22};
+}
 function startKidsLevel(i){
   const L=KIDS_LEVELS[i];
-  const size=L.ids.length<=5?9:12;
-  startGame(buildKidsRule(L,size,Math.random),'kids',{label:t('kidsMode'),icon:'🧒',showRule:true});
-  game.kidsLevel=i;
-}
-function buildKidsRule(rule,size,r){
-  const all=KIDS.map(k=>k.id);
-  const yes=rule.ids.filter(id=>all.indexOf(id)>=0);
-  const no=all.filter(id=>yes.indexOf(id)<0);
-  const cap=Math.min(6,Math.round(size*0.42));
-  const needYes=Math.min(yes.length,Math.max(4,cap));
-  const cy=sample(yes,needYes,r),cn=shuffle(no,r).slice(0,size-needYes);
-  let cells=shuffle(cy.map(e=>({e,yes:true})).concat(cn.map(e=>({e,yes:false}))),r);
-  const yesIdx=cells.map((c,i)=>c.yes?i:-1).filter(i=>i>=0);
-  const pre=sample(yesIdx,2,r);
-  cells.forEach((c,i)=>c.prelit=pre.includes(i));
-  return {rule:{vi:rule.vi,en:rule.en},cells,size,total:needYes,art:KIDS_ART_READY,artDir:'tiles_kids'};
+  game={mode:'kids',kidsLevel:i,answered:false,lives:3,hints:0,maxHints:1,picQuiz:true,puz:{rule:{vi:L.vi,en:L.en},total:4,size:9}};
+  setModeHeader(t('kidsMode'),'🧒');showGoalBanner();
+  showQuiz(kidsPicQuiz(L));go('scr-game');
 }
 function openAdvanced(){renderAdvMap();go('scr-advmap');}
 function renderAdvMap(){
@@ -983,50 +1079,9 @@ function renderAdvMap(){
 }
 function startAdvancedLevel(i){
   const p=AHA[i];
-  game={ahaP:p,advLevel:i,mode:'advanced',lives:3,hints:0,maxHints:1,answered:false,
-    puz:{rule:{vi:p.av,en:p.ae},total:5,size:16}};
-  document.getElementById('mode-label').textContent=t('advMode');
-  document.getElementById('mode-icon').textContent='🧠';
-  document.getElementById('rule-reveal').innerHTML='';
-  document.getElementById('q-card').innerHTML='🧠 <b>'+t('puzzleLbl')+':</b> '+(LANG==='vi'?p.pv:p.pe);
-  document.getElementById('q-hint').textContent=t('ahaStart');
-  const gg=document.getElementById('game-goal');
-  if(S.goal&&S.goal.progress<S.goal.target){gg.style.display='block';gg.innerHTML='🎁 '+t('goalHung')+': <b>'+S.goal.text+'</b> — '+t('goalLeft').replace('{n}',S.goal.target-S.goal.progress);}
-  else gg.style.display='none';
-  renderLives();renderHintCount();renderAha();go('scr-game');
-}
-function renderAha(){
-  const p=game.ahaP,b=document.getElementById('board');
-  b.style.display='block';b.style.gridTemplateColumns='';
-  let html='';
-  if(p.kind==='seq'){
-    html+='<div class="aha-seq">'+p.items.map(x=>'<div class="aha-tok'+(x==='?'?' q':'')+'">'+x+'</div>').join('')+'</div>';
-  }else{
-    html+='<div class="aha-grid" style="grid-template-columns:repeat('+p.cols+',1fr)">';
-    for(let i=0;i<p.cols*p.rows;i++)html+='<div class="aha-cell'+(p.lit.indexOf(i)>=0?' on':'')+'"></div>';
-    html+='</div>';
-  }
-  b.innerHTML=html;
-  const KEYS=['A','B','C','D','E','F'];
-  document.getElementById('answer-bar').innerHTML=p.options.map((o,i)=>
-    '<button class="ans-opt" data-v="'+o+'" onclick="answerAha(\''+o+'\',this)"><span class="ak">'+KEYS[i]+'</span><span>'+o+'</span></button>').join('');
-}
-function answerAha(opt,el){
-  if(game.answered)return;
-  const p=game.ahaP;
-  if(opt===p.answer){
-    game.answered=true;el.classList.add('right');
-    document.querySelectorAll('.ans-opt').forEach(x=>x.onclick=null);
-    setTimeout(win,560);
-  }else{
-    el.classList.add('wrong');el.onclick=null;game.lives--;renderLives();
-    document.getElementById('q-hint').textContent=t('ahaWrong');
-    if(game.lives<=0){
-      game.answered=true;
-      document.querySelectorAll('.ans-opt').forEach(x=>{x.onclick=null;if(x.dataset.v===p.answer)x.classList.add('right');});
-      setTimeout(win,780);
-    }
-  }
+  game={mode:'advanced',advLevel:i,answered:false,lives:3,hints:0,maxHints:1,ahaP:p,puz:{rule:{vi:p.av,en:p.ae},total:5,size:16}};
+  setModeHeader(t('advMode'),'🧠');showGoalBanner();
+  showQuiz(ahaQuiz(p,i<2?26:38));go('scr-game');
 }
 function startDaily(){
   const r=mulberry32(seedStr('matma-'+todayKey()));
@@ -1129,10 +1184,38 @@ function addMember(){
   const inp=document.getElementById('new-member'),nm=inp.value.trim();if(!nm)return;
   S.members.push({name:nm,pts:0,child:S.members.length%2===0});inp.value='';save();renderFamily();toast(t('newMemberAdded'));
 }
-function playFamilySolo(){
-  const pool=RULES.filter(x=>x.diff!=='hard');
-  const rule=pool[Math.floor(Math.random()*pool.length)];
-  startGame(buildPuzzle(rule,12,Math.random),'family',{label:S.members[S.sel].name,icon:'👨‍👩‍👧',famActive:S.sel,showRule:true});
+/* ===== ĐẤU GIA ĐÌNH (duel 2 người thay phiên) ===== */
+let duel=null;
+function startDuel(){
+  if(!S.members||S.members.length<2){toast(t('needTwo'));return;}
+  duel={players:S.members.map(function(m){return {name:m.name,child:m.child,score:0};}),idx:0,turn:0,maxTurns:6};
+  duelAsk();
+}
+function duelAsk(){
+  if(duel.turn>=duel.maxTurns){duelResult();return;}
+  const p=duel.players[duel.idx];
+  game={mode:'duel',answered:false,lives:1,hints:0,maxHints:0,puz:{rule:{vi:'',en:''},total:4,size:9}};
+  setModeHeader('🏆 '+p.name,'🏆');
+  document.getElementById('game-goal').style.display='none';
+  var q;
+  if(Math.random()<0.5){ q=kidsPicQuiz(KIDS_LEVELS[Math.floor(Math.random()*KIDS_LEVELS.length)]); }
+  else { q=ahaQuiz(AHA[Math.floor(Math.random()*Math.min(AHA.length,12))],28); }
+  q.prompt=t('duelTurn').replace('{n}','<b>'+p.name+'</b>')+' — '+q.prompt;
+  showQuiz(q);go('scr-game');
+}
+function duelAdvance(){ duel.turn++; duel.idx=(duel.idx+1)%duel.players.length; setTimeout(duelAsk,350); }
+function duelResult(){
+  var ps=duel.players.slice().sort(function(a,b){return b.score-a.score;});
+  var tie=ps.length>1&&ps[1].score===ps[0].score;
+  duel.players.forEach(function(p){ var m=S.members.filter(function(x){return x.name===p.name;})[0]; if(m)m.pts+=p.score; });
+  var sum=duel.players.reduce(function(s,p){return s+p.score;},0); S.petXp+=sum*3; S.solved+=duel.maxTurns; save();
+  document.getElementById('wow-title').textContent=tie?t('duelTie'):('🏆 '+ps[0].name);
+  document.getElementById('wow-rule-txt').textContent=t('duelResult');
+  document.getElementById('wow-pts').textContent=ps[0].score;
+  document.getElementById('wow-xp').textContent='+'+(sum*3);
+  document.getElementById('wow-family').innerHTML=duel.players.map(function(p){return '<div class="wow-rule">'+(p.child?'🧒':'🧑')+' '+p.name+': <b>'+p.score+'</b></div>';}).join('');
+  game={mode:'duel-done'};
+  document.getElementById('wow').classList.add('active');
 }
 
 /* ---------- duo ---------- */
