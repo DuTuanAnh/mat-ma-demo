@@ -1,393 +1,936 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0C2133">
-<title>MẬT MÃ</title>
+<title>MẬT MÃ — Giải luật ẩn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+/* ============ DESIGN TOKENS ============ */
 :root{
- --bg:#0C2133;--teal:#4BB8A7;--teal-d:#167A73;--gold:#F6C66A;--gold-d:#A96B1E;
- --cream:#F6ECD3;--cream-d:#E6D4A8;--ink:#2a2114;--ink2:#5a4a2e;--line:#315064;
- --green:#2E9D63;--green-d:#1c6e43;--red:#E0574E;--muted:#C7D5D5;
- --wood:#2a3d2a;--wood2:#1c2e1f;
+  --teal:#0C2133; --teal2:#12314A; --teal3:#1C4463;
+  --cream:#F4E8D0; --cream2:#FBF4E6;
+  --gold:#F6C66A; --gold2:#E8A93C; --ember:#CC5F2D;
+  --green:#3FBF8F; --red:#E8614C; --ink:#0A1824;
+  --shadow:0 12px 30px rgba(0,0,0,.35);
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#05101a;color:#fff;font:400 14px/1.5 "Be Vietnam Pro",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
-button{font:inherit;cursor:pointer;color:inherit;border:0;background:none}
-.app{min-height:100vh;display:flex;justify-content:center}
-.device{position:relative;width:min(100%,420px);min-height:100vh;overflow:hidden;background:var(--bg)}
-.scene{position:absolute;inset:0;z-index:0}
-.scrim{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(8,20,28,0) 32%,rgba(8,20,28,.42) 66%,rgba(8,20,28,.8) 100%)}
-.statusbar{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:12px 18px 4px;font-size:12px;color:#fff;text-shadow:0 1px 3px #0008}
-.wrap{position:relative;z-index:2;padding:4px 16px 92px;min-height:100vh}
-.row{display:flex;align-items:center;gap:10px}
-.spread{display:flex;align-items:center;justify-content:space-between}
-.circle{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#ffffff22;border:1px solid #ffffff44;backdrop-filter:blur(4px);color:#fff;font-size:17px}
-.logo{font:800 30px/1 "Baloo 2";letter-spacing:.06em;color:#fff;text-shadow:0 2px 10px #0007;text-align:center}
-.logo small{display:block;font:600 11px/1.6 "Be Vietnam Pro";letter-spacing:.12em;color:#ffe9b8}
-h1{font:800 26px/1.15 "Baloo 2";color:#fff;text-shadow:0 2px 8px #0007}
-.gold{color:var(--gold)}
-/* ribbon */
-.ribbon{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#fbeccb,#e8cf96);color:#6b4a16;font:800 17px "Baloo 2";padding:9px 22px;border-radius:10px;box-shadow:0 6px 16px #0006,inset 0 1px 0 #fff8;border:1px solid #cBAE78;position:relative}
-.ribbon:before,.ribbon:after{content:"";position:absolute;top:50%;width:14px;height:20px;background:#c79a4e;transform:translateY(-50%)}
-.ribbon:before{left:-10px;clip-path:polygon(100% 0,0 50%,100% 100%)}.ribbon:after{right:-10px;clip-path:polygon(0 0,100% 50%,0 100%)}
-/* cream panel */
-.panel{background:linear-gradient(180deg,#f7eed5,#efe0bc);color:var(--ink);border:1px solid #d8c395;border-radius:18px;box-shadow:0 10px 26px #0005,inset 0 1px 0 #fff9;padding:16px}
-.panel.dark{background:linear-gradient(180deg,#1c3a46,#132a34);color:#eaf3f0;border-color:#2f5360;box-shadow:0 10px 26px #0006}
-.pill{display:inline-flex;align-items:center;gap:6px;background:#ffffff22;border:1px solid #ffffff44;border-radius:99px;padding:6px 13px;font-size:13px;color:#fff;backdrop-filter:blur(4px)}
-/* buttons */
-.btn{display:block;width:100%;min-height:52px;border-radius:15px;background:linear-gradient(180deg,#f8d47a,#e9ab3f);color:#43300a;font:700 16px "Be Vietnam Pro";box-shadow:0 8px 18px #0005,inset 0 1px 0 #fff8;margin-top:12px}
-.btn:active{transform:translateY(1px)}
-.btn.sec{background:linear-gradient(180deg,#24414d,#1a313b);color:var(--gold);border:1px solid #39606e;box-shadow:none}
-.btn.wood{background:linear-gradient(180deg,#3a5236,#243a26);color:#ffe9b8;border:1px solid #4e6b45}
-.btn:disabled{filter:grayscale(.6) brightness(.8);opacity:.7}
-/* stats */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-.stat{background:linear-gradient(180deg,#f7eed5,#ece0ba);border:1px solid #d8c395;border-radius:14px;padding:9px 6px;text-align:center;color:var(--ink)}
-.stat .em{font-size:16px}.stat b{display:block;font:800 17px "Baloo 2"}.stat small{font-size:10px;color:var(--ink2)}
-/* mode cards */
-.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.mode{border-radius:18px;padding:14px 12px;min-height:120px;display:flex;flex-direction:column;justify-content:flex-end;border:1px solid #0003;box-shadow:0 8px 20px #0005;position:relative;overflow:hidden;color:#fff;text-align:left}
-.mode .em{font-size:30px}.mode b{font:800 16px "Baloo 2";margin-top:4px}.mode small{font-size:11px;opacity:.92;line-height:1.35}
-.mode.fam{background:linear-gradient(160deg,#4a6b3a,#2e4d2a)}
-.mode.adv{background:linear-gradient(160deg,#355a6e,#1f3a4d)}
-.mode .go{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;background:#ffffff33;display:grid;place-items:center}
-/* mini buttons row */
-.minis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.mini{background:#ffffff1a;border:1px solid #ffffff33;border-radius:14px;padding:11px 6px;text-align:center;color:#fff;font-size:12px;backdrop-filter:blur(4px)}
-.mini .em{display:block;font-size:19px;margin-bottom:3px}
-/* bottom tab */
-.tabbar{position:absolute;z-index:5;left:0;right:0;bottom:0;display:flex;justify-content:space-around;padding:8px 6px 14px;background:linear-gradient(180deg,#0c2133cc,#0c2133);backdrop-filter:blur(10px);border-top:1px solid #ffffff14}
-.tabbar button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#8fa6ab;flex:1}
-.tabbar button .em{font-size:19px}
-.tabbar button.on{color:var(--gold)}
-/* hearts */
-.hearts{font-size:20px;letter-spacing:2px}
-.dots{display:flex;gap:6px;align-items:center;justify-content:center;margin:8px 0}
-.dot{width:12px;height:12px;border-radius:50%;background:#ffffff33;border:1px solid #ffffff55}
-.dot.done{background:var(--gold);border-color:#ffe09c}.dot.cur{box-shadow:0 0 0 4px #f6c66a3a;background:var(--gold)}
-/* family grid */
-.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
-.pcard{aspect-ratio:1;border-radius:12px;position:relative;overflow:hidden;border:2px solid #ffffff22;box-shadow:0 4px 12px #0006;cursor:pointer;display:grid;place-items:center;font-size:30px}
-.pcard:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 25%,#ffffff33,transparent 55%)}
-.pcard.sel{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold),0 4px 12px #0007}
-.pcard.ok{border-color:var(--green);box-shadow:0 0 0 3px var(--green)}
-.pcard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-.pcard .mk{position:absolute;z-index:2;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:16px;font-weight:800;top:50%;left:50%;transform:translate(-50%,-50%)}
-.pcard.ok .mk{background:var(--green);color:#fff}
-.pcard.bad .mk{background:var(--red);color:#fff}.pcard.bad{filter:brightness(.7)}
-/* seq puzzle */
-.parch{background:linear-gradient(180deg,#f3e2b8,#e7d19a);border:2px solid #cBA564;border-radius:16px;padding:14px;color:#4a3410;box-shadow:inset 0 2px 8px #0002,0 8px 20px #0006}
-.seq{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;font:800 22px "Baloo 2";margin:8px 0}
-.seq .ar{color:#9a7430;font-size:16px}
-.seq .q{color:#b06a16}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-.ans{display:flex;align-items:center;gap:10px;min-height:54px;padding:0 14px;border-radius:14px;background:linear-gradient(180deg,#24414d,#19313b);border:1px solid #3a606e;color:#eaf3f0;font:700 18px "Baloo 2"}
-.ans .lt{width:28px;height:28px;border-radius:50%;background:#ffffff22;display:grid;place-items:center;font-size:14px;color:var(--gold)}
-.ans.sel{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
-.ans.ok{background:linear-gradient(180deg,#eafaef,#cdeed7);color:#185c39;border-color:var(--green)}
-.ans.bad{background:linear-gradient(180deg,#fbe6e3,#f2cdc8);color:#8a352d;border-color:var(--red)}
-.gridcode{display:grid;gap:4px;justify-content:center;margin:10px auto}
-.gc{width:40px;height:40px;border-radius:8px;display:grid;place-items:center;font:600 12px "Be Vietnam Pro";color:#9a845a;background:#00000018;border:1px solid #0000001a}
-.gc.lit{background:linear-gradient(145deg,#f6c66a,#cf9a36);color:#3a2608;font-weight:800;box-shadow:0 0 10px #f6c66a88}
-/* result banner */
-.resbar{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2f9d63,#1f7a4b);border:1px solid #58c88c;border-radius:14px;padding:12px 14px;color:#fff;margin-top:12px;box-shadow:0 8px 20px #0005}
-.resbar .ic{width:30px;height:30px;border-radius:50%;background:#fff;color:var(--green);display:grid;place-items:center;font-weight:800}
-.wowbig{font:800 50px/1 "Baloo 2";text-align:center;color:#fff;text-shadow:0 3px 12px #0b5,0 0 24px #35a66f99;margin:4px 0;animation:pop .5s}
-@keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.14)}100%{transform:scale(1);opacity:1}}
-.rewardrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
-.rw{background:#ffffff1a;border:1px solid #ffffff33;border-radius:12px;padding:9px 4px;text-align:center;font-size:11px}.rw b{display:block;font:800 15px "Baloo 2";color:var(--gold)}
-/* pet */
-.xpbar{height:22px;border-radius:99px;background:#102a34cc;border:1px solid #2f5360;overflow:hidden;position:relative;margin:10px 0 4px}
-.xpbar i{position:absolute;inset:0;width:70%;background:linear-gradient(90deg,#167A73,#4BB8A7);border-radius:99px}
-.xpbar span{position:relative;z-index:1;display:grid;place-items:center;height:100%;font:800 12px "Baloo 2";color:#fff}
-.econ{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-top:8px}
-.econ .who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink)}
-.econ .pts{display:flex;gap:4px}
-.ptbox{background:#efe0bc;border:1px solid #d8c395;border-radius:10px;padding:6px 8px;text-align:center;min-width:46px;font-size:11px;color:var(--ink2)}
-.ptbox b{display:block;font:800 14px "Baloo 2";color:var(--ink)}
-.ptbox.pet{background:linear-gradient(180deg,#2f9d63,#1f7a4b);color:#fff;border-color:#58c88c}.ptbox.pet b{color:#fff}
-/* lang */
-.flags{display:grid;gap:10px;margin-top:12px}
-.flagbtn{display:flex;align-items:center;gap:14px;padding:14px 16px;background:#ffffff14;border:1px solid #ffffff33;border-radius:16px;color:#fff;text-align:left}
-.flagbtn:hover{border-color:var(--gold)}.flagbtn .fl{font-size:28px}.flagbtn .nm{font-weight:700}.flagbtn .lg{font-size:12px;color:#cdd9d9}.flagbtn .go{margin-left:auto;color:var(--gold)}
-.center{text-align:center}.mt{margin-top:12px}.muted{color:#cdd9d9;font-size:13px}
-.statusline{text-align:center;min-height:20px;font-weight:600;margin:6px 0}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Be Vietnam Pro',system-ui,sans-serif;
+  background:var(--teal); color:var(--cream2);
+  overflow:hidden; user-select:none;
+}
+h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
+.app{
+  position:fixed; inset:0; max-width:520px; margin:0 auto;
+  background:var(--teal); overflow:hidden;
+}
+/* ============ SCREENS ============ */
+.screen{
+  position:absolute; inset:0; display:none; flex-direction:column;
+  background-size:cover; background-position:center;
+  animation:fade .35s ease;
+}
+.screen.active{display:flex}
+@keyframes fade{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:none}}
+.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,18,28,.55) 0%,rgba(8,18,28,.25) 35%,rgba(8,18,28,.80) 100%);z-index:0}
+.wrap{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;padding:18px;overflow-y:auto}
+.wrap::-webkit-scrollbar{display:none}
+
+/* ============ TOP BAR ============ */
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.topbar .sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;background:rgba(10,24,36,.6);
+  border:1px solid rgba(246,198,106,.35);border-radius:999px;padding:6px 12px;
+  font-weight:700;font-size:14px;color:var(--cream2);backdrop-filter:blur(6px)}
+.chip .big{font-size:16px;color:var(--gold)}
+.iconbtn{width:40px;height:40px;border-radius:12px;border:1px solid rgba(246,198,106,.3);
+  background:rgba(10,24,36,.55);color:var(--cream2);font-size:18px;cursor:pointer;
+  display:grid;place-items:center;backdrop-filter:blur(6px)}
+.iconbtn:active{transform:scale(.92)}
+
+/* ============ BRAND ============ */
+.brand{text-align:center;margin-top:6vh}
+.brand .logo{font-family:'Baloo 2';font-size:54px;font-weight:800;letter-spacing:6px;
+  color:var(--gold);text-shadow:0 4px 0 var(--ember),0 14px 30px rgba(0,0,0,.5)}
+.brand .tag{margin-top:6px;font-size:15px;color:var(--cream);opacity:.9;font-weight:500}
+
+/* ============ BUTTONS ============ */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:16px;border:none;border-radius:18px;cursor:pointer;
+  font-family:'Baloo 2';font-weight:700;font-size:18px;color:var(--ink);
+  background:linear-gradient(180deg,var(--gold),var(--gold2));
+  box-shadow:0 6px 0 #b8841f,var(--shadow);transition:.08s}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #b8841f}
+.btn.sec{background:linear-gradient(180deg,var(--teal3),var(--teal2));color:var(--cream2);
+  box-shadow:0 6px 0 #0a2538,var(--shadow)}
+.btn.sec:active{box-shadow:0 2px 0 #0a2538}
+.btn .em{font-size:22px}
+.btn .sub{font-family:'Be Vietnam Pro';font-weight:500;font-size:12px;opacity:.75}
+.btncol{display:flex;flex-direction:column;align-items:center;line-height:1.25}
+
+/* ============ HOME MENU ============ */
+.menu{margin-top:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
+.daily-card{background:rgba(10,24,36,.62);backdrop-filter:blur(8px);
+  border:1.5px solid rgba(246,198,106,.5);border-radius:22px;padding:18px;
+  display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:var(--shadow)}
+.daily-card:active{transform:scale(.98)}
+.daily-card .dc-ico{font-size:40px}
+.daily-card .dc-t{flex:1}
+.daily-card .dc-t b{font-family:'Baloo 2';font-size:19px;color:var(--gold);display:block}
+.daily-card .dc-t span{font-size:13px;opacity:.85}
+.daily-card .dc-go{font-size:26px;color:var(--gold)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ============ GAME ============ */
+#scr-game{background:linear-gradient(180deg,#0C2133,#081520)}
+#scr-game .wrap{padding:14px}
+.lives{display:flex;gap:4px;font-size:18px}
+.lives .lost{filter:grayscale(1);opacity:.3}
+.q-card{background:rgba(10,24,36,.62);border:1px solid rgba(246,198,106,.4);border-radius:16px;
+  padding:13px 15px;margin:8px 0 2px;text-align:center;font-size:15px;line-height:1.45;
+  backdrop-filter:blur(6px);box-shadow:var(--shadow)}
+.q-card b{color:var(--gold);font-family:'Baloo 2';font-size:16px}
+.q-hint{text-align:center;font-size:14px;margin:8px 4px 4px;opacity:.9;min-height:18px;font-weight:500;color:var(--gold)}
+.rule-banner{background:rgba(246,198,106,.16);border:1px solid var(--gold);
+  border-radius:14px;padding:10px 14px;margin:6px 0;text-align:center;
+  font-family:'Baloo 2';font-weight:700;color:var(--gold);font-size:16px;animation:fade .3s}
+.board{display:grid;gap:10px;margin:8px auto;width:100%;max-width:440px}
+.tile{aspect-ratio:1;border-radius:18px;background:linear-gradient(160deg,#14334c,#0d2435);
+  border:2px solid rgba(255,255,255,.06);display:grid;place-items:center;
+  font-size:min(12vw,46px);cursor:pointer;position:relative;overflow:hidden;
+  transition:transform .12s,box-shadow .2s,background .25s,border-color .25s}
+.tile:active{transform:scale(.93)}
+.tile.lit{background:linear-gradient(160deg,#3a2a12,#241708);
+  border-color:var(--gold);box-shadow:0 0 0 2px var(--gold),0 0 22px rgba(246,198,106,.65);
+  animation:pop .3s}
+.tile.prelit{background:linear-gradient(160deg,#2c3a20,#17230f);
+  border-color:var(--green);box-shadow:0 0 0 2px var(--green),0 0 18px rgba(63,191,143,.5)}
+.tile.prelit::after{content:"★";position:absolute;top:3px;right:6px;font-size:11px;color:var(--green)}
+.tile.wrong{background:#2a1414;border-color:var(--red);opacity:.5;animation:shake .4s}
+.tile.wrong::after{content:"✕";position:absolute;top:3px;right:6px;font-size:11px;color:var(--red)}
+.tile.dim{opacity:.22;pointer-events:none;filter:grayscale(.6)}
+.tile.art{font-size:0}
+.tile.art img{width:100%;height:100%;object-fit:cover;border-radius:16px}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.game-foot{margin-top:auto;display:flex;gap:10px;padding-top:12px}
+.hint-btn{flex:1}
+
+/* ============ WOW OVERLAY ============ */
+.overlay{position:absolute;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:22px}
+.overlay.active{display:flex;animation:fade .3s}
+.card{background:rgba(9,20,30,.92);border:1.5px solid rgba(246,198,106,.5);
+  border-radius:26px;padding:26px 22px;width:100%;max-width:400px;text-align:center;
+  box-shadow:var(--shadow);backdrop-filter:blur(10px)}
+.wow-big{font-family:'Baloo 2';font-size:46px;color:var(--gold);
+  text-shadow:0 4px 0 var(--ember);animation:pop .5s}
+.wow-rule{margin:10px 0 4px;font-size:14px;opacity:.85}
+.wow-rule b{color:var(--gold);font-size:17px;font-family:'Baloo 2'}
+.wow-stats{display:flex;justify-content:center;gap:18px;margin:16px 0}
+.wow-stat b{display:block;font-family:'Baloo 2';font-size:26px;color:var(--gold)}
+.wow-stat span{font-size:12px;opacity:.8}
+.pet-mini{width:92px;height:92px;margin:6px auto 0;position:relative}
+.pet-mini img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+
+/* ============ PET SCREEN ============ */
+.pet-stage{text-align:center;margin-top:10px}
+.pet-big{width:min(62vw,260px);height:min(62vw,260px);margin:0 auto;position:relative;display:grid;place-items:center}
+.pet-scale{width:100%;height:100%;display:grid;place-items:center;transition:transform .4s}
+.pet-big img{width:90%;height:90%;object-fit:contain;transform-origin:50% 100%;
+  filter:drop-shadow(0 12px 26px rgba(0,0,0,.55));will-change:transform}
+@keyframes fx-alive{0%,100%{transform:translateY(0) scale(1,1)}
+  30%{transform:translateY(-5px) scale(.99,1.03)}60%{transform:translateY(-6px) scale(1.01,1)}}
+@keyframes fx-sway{0%,100%{transform:translate(0,0) rotate(0) scale(1,1)}
+  25%{transform:translate(-4px,-3px) rotate(-1.5deg) scale(.99,1.02)}
+  50%{transform:translate(0,-5px) rotate(0) scale(1.01,1)}
+  75%{transform:translate(4px,-3px) rotate(1.5deg) scale(.99,1.02)}}
+@keyframes fx-bouncy{0%,100%{transform:translateY(0) scale(1,1)}
+  35%{transform:translateY(-16px) scale(.96,1.06)}55%{transform:translateY(0) scale(1.06,.94)}
+  70%{transform:translateY(-5px) scale(.99,1.02)}}
+.pet-aura{position:absolute;inset:-6%;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle,rgba(246,198,106,.35),transparent 65%);animation:pulse 3s infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.08);opacity:1}}
+.pet-name{font-family:'Baloo 2';font-size:28px;color:var(--gold);margin-top:6px}
+.pet-lv{opacity:.85;font-size:14px}
+.xpbar{height:16px;background:rgba(10,24,36,.7);border-radius:999px;overflow:hidden;
+  margin:14px 0 6px;border:1px solid rgba(246,198,106,.3)}
+.xpbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));transition:width .6s}
+.shelf{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;justify-content:center}
+.reward{background:rgba(10,24,36,.6);border:1px solid rgba(246,198,106,.3);border-radius:14px;
+  padding:10px 12px;font-size:13px;min-width:92px;text-align:center}
+.reward .r-ic{font-size:26px;display:block;margin-bottom:4px}
+.reward.locked{opacity:.4}
+
+/* ============ FAMILY ============ */
+.members{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.member{display:flex;align-items:center;gap:12px;background:rgba(10,24,36,.6);
+  border:1px solid rgba(246,198,106,.25);border-radius:16px;padding:12px;cursor:pointer}
+.member .av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  font-size:24px;background:var(--teal3);flex:none}
+.member .mi{flex:1}
+.member .mi b{font-family:'Baloo 2';font-size:17px}
+.member .mi span{font-size:12px;opacity:.8}
+.member .pts{font-family:'Baloo 2';font-size:20px;color:var(--gold)}
+.member.sel{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.addrow{display:flex;gap:8px;margin-top:10px}
+.addrow input{flex:1;padding:12px;border-radius:12px;border:1px solid rgba(246,198,106,.3);
+  background:rgba(10,24,36,.6);color:var(--cream2);font-family:inherit;font-size:15px}
+.addrow input::placeholder{color:rgba(244,232,208,.5)}
+
+/* ============ DUO ============ */
+.clue-card{text-align:center;padding:24px 18px;margin-top:4vh}
+.clue-eye{font-size:56px;margin-bottom:10px}
+.clue-who{font-family:'Baloo 2';font-size:24px;color:var(--gold)}
+.clue-txt{font-size:15px;opacity:.85;margin:8px 0 2px}
+.clue-reveal{background:rgba(246,198,106,.15);border:1px dashed var(--gold);border-radius:16px;
+  padding:16px;margin:16px 0;font-family:'Baloo 2';font-size:22px;color:var(--gold)}
+
+/* ============ MISC ============ */
+.sec-ttl{font-family:'Baloo 2';font-size:22px;color:var(--gold);margin:4px 0 2px}
+.sec-sub{font-size:13px;opacity:.85;margin-bottom:10px}
+.lang-row{display:flex;flex-direction:column;gap:12px;margin-top:auto;padding-bottom:10px}
+.toast{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:80;
+  background:rgba(9,20,30,.95);border:1px solid var(--gold);border-radius:14px;
+  padding:12px 18px;font-weight:600;font-size:14px;display:none;box-shadow:var(--shadow);max-width:90%;text-align:center}
+.toast.show{display:block;animation:fade .25s}
+.streak-dot{color:var(--ember)}
+.diffpick{display:flex;gap:8px;margin:4px 0 12px}
+.diffpick button{flex:1;padding:12px 6px;border-radius:14px;border:1px solid rgba(246,198,106,.3);
+  background:rgba(10,24,36,.6);color:var(--cream2);font-family:'Baloo 2';font-weight:700;cursor:pointer}
+.diffpick button.on{background:linear-gradient(180deg,var(--gold),var(--gold2));color:var(--ink)}
+/* reward goal */
+.goal-box{background:rgba(10,24,36,.6);border:1px solid rgba(246,198,106,.35);border-radius:16px;padding:14px;margin-top:12px}
+.goal-box .gh{font-family:'Baloo 2';color:var(--gold);font-size:16px;margin-bottom:6px}
+.goal-prog{height:14px;background:rgba(10,24,36,.7);border-radius:999px;overflow:hidden;border:1px solid rgba(246,198,106,.3);margin:8px 0 4px}
+.goal-prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));transition:width .5s}
+.goal-box input{width:100%;padding:11px;border-radius:12px;border:1px solid rgba(246,198,106,.3);background:rgba(10,24,36,.6);color:var(--cream2);font-family:inherit;font-size:14px;margin-bottom:8px}
+.goal-box input::placeholder{color:rgba(244,232,208,.5)}
+.goal-row{display:flex;gap:8px}
+.goal-row input{margin-bottom:0}
+.goal-row .tnum{width:76px;flex:none;text-align:center}
+.game-goal{background:rgba(246,198,106,.14);border:1px solid rgba(246,198,106,.45);border-radius:12px;
+  padding:9px 12px;margin:6px 0 2px;text-align:center;font-size:13px}
+.game-goal b{color:var(--gold)}
+/* nâng cao - aha puzzles */
+.aha-seq{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0}
+.aha-tok{min-width:46px;padding:12px 10px;border-radius:12px;background:linear-gradient(160deg,#14334c,#0d2435);
+  border:2px solid rgba(255,255,255,.08);font-family:'Baloo 2';font-weight:800;font-size:20px;text-align:center;color:var(--cream2)}
+.aha-tok.q{border-color:var(--gold);color:var(--gold);box-shadow:0 0 16px rgba(246,198,106,.4)}
+.aha-grid{display:grid;gap:5px;max-width:220px;margin:18px auto}
+.aha-cell{aspect-ratio:1;border-radius:5px;background:#10293c;border:1px solid rgba(255,255,255,.05)}
+.aha-cell.on{background:linear-gradient(160deg,var(--gold),var(--gold2));box-shadow:0 0 8px rgba(246,198,106,.6)}
+.aha-opts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:12px}
+.aha-opt{padding:14px 22px;border-radius:14px;border:1px solid rgba(246,198,106,.3);
+  background:rgba(10,24,36,.6);color:var(--cream2);font-family:'Baloo 2';font-weight:700;font-size:18px;cursor:pointer;transition:.1s}
+.aha-opt:active{transform:scale(.95)}
+.aha-opt.right{background:linear-gradient(160deg,var(--green),#2f9a5c);color:#042;border-color:transparent}
+.aha-opt.wrong{background:#2a1414;border-color:var(--red);opacity:.5}
+/* level map */
+.lvl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+.lvl-chip{aspect-ratio:1;border-radius:16px;display:grid;place-items:center;position:relative;cursor:pointer;
+  font-family:'Baloo 2';font-weight:800;font-size:24px;background:rgba(10,24,36,.6);
+  border:1.5px solid rgba(246,198,106,.3);color:var(--cream2);transition:.1s}
+.lvl-chip:active{transform:scale(.94)}
+.lvl-chip.done{background:linear-gradient(160deg,#2c3a20,#17230f);border-color:var(--green)}
+.lvl-chip.done::after{content:"✓";position:absolute;top:4px;right:8px;font-size:13px;color:var(--green)}
+.lvl-chip.cur{background:linear-gradient(180deg,var(--gold),var(--gold2));color:var(--ink);box-shadow:0 0 18px rgba(246,198,106,.5)}
+.lvl-chip.lock{opacity:.4;cursor:not-allowed;font-size:20px}
 </style>
 </head>
 <body>
-<div class="app"><div class="device" id="device">
-  <div class="scene" id="scene"></div>
-  <div class="scrim"></div>
-  <div class="statusbar"><span>9:41</span><span>●●● &nbsp; 📶 &nbsp; 🔋</span></div>
-  <div class="wrap" id="wrap"></div>
-  <div class="tabbar" id="tabbar" style="display:none"></div>
-</div></div>
+<div class="app">
+
+  <!-- ===== LANGUAGE ===== -->
+  <section id="scr-lang" class="screen active" style="background-image:url('assets/bg_lang.png')">
+    <div class="scrim"></div>
+    <div class="wrap">
+      <div class="brand">
+        <div class="logo">MẬT MÃ</div>
+        <div class="tag" id="lang-tag">Giải luật ẩn · Cả nhà cùng chơi</div>
+      </div>
+      <div class="lang-row">
+        <button class="btn" onclick="setLang('vi')"><span class="em">🇻🇳</span> Tiếng Việt</button>
+        <button class="btn sec" onclick="setLang('en')"><span class="em">🌐</span> English</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOME ===== -->
+  <section id="scr-home" class="screen" style="background-image:url('assets/bg_home.png')">
+    <div class="scrim"></div>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="chip"><span class="streak-dot">🔥</span><span class="big" id="home-streak">0</span></div>
+        <div class="sp"></div>
+        <button class="iconbtn" onclick="go('scr-lang')">🌐</button>
+      </div>
+      <div class="brand" style="margin-top:3vh">
+        <div class="logo" style="font-size:44px">MẬT MÃ</div>
+      </div>
+      <div class="menu">
+        <div class="daily-card" onclick="startDaily()">
+          <div class="dc-ico">📅</div>
+          <div class="dc-t">
+            <b data-t="daily">Đề của hôm nay</b>
+            <span id="daily-state" data-t="dailySub">Một câu đố mỗi ngày — cả thế giới cùng đề</span>
+          </div>
+          <div class="dc-go">▶</div>
+        </div>
+        <div class="grid2">
+          <button class="btn sec" onclick="go('scr-practice')"><div class="btncol"><span data-t="practice">Luyện tập</span><span class="sub" data-t="practiceSub">Chơi vô tận</span></div></button>
+          <button class="btn sec" onclick="renderPet();go('scr-pet')"><div class="btncol"><span data-t="pet">Thú cưng</span><span class="sub" id="pet-lvl-sub">Lv.1</span></div></button>
+        </div>
+        <button class="btn" onclick="renderFamily();go('scr-family')"><span class="em">👨‍👩‍👧</span> <span data-t="family">Gia đình cùng chơi</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PRACTICE PICKER ===== -->
+  <section id="scr-practice" class="screen" style="background-image:url('assets/bg_adv.png')">
+    <div class="scrim"></div>
+    <div class="wrap">
+      <div class="topbar">
+        <button class="iconbtn" onclick="go('scr-home')">←</button>
+        <div class="sp"></div>
+        <div class="chip">🏆 <span class="big" id="prac-solved">0</span></div>
+      </div>
+      <div class="sec-ttl" data-t="practice">Luyện tập</div>
+      <div class="sec-sub" data-t="pickMode">Ai chơi?</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:6px">
+        <div class="daily-card" onclick="startKids()">
+          <div class="dc-ico">🧒</div>
+          <div class="dc-t"><b data-t="kidsMode">Trẻ em</b><span data-t="kidsSub">Câu hỏi rõ ràng — cho bé tự chơi</span></div>
+          <div class="dc-go">▶</div>
+        </div>
+        <div class="daily-card" onclick="openAdvanced()">
+          <div class="dc-ico">🧠</div>
+          <div class="dc-t"><b data-t="advMode">Nâng cao</b><span data-t="advSub">10 màn trí tuệ — tự tìm cơ chế = WOW</span></div>
+          <div class="dc-go">▶</div>
+        </div>
+      </div>
+      <!-- Gói Đại Dương (tranh AI) tạm gỡ: 16 tile là ảnh cắt từ mockup, dính khung + badge nung sẵn. Chờ asset tile SẠCH rồi bật lại startOceanPack(). -->
+      <div style="margin-top:auto"></div>
+    </div>
+  </section>
+
+  <!-- ===== ADVANCED LEVEL MAP ===== -->
+  <section id="scr-advmap" class="screen" style="background-image:url('assets/bg_adv.png')">
+    <div class="scrim"></div>
+    <div class="wrap">
+      <div class="topbar">
+        <button class="iconbtn" onclick="go('scr-practice')">←</button>
+        <div class="sp"></div>
+        <div class="chip">🧠 <span id="adv-progress">0/10</span></div>
+      </div>
+      <div class="sec-ttl" data-t="advMode">Nâng cao</div>
+      <div class="sec-sub" data-t="advMapSub">Câu đố trí tuệ — giải xong mở màn kế tiếp</div>
+      <div class="lvl-grid" id="lvl-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== GAME ===== -->
+  <section id="scr-game" class="screen">
+    <div class="wrap">
+      <div class="topbar">
+        <button class="iconbtn" onclick="quitGame()">←</button>
+        <div class="chip" id="mode-chip"><span id="mode-icon">🧩</span> <span id="mode-label">Luyện tập</span></div>
+        <div class="sp"></div>
+        <div class="lives" id="lives"></div>
+      </div>
+      <div class="q-card" id="q-card"></div>
+      <div class="game-goal" id="game-goal" style="display:none"></div>
+      <div class="q-hint" id="q-hint"></div>
+      <div id="rule-reveal"></div>
+      <div class="board" id="board"></div>
+      <div class="game-foot">
+        <button class="btn hint-btn" onclick="useHint()"><span class="em">💡</span> <span data-t="hint">Gợi ý</span> <span id="hint-count"></span></button>
+      </div>
+    </div>
+    <div class="overlay" id="wow">
+      <div class="card">
+        <div class="wow-big" id="wow-title">WOW!</div>
+        <div class="wow-rule"><span data-t="theRuleWas">Luật ẩn là:</span><br><b id="wow-rule-txt"></b></div>
+        <div class="pet-mini"><img src="assets/fox.png" alt="pet"><div style="position:absolute;bottom:-4px;right:-4px;font-size:22px">✨</div></div>
+        <div class="wow-stats">
+          <div class="wow-stat"><b id="wow-pts">+0</b><span data-t="points">điểm</span></div>
+          <div class="wow-stat"><b id="wow-xp">+0</b><span data-t="petXp">pet XP</span></div>
+        </div>
+        <div id="wow-family"></div>
+        <button class="btn" onclick="afterWin()"><span data-t="continue">Tiếp tục</span> →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PET ===== -->
+  <section id="scr-pet" class="screen" style="background-image:url('assets/bg_adv.png')">
+    <div class="scrim"></div>
+    <div class="wrap">
+      <div class="topbar">
+        <button class="iconbtn" onclick="go('scr-home')">←</button>
+        <div class="sp"></div>
+        <div class="chip">⭐ <span class="big" id="pet-totalxp">0</span></div>
+      </div>
+      <div class="pet-stage">
+        <div class="pet-big"><div class="pet-aura" id="pet-aura"></div><div class="pet-scale" id="pet-scale"><img id="pet-img" src="assets/fox.png" alt="pet"></div></div>
+        <div class="pet-name" id="pet-name">Cáo Con</div>
+        <div class="pet-lv"><span data-t="level">Cấp</span> <span id="pet-level">1</span></div>
+      </div>
+      <div class="xpbar"><i id="pet-xpfill" style="width:0%"></i></div>
+      <div style="text-align:center;font-size:12px;opacity:.75" id="pet-xptext">0 / 100 XP</div>
+      <div class="sec-ttl" style="margin-top:18px" data-t="rewards">Phần thưởng</div>
+      <div class="sec-sub" data-t="rewardsSub">Mở khóa khi pet lớn lên — ba mẹ tự đặt phiếu thưởng thật</div>
+      <div class="shelf" id="reward-shelf"></div>
+    </div>
+  </section>
+
+  <!-- ===== FAMILY ===== -->
+  <section id="scr-family" class="screen" style="background-image:url('assets/bg_fam.png')">
+    <div class="scrim"></div>
+    <div class="wrap">
+      <div class="topbar">
+        <button class="iconbtn" onclick="go('scr-home')">←</button>
+        <div class="sp"></div>
+        <div class="chip">🦊 <span data-t="sharedPet">Pet chung</span> Lv.<span id="fam-petlv">1</span></div>
+      </div>
+      <div class="sec-ttl" data-t="family">Gia đình cùng chơi</div>
+      <div class="sec-sub" data-t="familySub">Ai chơi cũng nuôi chung 1 pet. Con chơi +2, ba mẹ +1.</div>
+      <div class="members" id="members"></div>
+      <div class="addrow">
+        <input id="new-member" placeholder="Tên thành viên..." maxlength="12">
+        <button class="btn sec" style="width:auto;padding:12px 16px" onclick="addMember()">＋</button>
+      </div>
+      <div class="goal-box" id="goal-box"></div>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px;padding-top:14px;padding-bottom:6px">
+        <button class="btn" onclick="playFamilySolo()"><span class="em">🧩</span> <span data-t="playAsSel">Chơi (người đang chọn)</span></button>
+        <button class="btn sec" onclick="startDuo()"><span class="em">🤝</span> <span data-t="duo">Đề Đôi — 2 người cùng ngồi</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DUO ===== -->
+  <section id="scr-duo" class="screen" style="background-image:url('assets/bg_fam.png')">
+    <div class="scrim"></div>
+    <div class="wrap">
+      <div class="topbar"><button class="iconbtn" onclick="go('scr-family')">←</button></div>
+      <div class="clue-card" id="duo-body"></div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+</div>
 
 <script>
-/* ========== i18n ========== */
-const T={vi:{
- continue:"Tiếp tục",lang_title:"Chọn quốc gia",lang_sub:"Choose your country · Chọn quốc gia của bạn",
- tagline:"Suy luận cho cả nhà",family_name:"Gia đình Minh An",members:"4 thành viên",
- lvl:"Cấp 3",petname:"Hồ Ly Ánh Dương",to_evolve:"Còn %n XP để tiến hóa",
- pt_kid:"Điểm Con",pt_par:"Điểm Ba Mẹ",streak:"Chuỗi ngày",days:"%n ngày",
- mode_fam:"Gia đình",mode_fam_s:"Cùng con suy luận, liên tưởng qua tranh",
- mode_adv:"Nâng cao",mode_adv_s:"Giải mã quy luật ẩn, thử thách trí tuệ",
- daily:"Phòng hôm nay",rewards:"Kho thưởng",collection:"Bộ sưu tập",
- tab_home:"Trang chủ",tab_ch:"Thử thách",tab_pet:"Pet",tab_rank:"Xếp hạng",tab_me:"Hồ sơ",
- round:"Ván %a / %b",wrong_left:"Lượt sai còn lại: %n",chosen:"Đã chọn: %a / %b",confirm:"Xác nhận đáp án",
- fam_clue_sub:"Chọn %n bức tranh dính tới từ này",
- chapter:"Chương I · Phòng %n",puz_n:"Câu đố %a / %b",find_seq:"Tìm số tiếp theo trong dãy:",
- fox_seq:"Hãy tìm quy luật ẩn sau dãy này nhé!",check:"Kiểm tra",
- correct:"Chính xác!",solved:"Bạn đã giải mã thành công!",your_ans:"Đáp án của bạn",
- explain:"Giải thích quy luật",retry:"Thử lại",next_room:"Phòng tiếp theo",
- rw_pts:"điểm",rw_fam:"cho gia đình",rw_ess:"Tinh hoa",
- pet_title:"Pet của nhà mình",econ_title:"Cách cộng điểm trong gia đình",
- kid:"Con",parent:"Ba mẹ",play:"chơi",see_evo:"Xem tiến hóa",how_pts:"Cách tính điểm",
- fam_find:"Suy ra đúng các tranh — né bẫy",wrong:"Chưa đúng, thử lại.",
- win_fam:"Giỏi lắm! Giải đúng cả %n tranh.",
- back_home:"Về trang chủ"
-},en:{
- continue:"Continue",lang_title:"Select your country",lang_sub:"Choose your country · Chọn quốc gia của bạn",
- tagline:"Reasoning for the whole family",family_name:"The Minh An Family",members:"4 members",
- lvl:"Level 3",petname:"Sunlight Fox",to_evolve:"%n XP left to evolve",
- pt_kid:"Kid points",pt_par:"Parent points",streak:"Streak",days:"%n days",
- mode_fam:"Family",mode_fam_s:"Reason together with your child through pictures",
- mode_adv:"Advanced",mode_adv_s:"Crack hidden rules, a real brain challenge",
- daily:"Today's room",rewards:"Rewards",collection:"Collection",
- tab_home:"Home",tab_ch:"Challenge",tab_pet:"Pet",tab_rank:"Ranking",tab_me:"Profile",
- round:"Round %a / %b",wrong_left:"Wrong tries left: %n",chosen:"Picked: %a / %b",confirm:"Confirm answer",
- fam_clue_sub:"Pick %n pictures linked to this word",
- chapter:"Chapter I · Room %n",puz_n:"Puzzle %a / %b",find_seq:"Find the next number:",
- fox_seq:"Try to spot the hidden rule!",check:"Check",
- correct:"Correct!",solved:"You cracked the code!",your_ans:"Your answer",
- explain:"The rule explained",retry:"Retry",next_room:"Next room",
- rw_pts:"points",rw_fam:"to the family",rw_ess:"Essence",
- pet_title:"Our family pet",econ_title:"How family points add up",
- kid:"Kid",parent:"Parents",play:"plays",see_evo:"See evolution",how_pts:"How points work",
- fam_find:"Deduce the right pictures — avoid traps",wrong:"Not quite, try again.",
- win_fam:"Great! You found all %n pictures.",
- back_home:"Home"
-}};
-const COUNTRIES=[{fl:"🇻🇳",nm:"Việt Nam",lg:"Tiếng Việt",lang:"vi"},{fl:"🇺🇸",nm:"United States",lg:"English",lang:"en"},{fl:"🇬🇧",nm:"United Kingdom",lg:"English",lang:"en"},{fl:"🇸🇬",nm:"Singapore",lg:"English",lang:"en"},{fl:"🇦🇺",nm:"Australia",lg:"English",lang:"en"},{fl:"🇨🇦",nm:"Canada",lg:"English",lang:"en"}];
+/* ============================================================
+   MẬT MÃ — hidden-rule deduction engine. 100% client-side.
+   ============================================================ */
 
-/* ========== scenes (CSS fantasy backgrounds) ========== */
-// Mỗi màn: thử ảnh nền thật ở assets/ TRƯỚC; thiếu file thì tự rơi về gradient (fallback).
-// => Khi có asset (bản B), chỉ cần bỏ file vào /assets/ là đẹp y hình, không sửa code.
-const SCENES={
- home:"url('assets/bg_home.png') center/cover no-repeat, radial-gradient(120% 70% at 50% 0%,#7fb4c9 0,#3f7e86 34%,#1c4a4f 68%,#0c2a30 100%)",
- fam:"url('assets/bg_fam.png') center/cover no-repeat, radial-gradient(120% 80% at 50% 10%,#2e8aa8 0,#16627e 40%,#0a3346 80%)",
- adv:"url('assets/bg_adv.png') center/cover no-repeat, radial-gradient(120% 80% at 50% 0%,#3a5a4a 0,#243f3a 40%,#14262a 80%)",
- pet:"url('assets/bg_pet.png') center/cover no-repeat, radial-gradient(120% 70% at 50% 0%,#8fc0d6 0,#4a86a0 35%,#1f4f5e 70%,#0c2a33 100%)",
- lang:"url('assets/bg_lang.png') center/cover no-repeat, radial-gradient(120% 70% at 50% -10%,#2c5366 0,#163044 44%,#0c2133 80%)",
- wow:"url('assets/bg_wow.png') center/cover no-repeat, radial-gradient(120% 80% at 50% 0%,#2f6f55 0,#1d4a3c 42%,#0f2a24 80%)"
+/* ---------- i18n ---------- */
+const I18N={
+  vi:{daily:"Đề của hôm nay",dailySub:"Một câu đố mỗi ngày — cả thế giới cùng đề",
+    dailyDone:"✅ Hôm nay xong! Chuỗi: ",practice:"Luyện tập",practiceSub:"Chơi vô tận",
+    pet:"Thú cưng",family:"Gia đình cùng chơi",hint:"Gợi ý",theRuleWas:"Luật ẩn là:",
+    points:"điểm",petXp:"pet XP",continue:"Tiếp tục",level:"Cấp",rewards:"Phần thưởng",
+    rewardsSub:"Mở khóa khi pet lớn lên — ba mẹ tự đặt phiếu thưởng thật",
+    sharedPet:"Pet chung",familySub:"Ai chơi cũng nuôi chung 1 pet. Con chơi +2, ba mẹ +1.",
+    playAsSel:"Chơi (người đang chọn)",duo:"Đề Đôi — 2 người cùng ngồi",
+    pickDiff:'Chọn độ khó — luật càng khéo càng "trời ơi"',easy:"Dễ",medium:"Vừa",hard:"Khó",
+    playNow:"Chơi ngay",ocean:"Gói Đại Dương (tranh AI)",
+    howto:"Vài ô đang sáng theo 1 LUẬT ẨN. Tìm & chạm những ô CÒN LẠI cùng luật.",
+    puzzleLbl:"Câu đố",question:"2 ô đang sáng cùng 1 LUẬT BÍ MẬT. Ô nào CÒN LẠI giống vậy? 👇",startHint:"Nhìn kỹ 2 ô sáng — chúng giống nhau ở điểm gì?",pickMode:"Ai chơi?",kidsMode:"Trẻ em",kidsSub:"Câu hỏi rõ ràng — cho bé tự chơi",advMode:"Nâng cao",advSub:"10 màn trí tuệ — tự tìm cơ chế = WOW",advMapSub:"Câu đố trí tuệ — giải xong mở màn kế tiếp",goalTitle:"Ba mẹ treo thưởng",goalHelp:"Đặt phần thưởng thật cho bé — đủ số câu thì ba mẹ tặng.",goalPh:"VD: Đi nhà banh chơi",goalBtn:"Treo thưởng",goalHung:"Đang treo",goalLeft:"còn {n} câu",goalReached:"Con đạt phần thưởng",goalDone:"Con đã đạt — ba mẹ tặng bé nhé!",goalNew:"Treo thưởng mới",goalChange:"Đổi / Gỡ thưởng",goalSet:"Đã treo thưởng!",goalUnitWord:"câu",ahaStart:"Không có luật nào được nói. Tự tìm ra cơ chế giấu!",ahaWrong:"Chưa đúng — thử nhìn kiểu khác",findTiles:"Tìm tất cả ô:",startHintKnown:"Chạm hết ô đúng luật — sai mất 1 ❤️",
+    wowTitles:["WOW!","TRỜI ƠI!","XUẤT SẮC!","ĐỈNH!","THÔNG MINH!"],
+    wrong:"Chưa đúng — nhìn kỹ các ô đang sáng",needMore:"Còn {n} ô nữa cùng luật",
+    noHint:"Hết bước gợi ý — bạn gần ra rồi!",hintDim:"Đã tối bớt vài ô chắc chắn SAI",
+    hintLight:"Đã sáng thêm 1 ô ĐÚNG",newMemberAdded:"Đã thêm thành viên",
+    childBonus:"con",parentBonus:"ba mẹ",
+    duoIntro:"Mỗi người thấy MỘT nửa manh mối. Phải nói cho nhau mới giải được!",
+    duoP1:"NGƯỜI 1 nhìn màn hình",duoP2:"NGƯỜI 2 nhìn màn hình",duoClue:"Nửa manh mối của bạn:",
+    duoHideP1:"Đã nhớ — che lại, đưa NGƯỜI 2",duoHideP2:"Đã nhớ — bắt đầu giải cùng nhau",
+    duoGo:"Giờ cả hai cùng tìm ô thỏa CẢ HAI manh mối",
+    dailyLabel:"Đề hôm nay",practiceLabel:"Luyện tập",oceanLabel:"Đại Dương",duoLabel:"Đề Đôi",
+    reward1:"Nuôi pet",reward2:"Phiếu: Ăn kem",reward3:"Phiếu: +30' chơi",
+    reward4:"Tranh AI mới",reward5:"Phòng bí mật",reward6:"Pet tiến hóa"},
+  en:{daily:"Today's puzzle",dailySub:"One puzzle a day — same for the whole world",
+    dailyDone:"✅ Done today! Streak: ",practice:"Practice",practiceSub:"Endless play",
+    pet:"Pet",family:"Family play",hint:"Hint",theRuleWas:"The hidden rule was:",
+    points:"points",petXp:"pet XP",continue:"Continue",level:"Level",rewards:"Rewards",
+    rewardsSub:"Unlock as your pet grows — parents set the real-life reward coupons",
+    sharedPet:"Shared pet",familySub:"Everyone feeds one shared pet. Child +2, parent +1.",
+    playAsSel:"Play (selected member)",duo:"Duo puzzle — two people together",
+    pickDiff:"Pick difficulty — the cleverer the rule, the bigger the aha",easy:"Easy",medium:"Medium",hard:"Hard",
+    playNow:"Play now",ocean:"Ocean pack (AI art)",
+    howto:"A few tiles glow by a HIDDEN RULE. Find & tap the OTHERS that follow it.",
+    puzzleLbl:"Puzzle",question:"2 tiles glow by a SECRET RULE. Which OTHER tiles match them? 👇",startHint:"Look at the 2 glowing tiles — what do they have in common?",pickMode:"Who's playing?",kidsMode:"Kids",kidsSub:"Clear question — kids play on their own",advMode:"Advanced",advSub:"10 brain levels — crack the mechanism = WOW",advMapSub:"Brain puzzles — solve to unlock the next",goalTitle:"Parents set a reward",goalHelp:"Set a real reward — reach the target and parents give it.",goalPh:"e.g. Trip to the ball pit",goalBtn:"Set reward",goalHung:"On the line",goalLeft:"{n} to go",goalReached:"Reward earned",goalDone:"Target reached — give the reward!",goalNew:"New reward",goalChange:"Change / Remove",goalSet:"Reward set!",goalUnitWord:"puzzles",ahaStart:"No rule is given. Figure out the hidden mechanism!",ahaWrong:"Not quite — try another angle",findTiles:"Find all tiles:",startHintKnown:"Tap every matching tile — a wrong tap costs 1 ❤️",
+    wowTitles:["WOW!","AHA!","BRILLIANT!","NICE!","SO SMART!"],
+    wrong:"Not quite — look at the glowing tiles",needMore:"{n} more tile(s) follow the rule",
+    noHint:"No more hints — you're close!",hintDim:"Dimmed a few that are definitely WRONG",
+    hintLight:"Lit one more CORRECT tile",newMemberAdded:"Member added",
+    childBonus:"child",parentBonus:"parent",
+    duoIntro:"Each person sees HALF the clue. You must talk to solve it!",
+    duoP1:"PLAYER 1 look at the screen",duoP2:"PLAYER 2 look at the screen",duoClue:"Your half of the clue:",
+    duoHideP1:"Got it — hide & pass to PLAYER 2",duoHideP2:"Got it — start solving together",
+    duoGo:"Now both find tiles that satisfy BOTH clues",
+    dailyLabel:"Today",practiceLabel:"Practice",oceanLabel:"Ocean",duoLabel:"Duo",
+    reward1:"Feed pet",reward2:"Coupon: Ice cream",reward3:"Coupon: +30 min",
+    reward4:"New AI art",reward5:"Secret room",reward6:"Pet evolves"}
 };
-// fox: dùng assets/fox.png nếu có, không thì hiện emoji 🦊
-function fox(sz){return '<span class="fxph" style="font-size:'+sz+'px;line-height:1">🦊</span>'+
- '<img src="assets/fox.png" alt="" style="display:none;width:'+Math.round(sz*1.7)+'px;max-width:82%" '+
- 'onload="this.style.display=\'inline-block\';this.previousElementSibling.style.display=\'none\'">';}
+let LANG='vi';
+const t=(k)=>I18N[LANG][k]||I18N.vi[k]||k;
 
-/* ========== family rounds ========== */
-const FAM=[{clue_vi:"DƯỚI NƯỚC",clue_en:"UNDER WATER",n:3,cards:[
- {t:"rua_bien",r:"t"},{t:"thuyen_buom",r:"n"},{t:"sua_bien",r:"t"},{t:"nui_tuyet",r:"n"},
- {t:"san_ho",r:"t"},{t:"ca_ngua",r:"t"},{t:"ruong_bau",r:"n"},{t:"hoa",r:"n"},
- {t:"chim_canh_cut",r:"x"},{t:"ca_voi",r:"t"},{t:"cua",r:"t"},{t:"dun_cat_sa_mac",r:"n"},
- {t:"hai_dang",r:"n"},{t:"cong_vom_duoi_nuoc",r:"t"},{t:"ca_map",r:"t"},{t:"tang_bang",r:"n"}
-]}];
-// t=target, n=neutral, x=trap. (demo: 6 targets but clue says 3 → chọn 3 bất kỳ target đúng)
+/* ---------- tile taxonomy ---------- */
+const G={
+  mammal:"🦁 🐯 🐘 🐮 🐷 🐴 🐑 🐐 🦌 🐶 🐱 🐰 🐭 🐹 🐻 🐨 🦊 🦓 🦒 🐳 🐬 🦭",
+  seaAnimal:"🐳 🐬 🐟 🐠 🐡 🦈 🐙 🦑 🦐 🦀 🐢 🦭 🐚",
+  bird:"🦅 🦆 🦉 🦜 🐓 🕊️ 🦢 🐥",
+  insect:"🐝 🦋 🐜 🐞 🦗",
+  reptile:"🐍 🦎 🐊 🐢",
+  fruit:"🍎 🍌 🍊 🍇 🍓 🍉 🍑 🍒 🥝 🍍 🥭 🍐 🍋",
+  veg:"🥕 🥦 🌽 🍅 🥔 🧅 🍆 🫑",
+  junk:"🍕 🍔 🍟 🌭 🍿 🧀 🍩 🍪 🎂 🍫 🍦 🍰",
+  celestial:"☀️ 🌙 ⭐ 🌟 🪐",
+  weather:"🌊 💧 🔥 🌈 ⚡ ❄️ ☁️ 🌪️",
+  vehicle:"🚗 🚕 🚌 🚒 🚜 🏎️ 🚲 ✈️ 🚀 🚁 ⛵ 🚤 🚂",
+  building:"🏠 🏰 🏢 🗼 ⛩️ 🏯",
+  object:"💡 🔑 🔔 ⚽ 🏀 🎸 📱 💻 📷 🕯️ 🔦 ⏰ 🎈 🎁 ✏️ 📚 ☂️",
+  plant:"🌸 🌻 🌹 🌷 🌵 🌲 🌴 🍀 🍁 🌿 🌾",
+  canFly:"🦅 🦆 🦉 🦜 🕊️ 🦢 🐝 🦋 🐞 ✈️ 🚀 🚁 🎈",
+  selfLit:"☀️ ⭐ 🌟 🔥 💡 ⚡ 🕯️ 🔦",
+  round:"☀️ 🌙 ⭐ 🌟 🍎 🍊 🍅 ⚽ 🏀 🍩 🎈 🪐 🍪 🔔",
+  red:"🍎 🍓 🍉 🌹 🍅 🍒 🦀 🚗 🏎️",
+  yellow:"🍌 🍋 ☀️ ⭐ 🌟 🧀 🐥 🌻 🚕",
+  green:"🥦 🐸 🐍 🌵 🌲 🍀 🌿 🫑 🐢 🦎 🥝",
+  edible:"🍎 🍌 🍊 🍇 🍓 🍉 🍑 🍒 🥝 🍍 🥭 🍐 🍋 🥕 🥦 🌽 🍅 🥔 🧅 🍆 🫑 🍕 🍔 🍟 🌭 🍿 🧀 🍩 🍪 🎂 🍫 🍦 🍰",
+  aquatic:"🐳 🐬 🐟 🐠 🐡 🦈 🐙 🦑 🦐 🦀 🐢 🦭 🐚 🐸"
+};
+const TAGS={};
+function addTag(tag,str){str.trim().split(/\s+/).forEach(e=>{(TAGS[e]=TAGS[e]||new Set()).add(tag);});}
+for(const k in G) addTag(k,G[k]);
+Object.keys(TAGS).forEach(e=>{const s=TAGS[e];
+  if(s.has('mammal')||s.has('seaAnimal')||s.has('bird')||s.has('insect')||s.has('reptile'))s.add('animal');
+  if(s.has('animal')||s.has('plant'))s.add('living');
+  if(s.has('vehicle')||s.has('building')||s.has('object'))s.add('manmade');});
+const ALL_TILES=Object.keys(TAGS);
+const has=(e,tag)=>TAGS[e]&&TAGS[e].has(tag);
 
-/* ========== advanced puzzles ========== */
-const D4=[0,3,5,8,10,13,15,16,17,18,19,23,28,33];
-const NOISE=['3','7','5','2','8','1','4','9','6','0','7','2','5','8','1','4','9'];
-const ADV=[
- {type:'seq',seq:['1','11','21','1211','?'],ans:'111221',opts:['111221','12211','112211','111222'],
-  vi:{ex:"Đọc số ở dòng trước rồi viết lại: 1211 = một 1, một 2, hai 1 → 111221."},
-  en:{ex:"Read the previous line aloud: 1211 = one 1, one 2, two 1s → 111221."}},
- {type:'seqL',
-  vi:{seq:['M','H','B','B','N','S','?','T','C'],ans:'B',opts:['B','S','N','C'],prompt:"Chữ nào vào ô trống?",ex:"Chữ đầu của Một Hai Ba Bốn Năm Sáu Bảy Tám Chín → ô trống = Bảy = B."},
-  en:{seq:['O','T','T','F','F','S','?','E','N'],ans:'S',opts:['S','N','E','T'],prompt:"Which letter fills the blank?",ex:"First letters of One Two Three Four Five Six Seven Eight Nine → blank = Seven = S."}},
- {type:'grid',cols:5,rows:7,lit:D4,ans:'4',opts:['2','4','7','9'],
-  vi:{prompt:"Mã khóa là một chữ số. Là số mấy?",ex:"Các ô SÁNG vẽ thành số 4 — lùi ra xa nhìn tổng thể là thấy."},
-  en:{prompt:"The code is a single digit. Which one?",ex:"The LIT tiles draw the number 4 — step back and you'll see it."}}
+/* ---------- rules ---------- */
+const RULES=[
+  {id:'animal',diff:'easy',vi:'là CON VẬT',en:'an ANIMAL',match:e=>has(e,'animal')},
+  {id:'fruit',diff:'easy',vi:'là TRÁI CÂY',en:'a FRUIT',match:e=>has(e,'fruit'),traps:"🥕 🥦 🍅 🌽".split(/\s+/)},
+  {id:'edible',diff:'easy',vi:'ĂN ĐƯỢC',en:'EDIBLE',match:e=>has(e,'edible'),traps:"🌹 🌻 🌵".split(/\s+/)},
+  {id:'plant',diff:'easy',vi:'là CÂY CỎ',en:'a PLANT',match:e=>has(e,'plant')},
+  {id:'bird',diff:'medium',vi:'là loài CHIM',en:'a BIRD',match:e=>has(e,'bird'),traps:"🦋 🐝 🐞".split(/\s+/)},
+  {id:'manmade',diff:'medium',vi:'do CON NGƯỜI làm ra',en:'MADE by humans',match:e=>has(e,'manmade'),traps:"🌲 🌵 🍀".split(/\s+/)},
+  {id:'yellow',diff:'medium',vi:'màu VÀNG',en:'YELLOW',match:e=>has(e,'yellow'),traps:"🍊 🥭".split(/\s+/)},
+  {id:'red',diff:'medium',vi:'màu ĐỎ',en:'RED',match:e=>has(e,'red'),traps:"🍊 🍑 🌸".split(/\s+/)},
+  {id:'canFly',diff:'medium',vi:'BAY được',en:'can FLY',match:e=>has(e,'canFly'),traps:"🐓 🐢 🚗".split(/\s+/)},
+  {id:'aquatic',diff:'hard',vi:'sống DƯỚI NƯỚC',en:'lives UNDERWATER',match:e=>has(e,'aquatic'),traps:"🦆 🦢 🐊 ⛵".split(/\s+/)},
+  {id:'selfLit',diff:'hard',vi:'TỰ PHÁT SÁNG',en:'gives its OWN light',match:e=>has(e,'selfLit'),traps:"🌙 🌈 💧 🪐".split(/\s+/)},
+  {id:'round',diff:'hard',vi:'hình TRÒN',en:'ROUND',match:e=>has(e,'round'),traps:"🍌 🍐 🍆 📱".split(/\s+/)},
+];
+const DUO_RULES=[
+  {a:{vi:'ĂN ĐƯỢC',en:'EDIBLE'},b:{vi:'màu ĐỎ',en:'RED'},vi:'ăn được VÀ màu đỏ',en:'edible AND red',match:e=>has(e,'edible')&&has(e,'red')},
+  {a:{vi:'con VẬT',en:'an ANIMAL'},b:{vi:'BAY được',en:'can FLY'},vi:'con vật VÀ biết bay',en:'animal AND can fly',match:e=>has(e,'animal')&&has(e,'canFly')},
+  {a:{vi:'con VẬT',en:'an ANIMAL'},b:{vi:'sống dưới NƯỚC',en:'lives in WATER'},vi:'con vật VÀ sống dưới nước',en:'animal AND aquatic',match:e=>has(e,'aquatic')&&has(e,'animal')},
+];
+/* ---------- NÂNG CAO: câu đố "aha" (tự tìm cơ chế, kiểu The Witness/Zendo) ---------- */
+const AHA=[
+ {kind:'grid',cols:5,rows:7,lit:[0,3,5,8,10,13,15,16,17,18,19,23,28,33],options:['2','4','7','9'],answer:'4',
+  pv:'Mã khóa là một CHỮ SỐ — số mấy?',pe:'The code is a DIGIT — which one?',
+  hv:'Đừng soi từng ô. Lùi màn hình ra xa / nheo mắt — các ô SÁNG đang vẽ thành gì?',
+  he:"Don't inspect each cell. Step back / squint — what do the LIT cells draw?",
+  av:'Số 4 — vẽ bằng các ô sáng. Bẫy: ai cũng soi từng ô, câu trả lời ở HÌNH TỔNG THỂ.',
+  ae:'A 4 — drawn by the lit cells. Trap: everyone inspects cells; the answer is the WHOLE shape.'},
+ {kind:'grid',cols:5,rows:7,lit:[1,2,3,5,9,14,18,22,26,30,31,32,33,34],options:['2','3','5','8'],answer:'2',
+  pv:'Mã khóa là một CHỮ SỐ — số mấy?',pe:'The code is a DIGIT — which one?',
+  hv:'Lùi ra xa, đọc hình tổng thể do các ô sáng tạo ra.',he:'Step back and read the overall shape.',
+  av:'Số 2 — vẽ bằng các ô sáng.',ae:'A 2 — drawn by the lit cells.'},
+ {kind:'seq',items:['M','H','B','B','N','S','?','T','C'],options:['B','S','N','C'],answer:'B',
+  pv:'M · H · B · B · N · S · ? · T · C — ô "?" là chữ gì?',pe:'M · H · B · B · N · S · ? · T · C — what is "?"',
+  hv:'Đọc to từng chữ như chữ cái ĐẦU của thứ mình đếm mỗi ngày...',he:'Read each as the first letter of the Vietnamese numbers...',
+  av:'B (Bảy) — chữ đầu Một–Hai–Ba–Bốn–Năm–Sáu–Bảy–Tám–Chín.',ae:'B — first letters of the Vietnamese numbers one…nine.'},
+ {kind:'seq',items:['1','11','21','1211','111221','?'],options:['312211','111222','1112221','122111'],answer:'312211',
+  pv:'1 → 11 → 21 → 1211 → 111221 → ?',pe:'1 → 11 → 21 → 1211 → 111221 → ?',
+  hv:'Không tính toán gì cả — mỗi dòng chỉ ĐỌC dòng ngay trên bằng lời.',he:'No math — each line just READS the line above out loud.',
+  av:'312211: "111221" = ba số 1, hai số 2, một số 1 → 31 22 11.',ae:'312211: "111221" = three 1s, two 2s, one 1 → 31 22 11.'},
+ {kind:'seq',items:['1','1','2','3','5','8','?'],options:['13','11','10','16'],answer:'13',
+  pv:'1 · 1 · 2 · 3 · 5 · 8 · ? — số kế tiếp?',pe:'1 · 1 · 2 · 3 · 5 · 8 · ? — next number?',
+  hv:'Thử CỘNG hai số liền trước lại với nhau...',he:'Try ADDING the two previous numbers...',
+  av:'13 — mỗi số là tổng 2 số trước (dãy Fibonacci).',ae:'13 — each number is the sum of the two before it (Fibonacci).'},
+ {kind:'seq',items:['O','T','T','F','F','S','S','?'],options:['E','N','S','O'],answer:'E',
+  pv:'O · T · T · F · F · S · S · ? — chữ kế? (tiếng Anh)',pe:'O · T · T · F · F · S · S · ? — next letter?',
+  hv:'One, Two, Three... chữ cái ĐẦU mỗi số đếm tiếng Anh.',he:'One, Two, Three... first letter of each English number.',
+  av:'E (Eight) — O-T-T-F-F-S-S-E.',ae:'E for Eight — One Two Three Four Five Six Seven Eight.'},
+ {kind:'seq',items:['J','F','M','A','M','J','J','A','S','O','N','?'],options:['D','M','J','S'],answer:'D',
+  pv:'J·F·M·A·M·J·J·A·S·O·N·? — chữ kế?',pe:'J·F·M·A·M·J·J·A·S·O·N·? — next letter?',
+  hv:'Có 12 thứ này trong một NĂM (viết tắt tiếng Anh)...',he:'There are 12 of these in a YEAR...',
+  av:'D (December) — chữ đầu 12 tháng tiếng Anh: Jan, Feb… Dec.',ae:'D for December — first letters of the 12 months.'},
+ {kind:'seq',items:['T2','T3','T4','T5','T6','T7','?'],options:['CN','T8','T1','T9'],answer:'CN',
+  pv:'T2 · T3 · T4 · T5 · T6 · T7 · ? — ngày kế?',pe:'Mon·Tue·Wed·Thu·Fri·Sat·? — next day?',
+  hv:'Đây là các THỨ trong tuần... hết Thứ Bảy là ngày gì?',he:'These are the days of the week... after Saturday?',
+  av:'CN (Chủ Nhật) — hết Thứ Bảy là Chủ Nhật.',ae:'Sun (Sunday) — the week ends on Sunday.'},
+ {kind:'seq',items:['2','3','5','7','11','?'],options:['13','12','15','9'],answer:'13',
+  pv:'2 · 3 · 5 · 7 · 11 · ? — số kế tiếp?',pe:'2 · 3 · 5 · 7 · 11 · ? — next number?',
+  hv:'Mấy số này chỉ chia hết cho 1 và chính nó...',he:'These numbers divide only by 1 and themselves...',
+  av:'13 — dãy số NGUYÊN TỐ (2, 3, 5, 7, 11, 13).',ae:'13 — the prime numbers (2, 3, 5, 7, 11, 13).'},
+ {kind:'grid',cols:5,rows:7,lit:[0,1,2,3,4,9,13,17,22,27,32],options:['1','4','7','9'],answer:'7',
+  pv:'Mã khóa là một CHỮ SỐ — số mấy?',pe:'The code is a DIGIT — which one?',
+  hv:'Lùi ra xa nhìn hình tổng thể các ô sáng.',he:'Step back and read the overall shape.',
+  av:'Số 7 — vẽ bằng các ô sáng.',ae:'A 7 — drawn by the lit cells.'},
+];
+const OCEAN=[
+  {f:'ca_map',live:1},{f:'ca_ngua',live:1},{f:'ca_voi',live:1},{f:'chim_canh_cut',live:1},
+  {f:'cua',live:1},{f:'rua_bien',live:1},{f:'san_ho',live:1},{f:'sua_bien',live:1},{f:'hoa',live:1},
+  {f:'hai_dang',live:0},{f:'dun_cat_sa_mac',live:0},{f:'nui_tuyet',live:0},{f:'tang_bang',live:0},
+  {f:'thuyen_buom',live:0},{f:'ruong_bau',live:0},{f:'cong_vom_duoi_nuoc',live:0}
 ];
 
-/* ========== state ========== */
-let lang='vi',screen='lang',tab='home';
-let fri=0,famSel=[],famWrong=0;
-let ai=0,advSel=null,advDone=false;
-let lastGame='adv';
-let xp=420,xpMax=600,kid=1240,par=2360;
-function t(k,o){let s=T[lang][k]||k;if(o)for(const p in o)s=s.replace('%'+p,o[p]);return s;}
-const scene=document.getElementById('scene'),wrap=document.getElementById('wrap'),tabbar=document.getElementById('tabbar');
-function go(s){screen=s;window.scrollTo(0,0);render();}
+/* ---------- RNG ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function seedStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19;}return h>>>0;}
+function shuffle(arr,r){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function sample(arr,n,r){return shuffle(arr,r).slice(0,n);}
 
-function render(){
-  scene.style.background=SCENES[screen==='home'?'home':screen==='fam'?'fam':screen==='adv'?'adv':screen==='pet'?'pet':screen==='wow'?'wow':'lang'];
-  tabbar.style.display=(screen==='home'||screen==='pet')?'flex':'none';
-  if(screen==='lang')return renderLang();
-  if(screen==='home')return renderHome();
-  if(screen==='fam')return renderFam();
-  if(screen==='adv')return renderAdv();
-  if(screen==='wow')return renderWow();
-  if(screen==='pet')return renderPet();
-  renderTabs();
+/* ---------- puzzle builder ---------- */
+function buildPuzzle(rule,size,r,prelitN){
+  prelitN=prelitN||2;
+  const yes=ALL_TILES.filter(rule.match);
+  const no=ALL_TILES.filter(e=>!rule.match(e));
+  const cap=Math.min(6,Math.round(size*0.42));
+  const needYes=Math.min(yes.length,Math.max(prelitN+2,cap));
+  const chosenYes=sample(yes,needYes,r);
+  let traps=(rule.traps||[]).filter(e=>no.includes(e));
+  let rest=shuffle(no.filter(e=>!traps.includes(e)),r);
+  const chosenNo=shuffle(traps.concat(rest).slice(0,size-needYes),r);
+  let cells=shuffle(chosenYes.map(e=>({e,yes:true})).concat(chosenNo.map(e=>({e,yes:false}))),r);
+  const yesIdx=cells.map((c,i)=>c.yes?i:-1).filter(i=>i>=0);
+  const pre=sample(yesIdx,Math.min(prelitN,needYes-1),r);
+  cells.forEach((c,i)=>c.prelit=pre.includes(i));
+  return {rule,cells,size,total:needYes,art:false};
 }
-function renderTabs(){
-  const items=[['home','🏠','tab_home'],['ch','⭐','tab_ch'],['pet','🐾','tab_pet'],['rank','🏆','tab_rank'],['me','👤','tab_me']];
-  tabbar.innerHTML=items.map(it=>'<button class="'+((it[0]==='home'&&screen==='home')||(it[0]==='pet'&&screen==='pet')?'on':'')+'" onclick="'+(it[0]==='home'?"go('home')":it[0]==='pet'?"go('pet')":"")+'"><span class="em">'+it[1]+'</span>'+t(it[2])+'</button>').join('');
-}
-
-function renderLang(){
-  wrap.innerHTML='<div class="center" style="margin-top:34px"><div class="logo" style="font-size:40px">MẬT MÃ<small>DECODE · FAMILY PUZZLE</small></div></div>'+
-   '<h1 class="center mt" style="margin-top:28px">'+t('lang_title')+'</h1><p class="muted center">'+t('lang_sub')+'</p>'+
-   '<div class="flags">'+COUNTRIES.map((c,i)=>'<button class="flagbtn" onclick="pick('+i+')"><span class="fl">'+c.fl+'</span><span><span class="nm">'+c.nm+'</span><br><span class="lg">'+c.lg+'</span></span><span class="go">›</span></button>').join('')+'</div>';
-  renderTabs();
-}
-function pick(i){lang=COUNTRIES[i].lang;document.documentElement.lang=lang;go('home');}
-
-function renderHome(){
-  wrap.innerHTML=
-   '<div class="spread"><div class="row"><div class="circle">👨‍👩‍👧</div><div><div style="font:700 14px/1.1 Be Vietnam Pro;text-shadow:0 1px 3px #0008">'+t('family_name')+' ▾</div><div style="font-size:11px;color:#dfe9e9">👥 '+t('members')+'</div></div></div><div class="row"><div class="circle" onclick="go(\'lang\')" title="lang">🌐</div><div class="circle">⚙️</div></div></div>'+
-   '<div class="center" style="margin-top:14px"><div class="logo">MẬT MÃ<small>'+t('tagline')+'</small></div></div>'+
-   '<div style="height:21vh"></div>'+
-   '<div class="center" style="margin:6px 0"><div class="pill">⭐ '+t('lvl')+' · '+t('petname')+'</div></div>'+
-   '<div class="xpbar"><i style="width:'+Math.round(xp/xpMax*100)+'%"></i><span>'+xp+' / '+xpMax+' XP</span></div>'+
-   '<div class="stats"><div class="stat"><span class="em">🧒</span><b>'+kid.toLocaleString()+'</b><small>'+t('pt_kid')+'</small></div>'+
-     '<div class="stat"><span class="em">👨‍👩‍👧</span><b>'+par.toLocaleString()+'</b><small>'+t('pt_par')+'</small></div>'+
-     '<div class="stat"><span class="em">🔥</span><b>7</b><small>'+t('streak')+'</small></div></div>'+
-   '<div class="modes">'+
-     '<button class="mode fam" onclick="startFam()"><span class="go">›</span><span class="em">👨‍👩‍👧</span><b>'+t('mode_fam')+'</b><small>'+t('mode_fam_s')+'</small></button>'+
-     '<button class="mode adv" onclick="startAdv()"><span class="go">›</span><span class="em">🔮</span><b>'+t('mode_adv')+'</b><small>'+t('mode_adv_s')+'</small></button>'+
-   '</div>'+
-   '<div class="minis"><div class="mini" onclick="startAdv()"><span class="em">📅</span>'+t('daily')+'</div><div class="mini" onclick="go(\'pet\')"><span class="em">🎁</span>'+t('rewards')+'</div><div class="mini"><span class="em">📚</span>'+t('collection')+'</div></div>';
-  renderTabs();
+function buildOcean(r){
+  const live=OCEAN.filter(o=>o.live),non=OCEAN.filter(o=>!o.live),needYes=4;
+  const yes=sample(live,needYes,r),no=sample(non,12-needYes,r);
+  let cells=shuffle(yes.map(o=>({e:o.f,yes:true})).concat(no.map(o=>({e:o.f,yes:false}))),r);
+  const yesIdx=cells.map((c,i)=>c.yes?i:-1).filter(i=>i>=0);
+  const pre=sample(yesIdx,2,r);
+  cells.forEach((c,i)=>c.prelit=pre.includes(i));
+  return {rule:{vi:'cũng là SINH VẬT SỐNG',en:'also a LIVING creature'},cells,size:12,total:needYes,art:true};
 }
 
-/* ---------- FAMILY ---------- */
-function startFam(){lastGame='fam';fri=0;famSel=[];famWrong=0;go('fam');}
-function renderFam(){
-  const R=FAM[fri],clue=lang==='vi'?R.clue_vi:R.clue_en;
-  wrap.innerHTML=
-   '<div class="spread" style="padding-top:4px"><button class="circle" onclick="go(\'home\')">‹</button><div class="logo" style="font-size:20px">MẬT MÃ</div><div class="pill">'+t('round',{a:2,b:5})+'</div></div>'+
-   '<div class="spread" style="margin:10px 2px 2px"><span class="hearts">❤️❤️🤍</span><span class="muted">'+t('wrong_left',{n:1})+'</span></div>'+
-   '<div class="center" style="margin:10px 0"><span class="ribbon">'+clue+' · '+R.n+'</span></div>'+
-   '<div class="pgrid">'+R.cards.map((c,i)=>{
-      const sel=famSel.includes(i)?' sel':'';
-      return '<div class="pcard'+sel+'" id="pc'+i+'" onclick="famPick('+i+')"><img src="assets/tiles/'+c.t+'.png" alt=""><div class="mk"></div></div>';
-   }).join('')+'</div>'+
-   '<div class="statusline" id="fsl"></div>'+
-   '<div class="center muted">'+t('chosen',{a:famSel.length,b:R.n})+'</div>'+
-   '<button class="btn" id="fbtn" '+(famSel.length===R.n?'':'disabled')+' onclick="famConfirm()">'+t('confirm')+' →</button>';
-  renderTabs();
-}
-function famPick(i){
-  const R=FAM[fri];if(document.getElementById('fsl').dataset.done)return;
-  const k=famSel.indexOf(i);
-  if(k>=0)famSel.splice(k,1); else {if(famSel.length>=R.n)return; famSel.push(i);}
-  renderFam();
-}
-function famConfirm(){
-  const R=FAM[fri];let good=0,trap=false;
-  famSel.forEach(i=>{const c=R.cards[i],el=document.getElementById('pc'+i),mk=el.querySelector('.mk');
-    if(c.r==='t'){el.classList.add('ok');mk.textContent='✓';good++;}
-    else if(c.r==='x'){el.classList.add('bad');mk.textContent='✕';trap=true;}
-    else{el.classList.add('bad');mk.textContent='✕';}});
-  const sl=document.getElementById('fsl');sl.dataset.done=1;
-  document.getElementById('fbtn').style.display='none';
-  if(good===R.n&&!trap){sl.style.color='#9ff0c0';sl.textContent='🎉 '+t('win_fam',{n:R.n});
-    setTimeout(()=>{xp=Math.min(xpMax,xp+40);kid+=2;par+=1;lastGame='fam';go('wow');},900);}
-  else{sl.style.color='#ffc2bd';sl.textContent='✕ '+t('wrong');
-    setTimeout(()=>{famSel=[];delete sl.dataset.done;renderFam();},1200);}
+/* ---------- state ---------- */
+const DEF={lang:null,petXp:0,streak:0,best:0,lastDaily:null,solved:0,
+  members:[{name:'Con',pts:0,child:true},{name:'Mẹ',pts:0,child:false}],sel:0,goal:null,advDone:0};
+let S=load();
+function load(){try{return Object.assign({},DEF,JSON.parse(localStorage.getItem('matma_state')||'{}'));}catch(e){return Object.assign({},DEF);}}
+function save(){localStorage.setItem('matma_state',JSON.stringify(S));}
+function petLevel(){return Math.floor(S.petXp/100)+1;}
+const PET_STAGES=[
+  {min:1,vi:'Cáo Con',en:'Fox Cub',s:.72,aura:0,acc:''},
+  {min:3,vi:'Cáo Nhỏ',en:'Young Fox',s:.84,aura:0,acc:''},
+  {min:5,vi:'Cáo Trưởng Thành',en:'Grown Fox',s:1,aura:1,acc:''},
+  {min:7,vi:'Cáo Lửa',en:'Ember Fox',s:1.08,aura:1,acc:'✨'},
+  {min:9,vi:'Cáo Thần',en:'Mystic Fox',s:1.16,aura:1,acc:'👑'},
+];
+function petStage(){const lv=petLevel();let st=PET_STAGES[0];for(const p of PET_STAGES)if(lv>=p.min)st=p;return st;}
+
+/* ---------- nav ---------- */
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id!=='scr-pet')stopFoxLoop();}
+let foxTimer=null;
+const FOX_ANIMS=['fx-alive 3.2s ease-in-out infinite','fx-sway 4.2s ease-in-out infinite','fx-bouncy 1.9s ease-in-out infinite'];
+function foxPlay(){const img=document.getElementById('pet-img');if(!img)return;const a=FOX_ANIMS[Math.floor(Math.random()*FOX_ANIMS.length)];img.style.animation='none';void img.offsetWidth;img.style.animation=a;}
+function startFoxLoop(){stopFoxLoop();foxPlay();foxTimer=setInterval(foxPlay,4500);}
+function stopFoxLoop(){if(foxTimer){clearInterval(foxTimer);foxTimer=null;}}
+function setLang(l){LANG=l;S.lang=l;save();applyLang();refreshHome();go('scr-home');}
+function applyLang(){document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-t]').forEach(el=>{el.textContent=t(el.getAttribute('data-t'));});
+  document.getElementById('lang-tag').textContent=LANG==='vi'?'Giải luật ẩn · Cả nhà cùng chơi':'Crack the hidden rule · Play together';}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1700);}
+function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+function refreshHome(){
+  document.getElementById('home-streak').textContent=S.streak;
+  document.getElementById('prac-solved').textContent=S.solved;
+  document.getElementById('pet-lvl-sub').textContent='Lv.'+petLevel();
+  const ds=document.getElementById('daily-state');
+  ds.textContent=(S.lastDaily===todayKey())?t('dailyDone')+S.streak+' 🔥':t('dailySub');
 }
 
-/* ---------- ADVANCED ---------- */
-function startAdv(){lastGame='adv';advSel=null;advDone=false;go('adv');}
-function P(){const p=ADV[ai];return (p.type==='seqL'||p.type==='grid'||p.vi)?p[lang]:p;}
-function renderAdv(){
-  const p=ADV[ai],L=p[lang];
-  let seq=p.type==='seq'?p.seq:(p.type==='seqL'?L.seq:null);
-  let opts=p.type==='seq'?p.opts:(p.type==='seqL'?L.opts:p.opts);
-  let prompt=p.type==='seq'?t('find_seq'):(L.prompt||'');
-  let puz;
-  if(seq){puz='<div class="seq">'+seq.map((s,i)=>(i>0?'<span class="ar">→</span>':'')+'<span'+(s==='?'?' class="q"':'')+'>'+s+'</span>').join('')+'</div>';}
-  else{puz='<div class="gridcode" style="grid-template-columns:repeat('+p.cols+',1fr)">'+Array.from({length:p.cols*p.rows},(_,i)=>'<div class="gc'+(p.lit.includes(i)?' lit':'')+'">'+NOISE[i%NOISE.length]+'</div>').join('')+'</div>';}
-  const letters=['A','B','C','D'];
-  wrap.innerHTML=
-   '<div class="spread" style="padding-top:4px"><button class="circle" onclick="go(\'home\')">‹</button><div class="logo" style="font-size:20px">MẬT MÃ</div><button class="circle">?</button></div>'+
-   '<div class="center" style="margin-top:6px;font:700 15px Baloo 2;color:#ffe9b8;text-shadow:0 1px 4px #0008">'+t('chapter',{n:5})+'</div>'+
-   '<div class="dots">'+[0,1,2,3,4].map(i=>'<span class="dot '+(i<ai?'done':i===ai?'cur':'')+'"></span>').join('')+'</div>'+
-   '<div class="spread" style="margin:4px 2px"><span class="hearts">❤️❤️❤️</span><span class="pill">💡 3</span></div>'+
-   '<div class="center" style="margin:6px 0"><span class="ribbon" style="font-size:14px">'+t('puz_n',{a:ai+1,b:3})+'</span></div>'+
-   '<div class="parch"><div style="font:700 15px Be Vietnam Pro;text-align:center;margin-bottom:4px">'+prompt+'</div>'+puz+
-     '<div class="row" style="gap:8px;margin-top:8px;align-items:flex-start"><img src="assets/fox.png" alt="" style="width:58px;height:auto;flex:0 0 auto;filter:drop-shadow(0 4px 6px #0006)"><div style="background:#fff8e6;border:1px solid #e0cfa0;border-radius:12px;padding:8px 10px;font-size:12px;color:#5a4a2e">'+t('fox_seq')+'</div></div></div>'+
-   '<div class="answers" id="answers">'+opts.map((o,i)=>'<button class="ans'+(advSel===o?' sel':'')+'" onclick="advPick(\''+o+'\')"><span class="lt">'+letters[i]+'</span>'+o+'</button>').join('')+'</div>'+
-   '<div id="advres"></div>'+
-   (advDone?'':'<button class="btn" id="abtn" '+(advSel?'':'disabled')+' onclick="advCheck()">'+t('check')+'</button>');
-  renderTabs();
+/* ---------- game controller ---------- */
+let game=null;
+function startGame(puz,mode,opts={}){
+  game={puz,lives:3,hints:0,maxHints:3,dimDone:false,mode,famActive:opts.famActive};
+  document.getElementById('mode-label').textContent=opts.label||t('practiceLabel');
+  document.getElementById('mode-icon').textContent=opts.icon||'🧩';
+  document.getElementById('rule-reveal').innerHTML='';
+  let qtext,hint;
+  if(opts.question){qtext=opts.question;hint=t('startHint');}
+  else if(opts.showRule){qtext=t('findTiles')+' <b>'+(puz.rule[LANG]||puz.rule.vi)+'</b>';hint=t('startHintKnown');}
+  else{qtext=t('question');hint=t('startHint');}
+  game.ruleShown=!!opts.showRule;
+  document.getElementById('q-card').innerHTML='🔍 <b>'+t('puzzleLbl')+':</b> '+qtext;
+  document.getElementById('q-hint').textContent=hint;
+  const gg=document.getElementById('game-goal');
+  if(S.goal&&S.goal.progress<S.goal.target){gg.style.display='block';gg.innerHTML='🎁 '+t('goalHung')+': <b>'+S.goal.text+'</b> — '+t('goalLeft').replace('{n}',S.goal.target-S.goal.progress);}
+  else gg.style.display='none';
+  renderLives();renderHintCount();renderBoard();go('scr-game');
 }
-function advPick(o){if(advDone)return;advSel=o;renderAdv();}
-function advCheck(){
-  const p=ADV[ai],L=p[lang],ans=p.type==='seqL'?L.ans:p.ans;
-  advDone=true;renderAdv();
-  const btns=document.querySelectorAll('#answers .ans');
-  btns.forEach(b=>{const txt=b.textContent.replace(/^[A-D]/,'');});
-  document.querySelectorAll('#answers .ans').forEach((b,i)=>{
-    const val=(p.type==='seqL'?L.opts:p.opts)[i];
-    if(val===ans)b.classList.add('ok'); else if(val===advSel)b.classList.add('bad');
+function renderLives(){let h='';for(let i=0;i<3;i++)h+=`<span class="${i<game.lives?'':'lost'}">❤️</span>`;document.getElementById('lives').innerHTML=h;}
+function renderHintCount(){document.getElementById('hint-count').textContent=`(${game.maxHints-game.hints})`;}
+function renderBoard(){
+  const b=document.getElementById('board'),p=game.puz,cols=p.size<=9?3:4;
+  b.style.display='grid';b.style.gridTemplateColumns=`repeat(${cols},1fr)`;b.innerHTML='';
+  p.cells.forEach((c,i)=>{
+    const d=document.createElement('div');
+    d.className='tile'+(c.prelit?' prelit':'')+(c.found?' lit':'')+(c.wrong?' wrong':'')+(c.dim?' dim':'')+(p.art?' art':'');
+    if(p.art)d.innerHTML=`<img src="assets/tiles/${c.e}.png" alt="">`;else d.textContent=c.e;
+    if(!c.prelit&&!c.found&&!c.wrong)d.onclick=()=>tapCell(i,d);
+    b.appendChild(d);
   });
-  if(advSel===ans){
-    document.getElementById('advres').innerHTML='<div class="resbar"><div class="ic">✓</div><div><b>'+t('correct')+'</b><div style="font-size:12px;opacity:.95">'+t('solved')+'</div></div></div>';
-    setTimeout(()=>{xp=Math.min(xpMax,xp+30);kid+=1;par+=2;lastGame='adv';go('wow');},1100);
+}
+function remaining(){return game.puz.cells.filter(c=>c.yes&&!c.prelit&&!c.found).length;}
+function tapCell(i,el){
+  const c=game.puz.cells[i];if(c.prelit||c.found||c.wrong)return;
+  if(c.yes){
+    c.found=true;el.className=el.className.replace(' dim','')+' lit';el.onclick=null;
+    if(remaining()===0){win();return;}
+    document.getElementById('q-hint').textContent=t('needMore').replace('{n}',remaining());
   }else{
-    document.getElementById('advres').innerHTML='<div class="statusline" style="color:#ffc2bd">✕ '+t('wrong')+'</div>';
-    setTimeout(()=>{advDone=false;advSel=null;renderAdv();},1200);
+    c.wrong=true;game.lives--;el.className+=' wrong';el.onclick=null;renderLives();
+    document.getElementById('q-hint').textContent=t('wrong');
+    if(game.lives<=0)autoHint();
   }
 }
-
-/* ---------- WOW ---------- */
-function renderWow(){
-  const p=ADV[ai],L=lastGame==='adv'?p[lang]:null;
-  const ex=lastGame==='adv'?L.ex:(lang==='vi'?'Những con vật/vật SỐNG DƯỚI NƯỚC mới đúng — con chim cánh cụt là bẫy.':'Only things that live UNDER WATER count — the penguin is a trap.');
-  wrap.innerHTML=
-   '<div class="center" style="margin-top:20px;font-size:56px">✨</div>'+
-   '<div class="wowbig">WOW!</div>'+
-   '<h1 class="center" style="font-size:20px;color:#d9ffe9">'+t('solved')+'</h1>'+
-   '<div class="panel mt"><div style="font:800 15px Baloo 2;color:var(--green-d);display:flex;align-items:center;gap:8px"><span style="width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center">💡</span>'+t('explain')+'</div>'+
-     '<p style="margin-top:8px;color:#4a3a1e">'+ex+'</p></div>'+
-   '<div class="rewardrow"><div class="rw"><b>+'+(lastGame==='adv'?30:40)+'</b>⭐ '+t('rw_pts')+'</div><div class="rw"><b>+15</b>👨‍👩‍👧 '+t('rw_fam')+'</div><div class="rw"><b>+1</b>🍃 '+t('rw_ess')+'</div></div>'+
-   '<button class="btn" onclick="nextRoom()">'+t('next_room')+' →</button>'+
-   '<button class="btn sec" onclick="go(\'home\')">'+t('back_home')+'</button>';
-  renderTabs();
+function useHint(){
+  if(game.ahaP){
+    if(game.hints>=game.maxHints){toast(t('noHint'));return;}
+    game.hints++;renderHintCount();
+    document.getElementById('q-hint').textContent='💡 '+(LANG==='vi'?game.ahaP.hv:game.ahaP.he);
+    return;
+  }
+  if(game.hints>=game.maxHints){toast(t('noHint'));return;}
+  const step=game.hints;
+  if(step===0&&!game.dimDone){
+    const wrongs=game.puz.cells.map((c,i)=>(!c.yes&&!c.wrong&&!c.dim)?i:-1).filter(i=>i>=0);
+    sample(wrongs,Math.min(3,wrongs.length),Math.random).forEach(i=>game.puz.cells[i].dim=true);
+    game.dimDone=true;document.getElementById('q-hint').textContent=t('hintDim');
+  }else if(step===1){
+    const tg=game.puz.cells.map((c,i)=>(c.yes&&!c.found&&!c.prelit)?i:-1).filter(i=>i>=0);
+    if(tg.length){game.puz.cells[tg[0]].found=true;document.getElementById('q-hint').textContent=t('hintLight');}
+  }else{revealRule();}
+  game.hints++;renderHintCount();renderBoard();
+  if(remaining()===0)win();
 }
-function nextRoom(){
-  if(lastGame==='adv'){ if(ai<ADV.length-1){ai++;startAdv();}else{ai=0;startAdv();} }
-  else{ go('home'); }
+function autoHint(){game.hints=game.maxHints;revealRule();renderHintCount();renderBoard();}
+function revealRule(){const txt=game.puz.rule[LANG]||game.puz.rule.vi;document.getElementById('rule-reveal').innerHTML=`<div class="rule-banner">🔑 ${txt}</div>`;}
+
+/* ---------- win ---------- */
+function win(){
+  const base=80+game.puz.total*8+(game.puz.size>9?20:0);
+  const pts=Math.max(15,base-(game.hints*12+(3-game.lives)*8));
+  const xp=Math.round(pts/4);
+  S.solved++;
+  if(game.mode==='advanced'&&game.advLevel!=null&&game.advLevel>=S.advDone)S.advDone=game.advLevel+1;
+  if(game.mode==='daily'&&S.lastDaily!==todayKey()){
+    const y=new Date();y.setDate(y.getDate()-1);
+    const yk=y.getFullYear()+'-'+(y.getMonth()+1)+'-'+y.getDate();
+    S.streak=(S.lastDaily===yk)?S.streak+1:1;
+    if(S.streak>S.best)S.best=S.streak;S.lastDaily=todayKey();
+  }
+  let famHtml='';
+  if(game.mode==='family'&&game.famActive!=null){
+    const a=S.members[game.famActive];a.pts+=2;
+    S.members.forEach((m,idx)=>{if(idx!==game.famActive)m.pts+=1;});
+    famHtml=`<div class="wow-rule" style="margin-top:2px">🦊 ${t('sharedPet')} +${xp} · <b>${a.name}</b> +2 · ${t('parentBonus')} +1</div>`;
+  }
+  let goalHtml='';
+  if(S.goal){
+    if(S.goal.progress<S.goal.target)S.goal.progress++;
+    if(S.goal.progress>=S.goal.target)goalHtml=`<div class="wow-rule" style="color:var(--gold)">🎉 ${t('goalReached')}: <b>${S.goal.text}</b></div>`;
+    else goalHtml=`<div class="wow-rule">🎁 ${t('goalHung')}: ${S.goal.text} — ${t('goalLeft').replace('{n}',S.goal.target-S.goal.progress)}</div>`;
+  }
+  S.petXp+=xp;save();
+  const titles=I18N[LANG].wowTitles;
+  document.getElementById('wow-title').textContent=titles[Math.floor(Math.random()*titles.length)];
+  document.getElementById('wow-rule-txt').textContent=game.puz.rule[LANG]||game.puz.rule.vi;
+  document.getElementById('wow-pts').textContent='+'+pts;
+  document.getElementById('wow-xp').textContent='+'+xp;
+  document.getElementById('wow-family').innerHTML=famHtml+goalHtml;
+  document.getElementById('wow').classList.add('active');
+}
+function afterWin(){
+  document.getElementById('wow').classList.remove('active');refreshHome();
+  const m=game?game.mode:'';game=null;
+  if(m==='family'||m==='duo'){renderFamily();go('scr-family');}
+  else if(m==='advanced'){renderAdvMap();go('scr-advmap');}
+  else if(m==='practice'){go('scr-practice');}
+  else{go('scr-home');}
+}
+function quitGame(){
+  document.getElementById('wow').classList.remove('active');
+  const m=game?game.mode:'';game=null;
+  if(m==='family'||m==='duo')go('scr-family');else if(m==='advanced'){renderAdvMap();go('scr-advmap');}else if(m==='daily')go('scr-home');else go('scr-practice');
 }
 
-/* ---------- PET ---------- */
+/* ---------- entry points ---------- */
+function startKids(){
+  const pool=RULES.filter(x=>x.diff!=='hard');
+  const rule=pool[Math.floor(Math.random()*pool.length)];
+  const size=rule.diff==='easy'?9:12;
+  startGame(buildPuzzle(rule,size,Math.random,2),'practice',{label:t('kidsMode'),icon:'🧒',showRule:true});
+}
+function openAdvanced(){renderAdvMap();go('scr-advmap');}
+function renderAdvMap(){
+  document.getElementById('adv-progress').textContent=S.advDone+'/'+AHA.length;
+  const g=document.getElementById('lvl-grid');g.innerHTML='';
+  AHA.forEach((p,i)=>{
+    const done=i<S.advDone,cur=i===S.advDone,lock=i>S.advDone;
+    const d=document.createElement('div');
+    d.className='lvl-chip'+(done?' done':'')+(cur?' cur':'')+(lock?' lock':'');
+    d.textContent=lock?'🔒':(i+1);
+    if(!lock)d.onclick=()=>startAdvancedLevel(i);
+    g.appendChild(d);
+  });
+}
+function startAdvancedLevel(i){
+  const p=AHA[i];
+  game={ahaP:p,advLevel:i,mode:'advanced',lives:3,hints:0,maxHints:1,answered:false,
+    puz:{rule:{vi:p.av,en:p.ae},total:5,size:16}};
+  document.getElementById('mode-label').textContent=t('advMode');
+  document.getElementById('mode-icon').textContent='🧠';
+  document.getElementById('rule-reveal').innerHTML='';
+  document.getElementById('q-card').innerHTML='🧠 <b>'+t('puzzleLbl')+':</b> '+(LANG==='vi'?p.pv:p.pe);
+  document.getElementById('q-hint').textContent=t('ahaStart');
+  const gg=document.getElementById('game-goal');
+  if(S.goal&&S.goal.progress<S.goal.target){gg.style.display='block';gg.innerHTML='🎁 '+t('goalHung')+': <b>'+S.goal.text+'</b> — '+t('goalLeft').replace('{n}',S.goal.target-S.goal.progress);}
+  else gg.style.display='none';
+  renderLives();renderHintCount();renderAha();go('scr-game');
+}
+function renderAha(){
+  const p=game.ahaP,b=document.getElementById('board');
+  b.style.display='block';b.style.gridTemplateColumns='';
+  let html='';
+  if(p.kind==='seq'){
+    html+='<div class="aha-seq">'+p.items.map(x=>'<div class="aha-tok'+(x==='?'?' q':'')+'">'+x+'</div>').join('')+'</div>';
+  }else{
+    html+='<div class="aha-grid" style="grid-template-columns:repeat('+p.cols+',1fr)">';
+    for(let i=0;i<p.cols*p.rows;i++)html+='<div class="aha-cell'+(p.lit.indexOf(i)>=0?' on':'')+'"></div>';
+    html+='</div>';
+  }
+  html+='<div class="aha-opts">'+p.options.map(o=>'<button class="aha-opt" onclick="answerAha(\''+o+'\',this)">'+o+'</button>').join('')+'</div>';
+  b.innerHTML=html;
+}
+function answerAha(opt,el){
+  if(game.answered)return;
+  const p=game.ahaP;
+  if(opt===p.answer){
+    game.answered=true;el.classList.add('right');
+    document.querySelectorAll('.aha-opt').forEach(x=>x.disabled=true);
+    setTimeout(win,520);
+  }else{
+    el.classList.add('wrong');el.disabled=true;game.lives--;renderLives();
+    document.getElementById('q-hint').textContent=t('ahaWrong');
+    if(game.lives<=0){
+      game.answered=true;
+      document.querySelectorAll('.aha-opt').forEach(x=>{x.disabled=true;if(x.textContent===p.answer)x.classList.add('right');});
+      setTimeout(win,760);
+    }
+  }
+}
+function startDaily(){
+  const r=mulberry32(seedStr('matma-'+todayKey()));
+  const rule=RULES[Math.floor(r()*RULES.length)];
+  const size=rule.diff==='easy'?9:(rule.diff==='hard'?16:12);
+  startGame(buildPuzzle(rule,size,r),'daily',{label:t('dailyLabel'),icon:'📅',showRule:rule.diff!=='hard'});
+}
+function startOceanPack(){startGame(buildOcean(Math.random),'practice',{label:t('oceanLabel'),icon:'🌊',showRule:true});}
+
+/* ---------- pet ---------- */
 function renderPet(){
-  wrap.innerHTML=
-   '<div class="spread" style="padding-top:4px"><button class="circle" onclick="go(\'home\')">‹</button><div class="logo" style="font-size:20px">MẬT MÃ</div><button class="circle">?</button></div>'+
-   '<h1 class="center" style="margin-top:6px">'+t('pet_title')+'</h1>'+
-   '<div style="height:28vh"></div>'+
-   '<div class="center"><span class="ribbon">'+t('petname')+' · '+t('lvl')+'</span></div>'+
-   '<div class="xpbar" style="margin-top:14px"><i style="width:'+Math.round(xp/xpMax*100)+'%"></i><span>'+xp+' / '+xpMax+' XP</span></div>'+
-   '<div class="center muted">'+t('to_evolve',{n:xpMax-xp})+'</div>'+
-   '<div class="stats" style="margin-top:12px"><div class="stat"><span class="em">🧒</span><b>'+kid.toLocaleString()+'</b><small>'+t('pt_kid')+'</small></div><div class="stat"><span class="em">👨‍👩‍👧</span><b>'+par.toLocaleString()+'</b><small>'+t('pt_par')+'</small></div></div>'+
-   '<div class="panel mt"><div class="center" style="font:800 14px Baloo 2;color:#6b4a16;margin-bottom:8px">'+t('econ_title')+'</div>'+
-     econRow('🧒 '+t('kid'),['+2','+1','+1'])+econRow('👨‍👩‍👧 '+t('parent'),['+2','+1','+1'],true)+'</div>'+
-   '<button class="btn" onclick="go(\'home\')">🐾 '+t('see_evo')+' ›</button>'+
-   '<button class="btn sec" onclick="go(\'home\')">📖 '+t('how_pts')+'</button>';
-  renderTabs();
-}
-function econRow(who,v,parent){
-  const labs=parent?[t('parent'),t('kid')]:[t('kid'),t('parent')];
-  return '<div class="econ" style="margin-top:6px"><div class="who">'+who+' '+t('play')+'</div><div style="color:#9a7430">→</div><div class="pts"><div class="ptbox"><small>'+labs[0]+'</small><b>'+v[0]+'</b></div><div class="ptbox"><small>'+labs[1]+'</small><b>'+v[1]+'</b></div><div class="ptbox pet"><small>🐾 Pet</small><b>'+v[2]+' XP</b></div></div></div>';
+  const lv=petLevel(),st=petStage(),inLv=S.petXp%100;
+  document.getElementById('pet-totalxp').textContent=S.petXp;
+  document.getElementById('pet-level').textContent=lv;
+  document.getElementById('pet-name').textContent=st[LANG]+(st.acc?' '+st.acc:'');
+  document.getElementById('pet-scale').style.transform=`scale(${st.s})`;
+  document.getElementById('pet-aura').style.display=st.aura?'block':'none';
+  startFoxLoop();
+  document.getElementById('pet-xpfill').style.width=inLv+'%';
+  document.getElementById('pet-xptext').textContent=inLv+' / 100 XP';
+  const shelf=document.getElementById('reward-shelf');shelf.innerHTML='';
+  [{ic:'🍖',k:'reward1',lv:1},{ic:'🍦',k:'reward2',lv:2},{ic:'⏰',k:'reward3',lv:3},
+   {ic:'🖼️',k:'reward4',lv:4},{ic:'🚪',k:'reward5',lv:6},{ic:'🦊',k:'reward6',lv:9}].forEach(rw=>{
+    const open=lv>=rw.lv;
+    shelf.innerHTML+=`<div class="reward ${open?'':'locked'}"><span class="r-ic">${open?rw.ic:'🔒'}</span>${open?t(rw.k):'Lv.'+rw.lv}</div>`;
+  });
 }
 
-render();
+/* ---------- family ---------- */
+function renderFamily(){
+  document.getElementById('fam-petlv').textContent=petLevel();
+  const box=document.getElementById('members');box.innerHTML='';
+  S.members.forEach((m,i)=>{
+    const d=document.createElement('div');d.className='member'+(i===S.sel?' sel':'');
+    d.innerHTML=`<div class="av">${m.child?'🧒':'🧑'}</div>
+      <div class="mi"><b>${m.name}</b><span>${m.child?t('childBonus'):t('parentBonus')} · +${m.child?2:1}/ván</span></div>
+      <div class="pts">${m.pts}</div>`;
+    d.onclick=()=>{S.sel=i;save();renderFamily();};box.appendChild(d);
+  });
+  renderGoal();
+}
+function renderGoal(){
+  const box=document.getElementById('goal-box');if(!box)return;
+  const g=S.goal;
+  if(!g){
+    box.innerHTML='<div class="gh">🎁 '+t('goalTitle')+'</div>'
+      +'<div style="font-size:12px;opacity:.8;margin-bottom:8px">'+t('goalHelp')+'</div>'
+      +'<input id="goal-text" placeholder="'+t('goalPh')+'" maxlength="40">'
+      +'<div class="goal-row"><input id="goal-target" class="tnum" type="number" min="1" value="5">'
+      +'<button class="btn" style="flex:1;padding:12px" onclick="setGoal()">'+t('goalBtn')+'</button></div>';
+  }else{
+    const pct=Math.min(100,Math.round(g.progress/g.target*100)),done=g.progress>=g.target;
+    box.innerHTML='<div class="gh">🎁 '+t('goalHung')+': '+g.text+'</div>'
+      +'<div class="goal-prog"><i style="width:'+pct+'%"></i></div>'
+      +'<div style="font-size:13px;opacity:.9">'+(done?('🎉 '+t('goalDone')):(g.progress+' / '+g.target+' '+t('goalUnitWord')))+'</div>'
+      +'<button class="'+(done?'btn':'btn sec')+'" style="width:100%;padding:11px;margin-top:10px" onclick="clearGoal()">'+(done?t('goalNew'):t('goalChange'))+'</button>';
+  }
+}
+function setGoal(){
+  const txt=(document.getElementById('goal-text').value||'').trim();
+  const tg=parseInt(document.getElementById('goal-target').value,10)||5;
+  if(!txt)return;
+  S.goal={text:txt,target:Math.max(1,tg),progress:0};save();renderGoal();toast(t('goalSet'));
+}
+function clearGoal(){S.goal=null;save();renderGoal();}
+function addMember(){
+  const inp=document.getElementById('new-member'),nm=inp.value.trim();if(!nm)return;
+  S.members.push({name:nm,pts:0,child:S.members.length%2===0});inp.value='';save();renderFamily();toast(t('newMemberAdded'));
+}
+function playFamilySolo(){
+  const pool=RULES.filter(x=>x.diff!=='hard');
+  const rule=pool[Math.floor(Math.random()*pool.length)];
+  startGame(buildPuzzle(rule,12,Math.random),'family',{label:S.members[S.sel].name,icon:'👨‍👩‍👧',famActive:S.sel,showRule:true});
+}
+
+/* ---------- duo ---------- */
+let duoRule=null,duoPuz=null;
+function startDuo(){
+  duoRule=DUO_RULES[Math.floor(Math.random()*DUO_RULES.length)];
+  duoPuz=buildPuzzle({vi:duoRule.vi,en:duoRule.en,match:duoRule.match,traps:[]},12,Math.random);
+  duoStep(0);go('scr-duo');
+}
+function duoStep(step){
+  const body=document.getElementById('duo-body');
+  if(step===0){body.innerHTML=`<div class="clue-eye">🤝</div><div class="clue-who">${t('duo')}</div><div class="clue-txt">${t('duoIntro')}</div><button class="btn" style="margin-top:20px" onclick="duoStep(1)">${t('continue')} →</button>`;}
+  else if(step===1){body.innerHTML=`<div class="clue-eye">🙈</div><div class="clue-who">${t('duoP1')}</div><div class="clue-txt">${t('duoClue')}</div><div class="clue-reveal">${duoRule.a[LANG]}</div><button class="btn" onclick="duoStep(2)">${t('duoHideP1')}</button>`;}
+  else if(step===2){body.innerHTML=`<div class="clue-eye">🙈</div><div class="clue-who">${t('duoP2')}</div><div class="clue-txt">${t('duoClue')}</div><div class="clue-reveal">${duoRule.b[LANG]}</div><button class="btn" onclick="duoStep(3)">${t('duoHideP2')}</button>`;}
+  else{startGame(duoPuz,'duo',{label:t('duoLabel'),icon:'🤝',question:t('duoGo')});}
+}
+
+/* ---------- boot ---------- */
+applyLang();
+if(S.lang){LANG=S.lang;applyLang();refreshHome();go('scr-home');}
 </script>
 </body>
 </html>
