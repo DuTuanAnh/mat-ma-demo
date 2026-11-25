@@ -1046,9 +1046,9 @@ function startTimer(sec){
   stopTimer();
   const bar=document.getElementById('timer-bar'),num=document.getElementById('timer-num');
   if(bar){bar.style.display='block';bar.classList.remove('warn');
-    const fill=bar.firstElementChild;
-    fill.style.transition='none';fill.style.width='100%';void fill.offsetWidth;
-    fill.style.transition='width '+sec+'s linear';fill.style.width='0%';}
+    var fill=bar.firstElementChild;
+    fill.style.transition='none';fill.style.width='100%';
+    requestAnimationFrame(function(){requestAnimationFrame(function(){fill.style.transition='width '+sec+'s linear';fill.style.width='0%';});});}
   if(game)game.timeLeft=sec;
   if(num){num.style.display='inline-flex';num.classList.remove('warn');num.textContent='⏱ '+sec;}
   quizTick=setInterval(function(){
@@ -1143,7 +1143,7 @@ function startKidsLevel(i){
   const L=KIDS_LEVELS[i];
   game={mode:'kids',kidsLevel:i,answered:false,lives:3,hints:0,maxHints:1,picQuiz:true,puz:{rule:{vi:L.vi,en:L.en},total:4,size:9}};
   setModeHeader(t('kidsMode'),'🧒');showGoalBanner();
-  showQuiz(kidsPicQuiz(L));go('scr-game');
+  go('scr-game');showQuiz(kidsPicQuiz(L));
 }
 function openAdvanced(){renderAdvMap();go('scr-advmap');}
 function renderAdvMap(){
@@ -1162,7 +1162,7 @@ function startAdvancedLevel(i){
   const p=AHA[i];
   game={mode:'advanced',advLevel:i,answered:false,lives:3,hints:0,maxHints:1,ahaP:p,puz:{rule:{vi:p.av,en:p.ae},total:5,size:16}};
   setModeHeader(t('advMode'),'🧠');showGoalBanner();
-  showQuiz(ahaQuiz(p,ADV_DUR[i]||32));go('scr-game');
+  go('scr-game');showQuiz(ahaQuiz(p,ADV_DUR[i]||32));
 }
 function startDaily(){
   const r=mulberry32(seedStr('matma-'+todayKey()));
@@ -1283,7 +1283,7 @@ function duelAsk(){
   if(Math.random()<0.5){ q=kidsPicQuiz(KIDS_LEVELS[Math.floor(Math.random()*KIDS_LEVELS.length)]); }
   else { q=ahaQuiz(AHA[Math.floor(Math.random()*Math.min(AHA.length,12))],22); }
   q.prompt=t('duelTurn').replace('{n}','<b>'+p.name+'</b>')+' — '+q.prompt;
-  showQuiz(q);go('scr-game');
+  go('scr-game');showQuiz(q);
 }
 function duelAdvance(){ duel.turn++; duel.idx=(duel.idx+1)%duel.players.length; setTimeout(duelAsk,350); }
 function duelResult(){sfxWin();var _wn=document.getElementById('wow-next');if(_wn)_wn.style.display='none';
