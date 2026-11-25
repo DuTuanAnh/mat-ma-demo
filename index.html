@@ -365,7 +365,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
       <div class="card">
         <div class="wow-big" id="wow-title">WOW!</div>
         <div class="wow-rule"><span data-t="theRuleWas">Luật ẩn là:</span><br><b id="wow-rule-txt"></b></div>
-        <div class="pet-mini"><img src="assets/fox.png" alt="pet"><div style="position:absolute;bottom:-4px;right:-4px;font-size:22px">✨</div></div>
+        <div class="pet-mini"><img src="assets/fox_rig/fox_full.png" alt="pet"><div style="position:absolute;bottom:-4px;right:-4px;font-size:22px">✨</div></div>
         <div class="wow-stats">
           <div class="wow-stat"><b id="wow-pts">+0</b><span data-t="points">điểm</span></div>
           <div class="wow-stat"><b id="wow-xp">+0</b><span data-t="petXp">pet XP</span></div>
@@ -386,7 +386,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
         <div class="chip">⭐ <span class="big" id="pet-totalxp">0</span></div>
       </div>
       <div class="pet-stage">
-        <div class="pet-big"><div class="pet-aura" id="pet-aura"></div><div class="pet-scale" id="pet-scale"><img id="pet-img" src="assets/fox.png" alt="pet"></div></div>
+        <div class="pet-big"><div class="pet-aura" id="pet-aura"></div><div class="pet-scale" id="pet-scale"><img id="pet-img" src="assets/fox_rig/fox_full.png" alt="pet"></div></div>
         <div class="pet-name" id="pet-name">Cáo Con</div>
         <div class="pet-lv"><span data-t="level">Cấp</span> <span id="pet-level">1</span></div>
       </div>
@@ -683,10 +683,9 @@ function startFoxLoop(){stopFoxLoop();foxPlay();foxTimer=setInterval(foxPlay,450
 function stopFoxLoop(){if(foxTimer){clearInterval(foxTimer);foxTimer=null;}}
 /* rig: nhiều lớp cáo rời (z thấp→cao). origin = điểm gắn khớp. Tự bật nếu fox_body.png tồn tại. */
 const FOX_RIG=[
-  {src:'assets/fox_tail.png',origin:'72% 45%',anim:'rig-tail 2.8s ease-in-out infinite'},
-  {src:'assets/fox_body.png',origin:'50% 100%',anim:'rig-breathe 3.2s ease-in-out infinite'},
-  {src:'assets/fox_head.png',origin:'42% 88%',anim:'rig-head 3.6s ease-in-out infinite'},
-  {src:'assets/fox_ear.png', origin:'50% 100%',anim:'rig-ear 4.4s ease-in-out infinite'},
+  {src:'assets/fox_rig/fox_tail.png',origin:'34% 52%',anim:'rig-tail 2.8s ease-in-out infinite'},
+  {src:'assets/fox_rig/fox_body.png',origin:'50% 100%',anim:'rig-breathe 3.2s ease-in-out infinite'},
+  {src:'assets/fox_rig/fox_head.png',origin:'56% 60%',anim:'rig-head 3.6s ease-in-out infinite'},
 ];
 let petMounted='';
 function mountPet(){
@@ -699,10 +698,10 @@ function mountPet(){
   };
   test.onerror=function(){
     petMounted='single';
-    if(!document.getElementById('pet-img'))scale.innerHTML='<img id="pet-img" src="assets/fox.png" alt="pet">';
+    if(!document.getElementById('pet-img'))scale.innerHTML='<img id="pet-img" src="assets/fox_rig/fox_full.png" alt="pet">';
     startFoxLoop();
   };
-  test.src='assets/fox_body.png';
+  test.src='assets/fox_rig/fox_body.png';
 }
 function setLang(l){LANG=l;S.lang=l;save();applyLang();refreshHome();go('scr-home');}
 function applyLang(){document.documentElement.lang=LANG;
