@@ -594,6 +594,7 @@ const DUO_RULES=[
   {a:{vi:'con VẬT',en:'an ANIMAL'},b:{vi:'sống dưới NƯỚC',en:'lives in WATER'},vi:'con vật VÀ sống dưới nước',en:'animal AND aquatic',match:e=>has(e,'aquatic')&&has(e,'animal')},
 ];
 /* ---------- NÂNG CAO: câu đố "aha" (tự tìm cơ chế, kiểu The Witness/Zendo) ---------- */
+const ADV_DUR=[30,30,30,45,30,30,30,18,30,30,18,18,18,18,30,30,30,30,18,18,18,30,30,45,18,30,18,18,18];
 const AHA=[
  {kind:'grid',cols:5,rows:7,lit:[0,3,5,8,10,13,15,16,17,18,19,23,28,33],options:['2','4','7','9'],answer:'4',
   pv:'Mã khóa là một CHỮ SỐ — số mấy?',pe:'The code is a DIGIT — which one?',
@@ -1072,7 +1073,7 @@ function kidsPicQuiz(L){
   const correct=sample(yes,1,Math.random)[0];
   const decoys=sample(no,3,Math.random);
   const opts=shuffle([correct].concat(decoys),Math.random).map(function(id){return {html:'<img src="assets/tiles_kids/'+id+'.png" alt="">',v:id,pic:true};});
-  return {prompt:t('whichIs').replace('{r}','<b>'+(LANG==='vi'?L.vi:L.en)+'</b>'),displayHtml:'',options:opts,correctVal:correct,hintStart:'',dur:22};
+  return {prompt:t('whichIs').replace('{r}','<b>'+(LANG==='vi'?L.vi:L.en)+'</b>'),displayHtml:'',options:opts,correctVal:correct,hintStart:'',dur:18};
 }
 function startKidsLevel(i){
   const L=KIDS_LEVELS[i];
@@ -1097,7 +1098,7 @@ function startAdvancedLevel(i){
   const p=AHA[i];
   game={mode:'advanced',advLevel:i,answered:false,lives:3,hints:0,maxHints:1,ahaP:p,puz:{rule:{vi:p.av,en:p.ae},total:5,size:16}};
   setModeHeader(t('advMode'),'🧠');showGoalBanner();
-  showQuiz(ahaQuiz(p,i<2?26:38));go('scr-game');
+  showQuiz(ahaQuiz(p,ADV_DUR[i]||32));go('scr-game');
 }
 function startDaily(){
   const r=mulberry32(seedStr('matma-'+todayKey()));
@@ -1215,7 +1216,7 @@ function duelAsk(){
   document.getElementById('game-goal').style.display='none';
   var q;
   if(Math.random()<0.5){ q=kidsPicQuiz(KIDS_LEVELS[Math.floor(Math.random()*KIDS_LEVELS.length)]); }
-  else { q=ahaQuiz(AHA[Math.floor(Math.random()*Math.min(AHA.length,12))],28); }
+  else { q=ahaQuiz(AHA[Math.floor(Math.random()*Math.min(AHA.length,12))],25); }
   q.prompt=t('duelTurn').replace('{n}','<b>'+p.name+'</b>')+' — '+q.prompt;
   showQuiz(q);go('scr-game');
 }
