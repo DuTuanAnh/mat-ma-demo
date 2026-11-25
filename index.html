@@ -1007,7 +1007,7 @@ function renderKidsMap(){
   });
 }
 /* ===== TIMER + FEEDBACK + UNIFIED QUIZ ===== */
-let quizTimer=null;
+let quizTimer=null,quizTick=null;
 function startTimer(sec){
   stopTimer();
   const bar=document.getElementById('timer-bar'),num=document.getElementById('timer-num');
@@ -1017,16 +1017,16 @@ function startTimer(sec){
     fill.style.transition='width '+sec+'s linear';fill.style.width='0%';}
   if(game)game.timeLeft=sec;
   if(num){num.style.display='inline-flex';num.classList.remove('warn');num.textContent='⏱ '+sec;}
-  if(game)game.tick=setInterval(function(){
-    if(!game){return;}
+  quizTick=setInterval(function(){
+    if(!game||game.answered){if(quizTick){clearInterval(quizTick);quizTick=null;}return;}
     game.timeLeft--;
     if(num)num.textContent='⏱ '+Math.max(0,game.timeLeft);
     if(game.timeLeft<=5){if(bar)bar.classList.add('warn');if(num)num.classList.add('warn');}
-    if(game.timeLeft<=0&&game.tick){clearInterval(game.tick);game.tick=null;}
+    if(game.timeLeft<=0){clearInterval(quizTick);quizTick=null;}
   },1000);
   quizTimer=setTimeout(function(){if(game&&!game.answered)onTimeUp();},sec*1000);
 }
-function stopTimer(){if(quizTimer){clearTimeout(quizTimer);quizTimer=null;}if(game&&game.tick){clearInterval(game.tick);game.tick=null;}const b=document.getElementById('timer-bar');if(b)b.style.display='none';const n=document.getElementById('timer-num');if(n)n.style.display='none';}
+function stopTimer(){if(quizTimer){clearTimeout(quizTimer);quizTimer=null;}if(quizTick){clearInterval(quizTick);quizTick=null;}const b=document.getElementById('timer-bar');if(b)b.style.display='none';const n=document.getElementById('timer-num');if(n)n.style.display='none';}
 function flashFeedback(type,cb){
   const el=document.getElementById('fb-flash');if(!el){if(cb)cb();return;}
   const map={correct:['fb-correct','✓'],wrong:['fb-wrong','✗'],time:['fb-time','⏰']};
