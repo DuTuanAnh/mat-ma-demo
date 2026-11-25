@@ -257,6 +257,8 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
 .answer-bar{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;
   background:rgba(10,24,36,.6);border:1.5px solid rgba(246,198,106,.35);border-radius:20px;backdrop-filter:blur(5px);box-shadow:var(--shadow)}
 .answer-bar:empty{display:none}
+.post-actions{display:flex;gap:10px;margin-top:10px}
+.post-actions:empty{display:none}
 .answer-bar.picbig{flex:1;margin:10px 0;grid-template-rows:1fr 1fr}
 .answer-bar.picbig .ans-opt{position:relative;flex-direction:column;justify-content:center;align-items:center;padding:8px;min-height:0}
 .answer-bar.picbig .ans-opt .ak{position:absolute;top:8px;left:8px}
@@ -399,6 +401,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
       <div id="rule-reveal"></div>
       <div class="board" id="board"></div>
       <div class="answer-bar" id="answer-bar"></div>
+      <div class="post-actions" id="post-actions"></div>
     </div>
     <div class="fb-flash" id="fb-flash"></div>
     <div class="overlay" id="wow">
@@ -411,7 +414,10 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
           <div class="wow-stat"><b id="wow-xp">+0</b><span data-t="petXp">pet XP</span></div>
         </div>
         <div id="wow-family"></div>
-        <button class="btn" onclick="afterWin()"><span data-t="continue">Tiếp tục</span> →</button>
+        <div style="display:flex;gap:10px">
+          <button class="btn sec" style="flex:1" onclick="afterWin()">≡ <span data-t="toList">Danh sách</span></button>
+          <button class="btn" style="flex:1" id="wow-next" onclick="nextLevel()"><span data-t="nextLevel">Màn kế</span> →</button>
+        </div>
       </div>
     </div>
   </section>
@@ -495,7 +501,7 @@ const I18N={
     pickDiff:'Chọn độ khó — luật càng khéo càng "trời ơi"',easy:"Dễ",medium:"Vừa",hard:"Khó",
     playNow:"Chơi ngay",ocean:"Gói Đại Dương (tranh AI)",
     howto:"Vài ô đang sáng theo 1 LUẬT ẨN. Tìm & chạm những ô CÒN LẠI cùng luật.",
-    puzzleLbl:"Câu đố",question:"2 ô đang sáng cùng 1 LUẬT BÍ MẬT. Ô nào CÒN LẠI giống vậy? 👇",startHint:"Nhìn kỹ 2 ô sáng — chúng giống nhau ở điểm gì?",pickMode:"Ai chơi?",kidsMode:"Trẻ em",kidsSub:"10 màn câu hỏi rõ ràng — cho bé",kidsMapSub:"Câu hỏi rõ ràng — giải xong mở màn kế",famShort:"Gia đình",advMode:"Nâng cao",advSub:"10 màn trí tuệ — tự tìm cơ chế = WOW",advMapSub:"Câu đố trí tuệ — giải xong mở màn kế tiếp",goalTitle:"Ba mẹ treo thưởng",goalHelp:"Đặt phần thưởng thật cho bé — đủ số câu thì ba mẹ tặng.",goalPh:"VD: Đi nhà banh chơi",goalBtn:"Treo thưởng",goalHung:"Đang treo",goalLeft:"còn {n} câu",goalReached:"Con đạt phần thưởng",goalDone:"Con đã đạt — ba mẹ tặng bé nhé!",goalNew:"Treo thưởng mới",goalChange:"Đổi / Gỡ thưởng",goalSet:"Đã treo thưởng!",goalUnitWord:"câu",ahaStart:"Không có luật nào được nói. Tự tìm ra cơ chế giấu!",ahaWrong:"Chưa đúng — thử nhìn kiểu khác",timeUpMsg:"⏰ Hết giờ! Đáp án đúng đã sáng — bấm ← để quay lại.",outMsg:"💔 Hết lượt! Đáp án đúng đã sáng — bấm ← để quay lại.",fedPet:"Pet ăn ngon! +10 XP 🍖",lockedAt:"Mở khoá ở Cấp {n}",findTiles:"Tìm tất cả ô:",startHintKnown:"Chạm hết ô đúng luật — sai mất 1 ❤️",
+    puzzleLbl:"Câu đố",question:"2 ô đang sáng cùng 1 LUẬT BÍ MẬT. Ô nào CÒN LẠI giống vậy? 👇",startHint:"Nhìn kỹ 2 ô sáng — chúng giống nhau ở điểm gì?",pickMode:"Ai chơi?",kidsMode:"Trẻ em",kidsSub:"10 màn câu hỏi rõ ràng — cho bé",kidsMapSub:"Câu hỏi rõ ràng — giải xong mở màn kế",famShort:"Gia đình",advMode:"Nâng cao",advSub:"10 màn trí tuệ — tự tìm cơ chế = WOW",advMapSub:"Câu đố trí tuệ — giải xong mở màn kế tiếp",goalTitle:"Ba mẹ treo thưởng",goalHelp:"Đặt phần thưởng thật cho bé — đủ số câu thì ba mẹ tặng.",goalPh:"VD: Đi nhà banh chơi",goalBtn:"Treo thưởng",goalHung:"Đang treo",goalLeft:"còn {n} câu",goalReached:"Con đạt phần thưởng",goalDone:"Con đã đạt — ba mẹ tặng bé nhé!",goalNew:"Treo thưởng mới",goalChange:"Đổi / Gỡ thưởng",goalSet:"Đã treo thưởng!",goalUnitWord:"câu",ahaStart:"Không có luật nào được nói. Tự tìm ra cơ chế giấu!",ahaWrong:"Chưa đúng — thử nhìn kiểu khác",timeUpMsg:"⏰ Hết giờ! Đáp án đúng đã sáng — bấm ← để quay lại.",outMsg:"💔 Hết lượt! Đáp án đúng đã sáng.",retry:"Thử lại",nextLevel:"Màn kế",toList:"Danh sách",fedPet:"Pet ăn ngon! +10 XP 🍖",lockedAt:"Mở khoá ở Cấp {n}",findTiles:"Tìm tất cả ô:",startHintKnown:"Chạm hết ô đúng luật — sai mất 1 ❤️",
     wowTitles:["WOW!","TRỜI ƠI!","XUẤT SẮC!","ĐỈNH!","THÔNG MINH!"],
     wrong:"Chưa đúng — nhìn kỹ các ô đang sáng",needMore:"Còn {n} ô nữa cùng luật",
     noHint:"Hết bước gợi ý — bạn gần ra rồi!",hintDim:"Đã tối bớt vài ô chắc chắn SAI",
@@ -521,7 +527,7 @@ const I18N={
     pickDiff:"Pick difficulty — the cleverer the rule, the bigger the aha",easy:"Easy",medium:"Medium",hard:"Hard",
     playNow:"Play now",ocean:"Ocean pack (AI art)",
     howto:"A few tiles glow by a HIDDEN RULE. Find & tap the OTHERS that follow it.",
-    puzzleLbl:"Puzzle",question:"2 tiles glow by a SECRET RULE. Which OTHER tiles match them? 👇",startHint:"Look at the 2 glowing tiles — what do they have in common?",pickMode:"Who's playing?",kidsMode:"Kids",kidsSub:"10 clear-question levels — for kids",kidsMapSub:"Clear question — solve to unlock the next",famShort:"Family",advMode:"Advanced",advSub:"10 brain levels — crack the mechanism = WOW",advMapSub:"Brain puzzles — solve to unlock the next",goalTitle:"Parents set a reward",goalHelp:"Set a real reward — reach the target and parents give it.",goalPh:"e.g. Trip to the ball pit",goalBtn:"Set reward",goalHung:"On the line",goalLeft:"{n} to go",goalReached:"Reward earned",goalDone:"Target reached — give the reward!",goalNew:"New reward",goalChange:"Change / Remove",goalSet:"Reward set!",goalUnitWord:"puzzles",ahaStart:"No rule is given. Figure out the hidden mechanism!",ahaWrong:"Not quite — try another angle",timeUpMsg:"⏰ Time up! The answer is lit — press ← to go back.",outMsg:"💔 Out of lives! The answer is lit — press ← to go back.",fedPet:"Yum! +10 XP 🍖",lockedAt:"Unlocks at Lv.{n}",findTiles:"Find all tiles:",startHintKnown:"Tap every matching tile — a wrong tap costs 1 ❤️",
+    puzzleLbl:"Puzzle",question:"2 tiles glow by a SECRET RULE. Which OTHER tiles match them? 👇",startHint:"Look at the 2 glowing tiles — what do they have in common?",pickMode:"Who's playing?",kidsMode:"Kids",kidsSub:"10 clear-question levels — for kids",kidsMapSub:"Clear question — solve to unlock the next",famShort:"Family",advMode:"Advanced",advSub:"10 brain levels — crack the mechanism = WOW",advMapSub:"Brain puzzles — solve to unlock the next",goalTitle:"Parents set a reward",goalHelp:"Set a real reward — reach the target and parents give it.",goalPh:"e.g. Trip to the ball pit",goalBtn:"Set reward",goalHung:"On the line",goalLeft:"{n} to go",goalReached:"Reward earned",goalDone:"Target reached — give the reward!",goalNew:"New reward",goalChange:"Change / Remove",goalSet:"Reward set!",goalUnitWord:"puzzles",ahaStart:"No rule is given. Figure out the hidden mechanism!",ahaWrong:"Not quite — try another angle",timeUpMsg:"⏰ Time up! The answer is lit — press ← to go back.",outMsg:"💔 Out of lives! The answer is lit.",retry:"Retry",nextLevel:"Next",toList:"List",fedPet:"Yum! +10 XP 🍖",lockedAt:"Unlocks at Lv.{n}",findTiles:"Find all tiles:",startHintKnown:"Tap every matching tile — a wrong tap costs 1 ❤️",
     wowTitles:["WOW!","AHA!","BRILLIANT!","NICE!","SO SMART!"],
     wrong:"Not quite — look at the glowing tiles",needMore:"{n} more tile(s) follow the rule",
     noHint:"No more hints — you're close!",hintDim:"Dimmed a few that are definitely WRONG",
@@ -851,7 +857,7 @@ function startGame(puz,mode,opts={}){
   document.getElementById('mode-label').textContent=opts.label||t('practiceLabel');
   document.getElementById('mode-icon').textContent=opts.icon||'🧩';
   document.getElementById('rule-reveal').innerHTML='';
-  document.getElementById('answer-bar').innerHTML='';
+  document.getElementById('answer-bar').innerHTML='';var _pa2=document.getElementById('post-actions');if(_pa2)_pa2.innerHTML='';
   let qtext,hint;
   if(opts.question){qtext=opts.question;hint=t('startHint');}
   else if(opts.showRule){qtext=t('findTiles')+' <b>'+(puz.rule[LANG]||puz.rule.vi)+'</b>';hint=t('startHintKnown');}
@@ -920,7 +926,7 @@ function revealRule(){const txt=game.puz.rule[LANG]||game.puz.rule.vi;document.g
 
 /* ---------- win ---------- */
 function win(){
-  stopTimer();sfxWin();
+  stopTimer();sfxWin();var _wn=document.getElementById('wow-next');if(_wn)_wn.style.display='';
   const base=80+game.puz.total*8+(game.puz.size>9?20:0);
   const pts=Math.max(15,base-(game.hints*12+(3-game.lives)*8));
   const xp=Math.round(pts/4);
@@ -961,6 +967,24 @@ function afterWin(){
   else if(m==='advanced'){renderAdvMap();go('scr-advmap');}
   else if(m==='kids'){renderKidsMap();go('scr-kidsmap');}
   else{go('scr-home');}
+}
+function nextLevel(){
+  document.getElementById('wow').classList.remove('active');
+  const m=game?game.mode:'';
+  if(m==='advanced'){var i=(game.advLevel|0)+1;if(i<AHA.length){startAdvancedLevel(i);return;}}
+  if(m==='kids'){var k=(game.kidsLevel|0)+1;if(k<KIDS_LEVELS.length){startKidsLevel(k);return;}}
+  afterWin();
+}
+function retryLevel(){
+  document.getElementById('wow').classList.remove('active');
+  const m=game?game.mode:'';
+  if(m==='advanced')startAdvancedLevel(game.advLevel|0);
+  else if(m==='kids')startKidsLevel(game.kidsLevel|0);
+  else afterWin();
+}
+function showPostActions(){
+  const pa=document.getElementById('post-actions');if(!pa)return;
+  pa.innerHTML='<button class="btn sec" style="flex:1" onclick="retryLevel()">🔄 '+t('retry')+'</button><button class="btn" style="flex:1" onclick="nextLevel()">'+t('nextLevel')+' →</button>';
 }
 function quitGame(){
   document.getElementById('wow').classList.remove('active');
@@ -1062,7 +1086,7 @@ function showQuiz(q){
     return '<button class="ans-opt'+(o.pic?' pic':'')+'" data-v="'+o.v+'" onclick="answerQuiz(\''+o.v+'\',this)"><span class="ak">'+KEYS[i]+'</span>'+o.html+'</button>';
   }).join('');
   game.correctVal=q.correctVal;
-  var _ab=document.getElementById('answer-bar');_ab.classList.toggle('picbig',!!(q.options[0]&&q.options[0].pic));
+  var _ab=document.getElementById('answer-bar');_ab.classList.toggle('picbig',!!(q.options[0]&&q.options[0].pic));var _pa=document.getElementById('post-actions');if(_pa)_pa.innerHTML='';
   const hi=document.querySelector('.hint-ic');if(hi)hi.style.display=(game.maxHints>0)?'grid':'none';
   renderLives();renderHintCount();
   startTimer(q.dur||28);
@@ -1078,14 +1102,14 @@ function answerQuiz(v,el){
     sfxWrong();el.classList.add('wrong');el.onclick=null;flashFeedback('wrong');
     if(game.mode==='duel'){game.answered=true;stopTimer();revealCorrect();setTimeout(duelAdvance,900);return;}
     game.lives--;renderLives();document.getElementById('q-hint').textContent=t('ahaWrong');
-    if(game.lives<=0){game.answered=true;stopTimer();revealCorrect();document.getElementById('q-hint').textContent=t('outMsg');}
+    if(game.lives<=0){game.answered=true;stopTimer();revealCorrect();document.getElementById('q-hint').textContent=t('outMsg');showPostActions();}
   }
 }
 function onTimeUp(){
   if(!game||game.answered)return;
   game.answered=true;stopTimer();sfxTime();
   if(game.mode==='duel'){flashFeedback('time',function(){duelAdvance();});return;}
-  revealCorrect();flashFeedback('time');document.getElementById('q-hint').textContent=t('timeUpMsg');
+  revealCorrect();flashFeedback('time');document.getElementById('q-hint').textContent=t('timeUpMsg');showPostActions();
 }
 function quizSucceed(){ if(game.mode==='duel'){duel.players[duel.idx].score++;duelAdvance();return;} win(); }
 function quizFail(){
@@ -1262,7 +1286,7 @@ function duelAsk(){
   showQuiz(q);go('scr-game');
 }
 function duelAdvance(){ duel.turn++; duel.idx=(duel.idx+1)%duel.players.length; setTimeout(duelAsk,350); }
-function duelResult(){sfxWin();
+function duelResult(){sfxWin();var _wn=document.getElementById('wow-next');if(_wn)_wn.style.display='none';
   var ps=duel.players.slice().sort(function(a,b){return b.score-a.score;});
   var tie=ps.length>1&&ps[1].score===ps[0].score;
   duel.players.forEach(function(p){ var m=S.members.filter(function(x){return x.name===p.name;})[0]; if(m)m.pts+=p.score; });
