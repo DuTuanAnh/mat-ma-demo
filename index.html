@@ -1008,24 +1008,27 @@ function startKids(){
   const size=rule.diff==='easy'?9:12;
   startGame(buildPuzzle(rule,size,Math.random,2),'practice',{label:t('kidsMode'),icon:'🧒',showRule:true});
 }
+const _AN=["lion","elephant","rabbit","bear","cat","dog","pig","horse","fish","crab","turtle","octopus","dolphin","bird","duck","owl","chicken","bee","butterfly"];
+const _FOOD=["apple","banana","orange","strawberry","watermelon","carrot","corn","pizza","cake","icecream"];
+const _ALL=_AN.concat(_FOOD).concat(["sun","moon","star","fire","rainbow","car","plane","house","ball","lamp","boat"]);
 const KIDS_LEVELS=[
- {vi:"cũng là CON VẬT",en:"is an ANIMAL",ids:["lion","elephant","rabbit","bear","cat","dog","pig","horse","fish","crab","turtle","octopus","dolphin","bird","duck","owl","chicken","bee","butterfly"]},
- {vi:"là TRÁI CÂY",en:"is a FRUIT",ids:["apple","banana","orange","strawberry","watermelon"]},
- {vi:"ĂN ĐƯỢC",en:"you can EAT it",ids:["apple","banana","orange","strawberry","watermelon","carrot","corn","pizza","cake","icecream"]},
- {vi:"sống DƯỚI NƯỚC",en:"lives in the WATER",ids:["fish","crab","turtle","octopus","dolphin"]},
- {vi:"biết BAY trên trời",en:"can FLY in the sky",ids:["bird","duck","owl","bee","butterfly","plane"]},
- {vi:"tròn xoe",en:"is ROUND",ids:["apple","orange","watermelon","sun","moon","ball","pizza"]},
- {vi:"màu ĐỎ",en:"RED things",ids:["apple","strawberry","fire","crab"]},
- {vi:"màu VÀNG",en:"YELLOW things",ids:["banana","corn","sun","star","duck","bee"]},
- {vi:"có 4 CHÂN",en:"has four legs",ids:["lion","elephant","rabbit","bear","cat","dog","pig","horse","turtle"]},
- {vi:"có ĐUÔI",en:"has a tail",ids:["lion","elephant","rabbit","cat","dog","pig","horse","fish","dolphin","bird","duck","chicken","turtle"]},
- {vi:"có LÔNG",en:"is furry",ids:["lion","rabbit","bear","cat","dog","horse"]},
- {vi:"PHÁT SÁNG",en:"glows / gives light",ids:["sun","moon","star","fire","lamp"]},
- {vi:"NUÔI TRONG NHÀ",en:"kept at home",ids:["cat","dog","pig","horse","chicken","duck","rabbit"]},
- {vi:"ở TRÊN BẦU TRỜI",en:"up in the sky",ids:["sun","moon","star","rainbow","bird"]},
- {vi:"do NGƯỜI làm ra",en:"man-made",ids:["pizza","cake","icecream","car","plane","house","ball","lamp","boat"]},
- {vi:"món NGỌT",en:"sweet dessert",ids:["cake","icecream","strawberry","watermelon"]},
- {vi:"vật DÀI",en:"LONG shape",ids:["banana","carrot","corn","plane"]}
+ {vi:"cũng là CON VẬT",en:"is an ANIMAL",ids:_AN.slice(),pool:_ALL},
+ {vi:"là TRÁI CÂY",en:"is a FRUIT",ids:["apple","banana","orange","strawberry","watermelon"],pool:_FOOD},
+ {vi:"ĂN ĐƯỢC",en:"you can EAT it",ids:_FOOD.slice(),pool:_ALL},
+ {vi:"sống DƯỚI NƯỚC",en:"lives in the WATER",ids:["fish","crab","turtle","octopus","dolphin"],pool:_AN},
+ {vi:"biết BAY trên trời",en:"can FLY",ids:["bird","duck","owl","bee","butterfly","plane"],pool:_AN.concat(["plane"])},
+ {vi:"tròn xoe",en:"is ROUND",ids:["apple","orange","watermelon","sun","moon","ball","pizza"],pool:["apple","orange","watermelon","sun","moon","ball","pizza","banana","carrot","corn","house","car","lamp","star","boat"]},
+ {vi:"màu ĐỎ",en:"RED",ids:["apple","strawberry","fire","crab"],pool:["apple","strawberry","fire","crab","banana","corn","sun","star","duck","bee","orange","carrot","watermelon","turtle"]},
+ {vi:"màu VÀNG",en:"YELLOW",ids:["banana","corn","sun","star","duck","bee"],pool:["banana","corn","sun","star","duck","bee","apple","strawberry","fire","crab","orange","carrot","turtle","dolphin"]},
+ {vi:"có 4 CHÂN",en:"has four legs",ids:["lion","elephant","rabbit","bear","cat","dog","pig","horse","turtle"],pool:_AN},
+ {vi:"có ĐUÔI",en:"has a tail",ids:["lion","elephant","rabbit","cat","dog","pig","horse","fish","dolphin","bird","duck","chicken","turtle"],pool:_AN},
+ {vi:"có LÔNG",en:"is furry",ids:["lion","rabbit","bear","cat","dog","horse"],pool:_AN},
+ {vi:"PHÁT SÁNG",en:"glows",ids:["sun","star","fire","lamp"],pool:["sun","star","fire","lamp","moon","rainbow","ball","house","car","boat"]},
+ {vi:"NUÔI TRONG NHÀ",en:"kept at home",ids:["cat","dog","pig","horse","chicken","duck","rabbit"],pool:_AN},
+ {vi:"ở TRÊN BẦU TRỜI",en:"up in the sky",ids:["sun","moon","star","rainbow","bird"],pool:["sun","moon","star","rainbow","bird","plane","car","house","boat","dog","fish","lion"]},
+ {vi:"do NGƯỜI làm ra",en:"man-made",ids:["pizza","cake","icecream","car","plane","house","ball","lamp","boat"],pool:_ALL},
+ {vi:"món NGỌT",en:"sweet dessert",ids:["cake","icecream","strawberry","watermelon"],pool:_FOOD},
+ {vi:"vật DÀI",en:"LONG",ids:["banana","carrot","corn","plane"],pool:["banana","carrot","corn","plane","apple","orange","watermelon","ball","house","car","lamp","boat","pizza"]}
 ];
 function openKids(){renderKidsMap();go('scr-kidsmap');}
 function renderKidsMap(){
@@ -1132,9 +1135,11 @@ function ahaQuiz(p,dur){
 }
 function kidsPicQuiz(L){
   const all=KIDS.map(function(k){return k.id;});
-  const yes=L.ids.filter(function(id){return all.indexOf(id)>=0;});
-  const no=all.filter(function(id){return yes.indexOf(id)<0;});
-  const correct=sample(yes,1,Math.random)[0];
+  const pool=(L.pool&&L.pool.length)?L.pool:all;
+  const yes=L.ids.filter(function(id){return pool.indexOf(id)>=0;});
+  let no=pool.filter(function(id){return L.ids.indexOf(id)<0;});
+  if(no.length<3)no=no.concat(all.filter(function(id){return L.ids.indexOf(id)<0&&no.indexOf(id)<0;}));
+  const correct=sample(yes.length?yes:L.ids,1,Math.random)[0];
   const decoys=sample(no,3,Math.random);
   const opts=shuffle([correct].concat(decoys),Math.random).map(function(id){return {html:'<img src="assets/tiles_kids/'+id+'.png" alt="">',v:id,pic:true};});
   return {prompt:t('whichIs').replace('{r}','<b>'+(LANG==='vi'?L.vi:L.en)+'</b>'),displayHtml:'',options:opts,correctVal:correct,hintStart:'',dur:20};
