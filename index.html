@@ -301,39 +301,14 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
           <div class="dc-go">▶</div>
         </div>
         <div class="grid2">
-          <button class="btn sec" onclick="go('scr-practice')"><div class="btncol"><span data-t="practice">Luyện tập</span><span class="sub" data-t="practiceSub">Chơi vô tận</span></div></button>
-          <button class="btn sec" onclick="renderPet();go('scr-pet')"><div class="btncol"><span data-t="pet">Thú cưng</span><span class="sub" id="pet-lvl-sub">Lv.1</span></div></button>
+          <button class="btn sec" onclick="openKids()"><div class="btncol"><span class="em">🧒</span><span data-t="kidsMode">Trẻ em</span></div></button>
+          <button class="btn sec" onclick="openAdvanced()"><div class="btncol"><span class="em">🧠</span><span data-t="advMode">Nâng cao</span></div></button>
         </div>
-        <button class="btn" onclick="renderFamily();go('scr-family')"><span class="em">👨‍👩‍👧</span> <span data-t="family">Gia đình cùng chơi</span></button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== PRACTICE PICKER ===== -->
-  <section id="scr-practice" class="screen" style="background-image:url('assets/bg_adv.png')">
-    <div class="scrim"></div>
-    <div class="wrap">
-      <div class="topbar">
-        <button class="iconbtn" onclick="go('scr-home')">←</button>
-        <div class="sp"></div>
-        <div class="chip">🏆 <span class="big" id="prac-solved">0</span></div>
-      </div>
-      <div class="sec-ttl" data-t="practice">Luyện tập</div>
-      <div class="sec-sub" data-t="pickMode">Ai chơi?</div>
-      <div style="display:flex;flex-direction:column;gap:12px;margin-top:6px">
-        <div class="daily-card" onclick="openKids()">
-          <div class="dc-ico">🧒</div>
-          <div class="dc-t"><b data-t="kidsMode">Trẻ em</b><span data-t="kidsSub">10 màn câu hỏi rõ ràng — cho bé</span></div>
-          <div class="dc-go">▶</div>
-        </div>
-        <div class="daily-card" onclick="openAdvanced()">
-          <div class="dc-ico">🧠</div>
-          <div class="dc-t"><b data-t="advMode">Nâng cao</b><span data-t="advSub">10 màn trí tuệ — tự tìm cơ chế = WOW</span></div>
-          <div class="dc-go">▶</div>
+        <div class="grid2">
+          <button class="btn sec" onclick="renderPet();go('scr-pet')"><div class="btncol"><span class="em">🦊</span><span data-t="pet">Thú cưng</span><span class="sub" id="pet-lvl-sub">Lv.1</span></div></button>
+          <button class="btn" onclick="renderFamily();go('scr-family')"><div class="btncol"><span class="em">👨‍👩‍👧</span><span data-t="famShort">Gia đình</span></div></button>
         </div>
       </div>
-      <!-- Gói Đại Dương (tranh AI) tạm gỡ: 16 tile là ảnh cắt từ mockup, dính khung + badge nung sẵn. Chờ asset tile SẠCH rồi bật lại startOceanPack(). -->
-      <div style="margin-top:auto"></div>
     </div>
   </section>
 
@@ -342,7 +317,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
     <div class="scrim"></div>
     <div class="wrap">
       <div class="topbar">
-        <button class="iconbtn" onclick="go('scr-practice')">←</button>
+        <button class="iconbtn" onclick="go('scr-home')">←</button>
         <div class="sp"></div>
         <div class="chip">🧒 <span id="kids-progress">0/10</span></div>
       </div>
@@ -357,7 +332,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
     <div class="scrim"></div>
     <div class="wrap">
       <div class="topbar">
-        <button class="iconbtn" onclick="go('scr-practice')">←</button>
+        <button class="iconbtn" onclick="go('scr-home')">←</button>
         <div class="sp"></div>
         <div class="chip">🧠 <span id="adv-progress">0/10</span></div>
       </div>
@@ -475,7 +450,7 @@ const I18N={
     pickDiff:'Chọn độ khó — luật càng khéo càng "trời ơi"',easy:"Dễ",medium:"Vừa",hard:"Khó",
     playNow:"Chơi ngay",ocean:"Gói Đại Dương (tranh AI)",
     howto:"Vài ô đang sáng theo 1 LUẬT ẨN. Tìm & chạm những ô CÒN LẠI cùng luật.",
-    puzzleLbl:"Câu đố",question:"2 ô đang sáng cùng 1 LUẬT BÍ MẬT. Ô nào CÒN LẠI giống vậy? 👇",startHint:"Nhìn kỹ 2 ô sáng — chúng giống nhau ở điểm gì?",pickMode:"Ai chơi?",kidsMode:"Trẻ em",kidsSub:"10 màn câu hỏi rõ ràng — cho bé",kidsMapSub:"Câu hỏi rõ ràng — giải xong mở màn kế",advMode:"Nâng cao",advSub:"10 màn trí tuệ — tự tìm cơ chế = WOW",advMapSub:"Câu đố trí tuệ — giải xong mở màn kế tiếp",goalTitle:"Ba mẹ treo thưởng",goalHelp:"Đặt phần thưởng thật cho bé — đủ số câu thì ba mẹ tặng.",goalPh:"VD: Đi nhà banh chơi",goalBtn:"Treo thưởng",goalHung:"Đang treo",goalLeft:"còn {n} câu",goalReached:"Con đạt phần thưởng",goalDone:"Con đã đạt — ba mẹ tặng bé nhé!",goalNew:"Treo thưởng mới",goalChange:"Đổi / Gỡ thưởng",goalSet:"Đã treo thưởng!",goalUnitWord:"câu",ahaStart:"Không có luật nào được nói. Tự tìm ra cơ chế giấu!",ahaWrong:"Chưa đúng — thử nhìn kiểu khác",fedPet:"Pet ăn ngon! +10 XP 🍖",lockedAt:"Mở khoá ở Cấp {n}",findTiles:"Tìm tất cả ô:",startHintKnown:"Chạm hết ô đúng luật — sai mất 1 ❤️",
+    puzzleLbl:"Câu đố",question:"2 ô đang sáng cùng 1 LUẬT BÍ MẬT. Ô nào CÒN LẠI giống vậy? 👇",startHint:"Nhìn kỹ 2 ô sáng — chúng giống nhau ở điểm gì?",pickMode:"Ai chơi?",kidsMode:"Trẻ em",kidsSub:"10 màn câu hỏi rõ ràng — cho bé",kidsMapSub:"Câu hỏi rõ ràng — giải xong mở màn kế",famShort:"Gia đình",advMode:"Nâng cao",advSub:"10 màn trí tuệ — tự tìm cơ chế = WOW",advMapSub:"Câu đố trí tuệ — giải xong mở màn kế tiếp",goalTitle:"Ba mẹ treo thưởng",goalHelp:"Đặt phần thưởng thật cho bé — đủ số câu thì ba mẹ tặng.",goalPh:"VD: Đi nhà banh chơi",goalBtn:"Treo thưởng",goalHung:"Đang treo",goalLeft:"còn {n} câu",goalReached:"Con đạt phần thưởng",goalDone:"Con đã đạt — ba mẹ tặng bé nhé!",goalNew:"Treo thưởng mới",goalChange:"Đổi / Gỡ thưởng",goalSet:"Đã treo thưởng!",goalUnitWord:"câu",ahaStart:"Không có luật nào được nói. Tự tìm ra cơ chế giấu!",ahaWrong:"Chưa đúng — thử nhìn kiểu khác",fedPet:"Pet ăn ngon! +10 XP 🍖",lockedAt:"Mở khoá ở Cấp {n}",findTiles:"Tìm tất cả ô:",startHintKnown:"Chạm hết ô đúng luật — sai mất 1 ❤️",
     wowTitles:["WOW!","TRỜI ƠI!","XUẤT SẮC!","ĐỈNH!","THÔNG MINH!"],
     wrong:"Chưa đúng — nhìn kỹ các ô đang sáng",needMore:"Còn {n} ô nữa cùng luật",
     noHint:"Hết bước gợi ý — bạn gần ra rồi!",hintDim:"Đã tối bớt vài ô chắc chắn SAI",
@@ -498,7 +473,7 @@ const I18N={
     pickDiff:"Pick difficulty — the cleverer the rule, the bigger the aha",easy:"Easy",medium:"Medium",hard:"Hard",
     playNow:"Play now",ocean:"Ocean pack (AI art)",
     howto:"A few tiles glow by a HIDDEN RULE. Find & tap the OTHERS that follow it.",
-    puzzleLbl:"Puzzle",question:"2 tiles glow by a SECRET RULE. Which OTHER tiles match them? 👇",startHint:"Look at the 2 glowing tiles — what do they have in common?",pickMode:"Who's playing?",kidsMode:"Kids",kidsSub:"10 clear-question levels — for kids",kidsMapSub:"Clear question — solve to unlock the next",advMode:"Advanced",advSub:"10 brain levels — crack the mechanism = WOW",advMapSub:"Brain puzzles — solve to unlock the next",goalTitle:"Parents set a reward",goalHelp:"Set a real reward — reach the target and parents give it.",goalPh:"e.g. Trip to the ball pit",goalBtn:"Set reward",goalHung:"On the line",goalLeft:"{n} to go",goalReached:"Reward earned",goalDone:"Target reached — give the reward!",goalNew:"New reward",goalChange:"Change / Remove",goalSet:"Reward set!",goalUnitWord:"puzzles",ahaStart:"No rule is given. Figure out the hidden mechanism!",ahaWrong:"Not quite — try another angle",fedPet:"Yum! +10 XP 🍖",lockedAt:"Unlocks at Lv.{n}",findTiles:"Find all tiles:",startHintKnown:"Tap every matching tile — a wrong tap costs 1 ❤️",
+    puzzleLbl:"Puzzle",question:"2 tiles glow by a SECRET RULE. Which OTHER tiles match them? 👇",startHint:"Look at the 2 glowing tiles — what do they have in common?",pickMode:"Who's playing?",kidsMode:"Kids",kidsSub:"10 clear-question levels — for kids",kidsMapSub:"Clear question — solve to unlock the next",famShort:"Family",advMode:"Advanced",advSub:"10 brain levels — crack the mechanism = WOW",advMapSub:"Brain puzzles — solve to unlock the next",goalTitle:"Parents set a reward",goalHelp:"Set a real reward — reach the target and parents give it.",goalPh:"e.g. Trip to the ball pit",goalBtn:"Set reward",goalHung:"On the line",goalLeft:"{n} to go",goalReached:"Reward earned",goalDone:"Target reached — give the reward!",goalNew:"New reward",goalChange:"Change / Remove",goalSet:"Reward set!",goalUnitWord:"puzzles",ahaStart:"No rule is given. Figure out the hidden mechanism!",ahaWrong:"Not quite — try another angle",fedPet:"Yum! +10 XP 🍖",lockedAt:"Unlocks at Lv.{n}",findTiles:"Find all tiles:",startHintKnown:"Tap every matching tile — a wrong tap costs 1 ❤️",
     wowTitles:["WOW!","AHA!","BRILLIANT!","NICE!","SO SMART!"],
     wrong:"Not quite — look at the glowing tiles",needMore:"{n} more tile(s) follow the rule",
     noHint:"No more hints — you're close!",hintDim:"Dimmed a few that are definitely WRONG",
@@ -614,6 +589,44 @@ const AHA=[
   pv:'Mã khóa là một CHỮ SỐ — số mấy?',pe:'The code is a DIGIT — which one?',
   hv:'Lùi ra xa nhìn hình tổng thể các ô sáng.',he:'Step back and read the overall shape.',
   av:'Số 7 — vẽ bằng các ô sáng.',ae:'A 7 — drawn by the lit cells.'},
+ {kind:'seq',items:["1","4","9","16","?"],options:["20","23","25","28"],answer:"25",
+  pv:"Số nào điền vào dấu hỏi?",pe:"Which number fills the blank?",hv:"Thử nhân một số với chính nó.",he:"Try multiplying a number by itself.",av:"Bình phương các số đếm: 1=1², 4=2², 9=3², 16=4², 25=5². Số tiếp theo là 5×5.",ae:"Squares of counting numbers: 1=1², 4=2², 9=3², 16=4², 25=5². The next is 5×5."},
+ {kind:'seq',items:["1","3","6","10","?"],options:["12","13","15","16"],answer:"15",
+  pv:"Số nào điền vào dấu hỏi?",pe:"Which number fills the blank?",hv:"Khoảng cách giữa các số tự lớn dần lên.",he:"The gaps between numbers grow one by one.",av:"Số tam giác — cộng dồn 1+2+3+4+5: 1, 3, 6, 10, 15. Mỗi lần cộng thêm số lớn hơn 1.",ae:"Triangular numbers — running sum 1+2+3+4+5: 1, 3, 6, 10, 15. Each step adds one more."},
+ {kind:'seq',items:["1","2","4","7","11","?"],options:["14","15","16","17"],answer:"16",
+  pv:"Số nào điền vào dấu hỏi?",pe:"Which number fills the blank?",hv:"Mỗi lần cộng thêm nhiều hơn lần trước đúng một bậc.",he:"Each step adds one more than the step before.",av:"Hiệu tăng dần 1,2,3,4,5: 1→2→4→7→11→16. Cộng thêm 1, rồi 2, rồi 3, 4, 5.",ae:"Growing differences 1,2,3,4,5: 1→2→4→7→11→16. Add 1, then 2, then 3, 4, 5."},
+ {kind:'seq',items:["1","2","4","5","7","8","?"],options:["9","10","11","12"],answer:"10",
+  pv:"Số nào điền vào dấu hỏi?",pe:"Which number fills the blank?",hv:"Nhìn khoảng cách theo cặp — nó lặp lại.",he:"Look at the gaps in pairs — they repeat.",av:"Xen kẽ hai bước: +1 rồi +2, lặp lại. 1,2(+1),4(+2),5(+1),7(+2),8(+1),10(+2).",ae:"Alternating steps +1 then +2, repeating: 1,2(+1),4(+2),5(+1),7(+2),8(+1),10(+2)."},
+ {kind:'seq',items:["2","3","6","7","14","15","?"],options:["22","28","30","31"],answer:"30",
+  pv:"Số nào điền vào dấu hỏi?",pe:"Which number fills the blank?",hv:"Hai phép khác nhau thay phiên: một lần +, một lần ×.",he:"Two moves take turns: once add, once multiply.",av:"Xen kẽ +1 rồi ×2: 2,+1→3,×2→6,+1→7,×2→14,+1→15,×2→30.",ae:"Alternating +1 then ×2: 2,+1→3,×2→6,+1→7,×2→14,+1→15,×2→30."},
+ {kind:'seq',items:["O","T","T","F","?","S"],options:["F","N","E","S"],answer:"F",
+  pv:"Chữ nào vào chỗ ?",pe:"Which letter fills the ?",hv:"Thử đếm thật chậm bằng tiếng Anh.",he:"Try counting slowly in English.",av:"Chữ đầu số đếm tiếng Anh: One Two Three Four Five Six. Số thứ 5 là Five nên là F.",ae:"First letters of English counting: One Two Three Four Five Six. The 5th is Five, so F."},
+ {kind:'seq',items:["U","D","T","Q","?"],options:["C","F","S","N"],answer:"C",
+  pv:"Chữ tiếp theo là gì?",pe:"What is the next letter?",hv:"Vẫn là đếm, nhưng là ngôn ngữ của tháp Eiffel.",he:"Still counting — but in the language of the Eiffel Tower.",av:"Chữ đầu số đếm tiếng Pháp: Un Deux Trois Quatre Cinq. Số thứ 5 là Cinq nên là C.",ae:"First letters of French counting: Un Deux Trois Quatre Cinq. The 5th is Cinq, so C."},
+ {kind:'seq',items:["J","S","U","?"],options:["N","M","P","E"],answer:"N",
+  pv:"Chữ cuối của dãy là gì?",pe:"What is the last letter of the sequence?",hv:"Đây là bốn hành tinh xa Mặt Trời nhất.",he:"These are the four planets farthest from the Sun.",av:"Chữ đầu bốn hành tinh ngoài cùng: Jupiter Saturn Uranus Neptune. Hành tinh xa nhất là Neptune nên là N.",ae:"First letters of the four outer planets: Jupiter Saturn Uranus Neptune. The farthest is Neptune, so N."},
+ {kind:'seq',items:["Tý","Sửu","Dần","?","Thìn"],options:["Mão","Ngọ","Mùi","Tuất"],answer:"Mão",
+  pv:"Điền con giáp còn thiếu vào chỗ trống.",pe:"Fill in the missing zodiac animal.",hv:"Đây là thứ tự 12 con giáp bắt đầu từ Tý.",he:"This is the order of the 12 zodiac animals starting from Tý.",av:"Thứ tự 12 con giáp: Tý, Sửu, Dần, Mão, Thìn... Con thứ tư ngay trước Thìn là Mão.",ae:"The 12 zodiac order is Tý, Sửu, Dần, Mão, Thìn... The fourth, right before Thìn, is Mão."},
+ {kind:'seq',items:["giáp","ất","bính","?","mậu"],options:["đinh","kỷ","canh","tân"],answer:"đinh",
+  pv:"Điền can còn thiếu.",pe:"Fill in the missing Heavenly Stem.",hv:"Đây là mười thiên can theo đúng thứ tự.",he:"These are the ten Heavenly Stems in order.",av:"Mười thiên can: giáp, ất, bính, đinh, mậu, kỷ... Can giữa bính và mậu là đinh.",ae:"The ten Stems: giáp, ất, bính, đinh, mậu, kỷ... Between bính and mậu is đinh."},
+ {kind:'seq',items:["một","ba","năm","?","chín"],options:["bảy","sáu","tám","mười"],answer:"bảy",
+  pv:"Số đếm còn thiếu là gì?",pe:"What number is missing?",hv:"Đếm cách một số mỗi bước.",he:"Each step skips one number.",av:"Dãy là các số lẻ: một, ba, năm, bảy, chín. Số còn thiếu là bảy.",ae:"The sequence is odd numbers: one, three, five, seven, nine. The missing one is seven."},
+ {kind:'seq',items:["Dần","Tỵ","Thân","?"],options:["Hợi","Mão","Ngọ","Sửu"],answer:"Hợi",
+  pv:"Con giáp còn thiếu của bộ bốn này?",pe:"Which animal completes this group of four?",hv:"Đây là bốn con giáp cách đều nhau trong vòng 12.",he:"These are four zodiac animals spaced evenly around the 12.",av:"Trong vòng 12 con giáp, Dần-Tỵ-Thân-Hợi cách nhau đúng 3 bước. Còn thiếu Hợi.",ae:"Around the 12 zodiac, Dần-Tỵ-Thân-Hợi are each 3 steps apart. The missing one is Hợi."},
+ {kind:'seq',items:["Tý","Dần","Thìn","Ngọ","?"],options:["Thân","Mùi","Mão","Sửu"],answer:"Thân",
+  pv:"Con giáp còn thiếu theo quy luật dãy?",pe:"Which animal follows the pattern?",hv:"Để ý khoảng cách giữa các con trên vòng 12.",he:"Notice the spacing between animals on the 12-cycle.",av:"Dãy lấy mỗi con cách một trên vòng 12: Tý(1), Dần(3), Thìn(5), Ngọ(7), Thân(9). Còn thiếu Thân.",ae:"Each animal skips one on the 12-cycle: Tý(1), Dần(3), Thìn(5), Ngọ(7), Thân(9). The missing one is Thân."},
+ {kind:'seq',items:["11","21","1112","3112","211213","?"],options:["312213","411223","212223","132113"],answer:"312213",
+  pv:"Mỗi dòng ĐẾM dòng trên theo thứ tự: mấy số 1, mấy số 2, mấy số 3. Dòng kế?",pe:"Each line COUNTS the line above as: how many 1s, how many 2s, how many 3s. Next line?",hv:"Khác look-and-say thường: luôn báo cáo theo đúng thứ tự 1 rồi 2 rồi 3, kể cả khi số 0 lần thì bỏ qua.",he:"Unlike normal look-and-say: always report in fixed order 1s then 2s then 3s, skipping any with zero count.",av:"Đây là 'look-and-say tự kiểm' (self-counting): đọc 211213 — có ba số 1, hai số 2, một số 3 → '31 22 13' = 312213. Biến thể báo cáo theo chữ số tăng dần, không theo nhóm liền kề, nên khác hẳn 1-11-21.",ae:"This is a self-counting variant: read 211213 — three 1s, two 2s, one 3 → '31 22 13' = 312213. It reports by ascending digit, not by adjacent runs, so it differs from 1-11-21."},
+ {kind:'seq',items:["b","d","b","d","?"],options:["b","d","p","q"],answer:"b",
+  pv:"b-d-b-d... chữ tiếp theo?",pe:"b-d-b-d... what comes next?",hv:"Hai chữ này là ảnh soi gương của nhau.",he:"These two letters are mirror images of each other.",av:"d là ảnh gương (lật trái-phải) của b. Dãy chỉ gồm một chữ và bản soi gương của nó xen kẽ, nên sau d phải là b.",ae:"d is the mirror image (left-right flip) of b. The sequence alternates a letter with its mirror, so after d comes b."},
+ {kind:'seq',items:["Z","W","T","Q","?"],options:["N","O","P","R"],answer:"N",
+  pv:"Z-W-T-Q... chữ tiếp theo?",pe:"Z-W-T-Q... what letter comes next?",hv:"Đi lùi trong bảng chữ cái, bỏ qua đều mỗi bước.",he:"Walk backward through the alphabet, skipping evenly each step.",av:"Đi lùi và cách quãng 3: Z lùi 3 tới W, W lùi 3 tới T, T lùi 3 tới Q, Q lùi 3 tới N.",ae:"Going backward by 3 each time: Z to W, W to T, T to Q, and Q back three lands on N."},
+ {kind:'seq',items:["2","4","8","16","?"],options:["18","24","32","20"],answer:"32",
+  pv:"Số nào thay cho dấu ?",pe:"Which number replaces the ?",hv:"Mỗi số so với số trước nó, gấp lên bao nhiêu lần?",he:"Compare each number with the one before it — how many times bigger?",av:"Mỗi số gấp đôi số trước: 2→4→8→16→32. Nhân 2 chứ không phải cộng.",ae:"Each number doubles the previous: 2→4→8→16→32. Multiply by 2, not add."},
+ {kind:'seq',items:["tay","găng","chân","?"],options:["giày","mũ","áo","khăn"],answer:"giày",
+  pv:"Từ nào thay cho dấu ?",pe:"Which word replaces the ?",hv:"Găng để làm gì cho tay? Vậy cái tương tự cho chân là gì?",he:"A glove goes on the hand — what does the same job for the foot?",av:"Tay đi với găng (vật che tay), nên chân đi với giày (vật che chân). Mũ/áo/khăn không dành cho chân.",ae:"Hand pairs with glove (covers the hand), so foot pairs with shoe (covers the foot). Hat/shirt/scarf aren't for the foot."},
+ {kind:'seq',items:["3","6","9","12","?"],options:["14","15","16","18"],answer:"15",
+  pv:"Số nào thay cho dấu ?",pe:"Which number replaces the ?",hv:"Mỗi số cách số trước đúng bao nhiêu? Luôn luôn một khoảng đều.",he:"How far is each number from the one before? Always the same step.",av:"Dãy cộng 3 đều: 3,6,9,12,15. Các số đều chia hết cho 3; 15 là số tiếp theo (14 và 16 không chia hết cho 3).",ae:"Add 3 each time: 3,6,9,12,15. All are multiples of 3; 15 comes next (14 and 16 aren't multiples of 3)."},
 ];
 const OCEAN=[
   {f:'ca_map',live:1},{f:'ca_ngua',live:1},{f:'ca_voi',live:1},{f:'chim_canh_cut',live:1},
@@ -850,13 +863,12 @@ function afterWin(){
   if(m==='family'||m==='duo'){renderFamily();go('scr-family');}
   else if(m==='advanced'){renderAdvMap();go('scr-advmap');}
   else if(m==='kids'){renderKidsMap();go('scr-kidsmap');}
-  else if(m==='practice'){go('scr-practice');}
   else{go('scr-home');}
 }
 function quitGame(){
   document.getElementById('wow').classList.remove('active');
   const m=game?game.mode:'';game=null;
-  if(m==='family'||m==='duo')go('scr-family');else if(m==='advanced'){renderAdvMap();go('scr-advmap');}else if(m==='kids'){renderKidsMap();go('scr-kidsmap');}else if(m==='daily')go('scr-home');else go('scr-practice');
+  if(m==='family'||m==='duo')go('scr-family');else if(m==='advanced'){renderAdvMap();go('scr-advmap');}else if(m==='kids'){renderKidsMap();go('scr-kidsmap');}else go('scr-home');
 }
 
 /* ---------- entry points ---------- */
@@ -876,8 +888,23 @@ function startKids(){
   startGame(buildPuzzle(rule,size,Math.random,2),'practice',{label:t('kidsMode'),icon:'🧒',showRule:true});
 }
 const KIDS_LEVELS=[
- {r:'animal',s:9},{r:'fruit',s:9},{r:'edible',s:9},{r:'bird',s:12},{r:'yellow',s:12},
- {r:'red',s:12},{r:'canFly',s:12},{r:'manmade',s:12},{r:'aquatic',s:12},{r:'selfLit',s:16}
+ {vi:"cũng là CON VẬT",en:"is an ANIMAL",ids:["lion","elephant","rabbit","bear","cat","dog","pig","horse","fish","crab","turtle","octopus","dolphin","bird","duck","owl","chicken","bee","butterfly"]},
+ {vi:"là TRÁI CÂY",en:"is a FRUIT",ids:["apple","banana","orange","strawberry","watermelon"]},
+ {vi:"ĂN ĐƯỢC",en:"you can EAT it",ids:["apple","banana","orange","strawberry","watermelon","carrot","corn","pizza","cake","icecream"]},
+ {vi:"sống DƯỚI NƯỚC",en:"lives in the WATER",ids:["fish","crab","turtle","octopus","dolphin"]},
+ {vi:"biết BAY trên trời",en:"can FLY in the sky",ids:["bird","duck","owl","bee","butterfly","plane"]},
+ {vi:"tròn xoe",en:"is ROUND",ids:["apple","orange","watermelon","sun","moon","ball","pizza"]},
+ {vi:"màu ĐỎ",en:"RED things",ids:["apple","strawberry","fire","crab"]},
+ {vi:"màu VÀNG",en:"YELLOW things",ids:["banana","corn","sun","star","duck","bee"]},
+ {vi:"có 4 CHÂN",en:"has four legs",ids:["lion","elephant","rabbit","bear","cat","dog","pig","horse","turtle"]},
+ {vi:"có ĐUÔI",en:"has a tail",ids:["lion","elephant","rabbit","cat","dog","pig","horse","fish","dolphin","bird","duck","chicken","turtle"]},
+ {vi:"có LÔNG",en:"is furry",ids:["lion","rabbit","bear","cat","dog","horse"]},
+ {vi:"PHÁT SÁNG",en:"glows / gives light",ids:["sun","moon","star","fire","lamp"]},
+ {vi:"NUÔI TRONG NHÀ",en:"kept at home",ids:["cat","dog","pig","horse","chicken","duck","rabbit"]},
+ {vi:"ở TRÊN BẦU TRỜI",en:"up in the sky",ids:["sun","moon","star","rainbow","bird"]},
+ {vi:"do NGƯỜI làm ra",en:"man-made",ids:["pizza","cake","icecream","car","plane","house","ball","lamp","boat"]},
+ {vi:"món NGỌT",en:"sweet dessert",ids:["cake","icecream","strawberry","watermelon"]},
+ {vi:"vật DÀI",en:"LONG shape",ids:["banana","carrot","corn","plane"]}
 ];
 function openKids(){renderKidsMap();go('scr-kidsmap');}
 function renderKidsMap(){
@@ -893,10 +920,23 @@ function renderKidsMap(){
   });
 }
 function startKidsLevel(i){
-  const L=KIDS_LEVELS[i],rule=RULES.find(x=>x.id===L.r);
-  const puz=KIDS_ART_READY?buildKids(rule,L.s,Math.random):buildPuzzle(rule,L.s,Math.random,2);
-  startGame(puz,'kids',{label:t('kidsMode'),icon:'🧒',showRule:true});
+  const L=KIDS_LEVELS[i];
+  const size=L.ids.length<=5?9:12;
+  startGame(buildKidsRule(L,size,Math.random),'kids',{label:t('kidsMode'),icon:'🧒',showRule:true});
   game.kidsLevel=i;
+}
+function buildKidsRule(rule,size,r){
+  const all=KIDS.map(k=>k.id);
+  const yes=rule.ids.filter(id=>all.indexOf(id)>=0);
+  const no=all.filter(id=>yes.indexOf(id)<0);
+  const cap=Math.min(6,Math.round(size*0.42));
+  const needYes=Math.min(yes.length,Math.max(4,cap));
+  const cy=sample(yes,needYes,r),cn=shuffle(no,r).slice(0,size-needYes);
+  let cells=shuffle(cy.map(e=>({e,yes:true})).concat(cn.map(e=>({e,yes:false}))),r);
+  const yesIdx=cells.map((c,i)=>c.yes?i:-1).filter(i=>i>=0);
+  const pre=sample(yesIdx,2,r);
+  cells.forEach((c,i)=>c.prelit=pre.includes(i));
+  return {rule:{vi:rule.vi,en:rule.en},cells,size,total:needYes,art:KIDS_ART_READY,artDir:'tiles_kids'};
 }
 function openAdvanced(){renderAdvMap();go('scr-advmap');}
 function renderAdvMap(){
