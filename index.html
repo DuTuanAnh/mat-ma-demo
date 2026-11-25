@@ -272,9 +272,11 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
 .ans-opt.dim{opacity:.28;pointer-events:none;filter:grayscale(.6)}
 .ans-opt img{width:52px;height:52px;object-fit:contain}
 .ans-opt.pic{justify-content:center;padding:12px}
-.timer-bar{height:9px;background:rgba(10,24,36,.7);border-radius:999px;overflow:hidden;margin:2px 0 4px;border:1px solid rgba(246,198,106,.2);display:none}
+.timer-bar{height:13px;background:rgba(10,24,36,.7);border-radius:999px;overflow:hidden;margin:2px 0 4px;border:1px solid rgba(246,198,106,.2);display:none}
 .timer-bar>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--green),var(--gold))}
 .timer-bar.warn>i{background:linear-gradient(90deg,var(--ember),var(--red))}
+.timer-num{display:none;align-items:center;gap:3px;background:rgba(10,24,36,.65);border:1px solid rgba(246,198,106,.4);border-radius:999px;padding:4px 11px;font-family:'Baloo 2';font-weight:800;font-size:15px;color:var(--gold)}
+.timer-num.warn{color:#fff;background:var(--red);border-color:transparent;animation:pulse 1s infinite}
 .fb-flash{position:absolute;inset:0;z-index:45;display:none;align-items:center;justify-content:center;pointer-events:none}
 .fb-flash.show{display:flex;animation:fade .15s}
 .fb-flash .fb-in{font-family:'Baloo 2';font-weight:800;font-size:46px;width:96px;height:96px;border-radius:26px;display:grid;place-items:center;box-shadow:var(--shadow);animation:pop .4s}
@@ -386,6 +388,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
         <button class="iconbtn" onclick="quitGame()">←</button>
         <div class="chip" id="mode-chip"><span id="mode-icon">🧩</span> <span id="mode-label">Luyện tập</span></div>
         <div class="sp"></div>
+        <span class="timer-num" id="timer-num"></span>
         <button class="iconbtn hint-ic" onclick="useHint()" title="Gợi ý">💡<span id="hint-count" class="hint-badge"></span></button>
         <div class="lives" id="lives"></div>
       </div>
@@ -977,15 +980,23 @@ function renderKidsMap(){
 let quizTimer=null;
 function startTimer(sec){
   stopTimer();
-  const bar=document.getElementById('timer-bar');if(!bar)return;
-  bar.style.display='block';bar.classList.remove('warn');
-  const fill=bar.firstElementChild;
-  fill.style.transition='none';fill.style.width='100%';void fill.offsetWidth;
-  fill.style.transition='width '+sec+'s linear';fill.style.width='0%';
-  if(game)game.warnT=setTimeout(function(){const b=document.getElementById('timer-bar');if(b)b.classList.add('warn');},Math.max(0,sec-6)*1000);
+  const bar=document.getElementById('timer-bar'),num=document.getElementById('timer-num');
+  if(bar){bar.style.display='block';bar.classList.remove('warn');
+    const fill=bar.firstElementChild;
+    fill.style.transition='none';fill.style.width='100%';void fill.offsetWidth;
+    fill.style.transition='width '+sec+'s linear';fill.style.width='0%';}
+  if(game)game.timeLeft=sec;
+  if(num){num.style.display='inline-flex';num.classList.remove('warn');num.textContent='⏱ '+sec;}
+  if(game)game.tick=setInterval(function(){
+    if(!game){return;}
+    game.timeLeft--;
+    if(num)num.textContent='⏱ '+Math.max(0,game.timeLeft);
+    if(game.timeLeft<=5){if(bar)bar.classList.add('warn');if(num)num.classList.add('warn');}
+    if(game.timeLeft<=0&&game.tick){clearInterval(game.tick);game.tick=null;}
+  },1000);
   quizTimer=setTimeout(function(){if(game&&!game.answered)onTimeUp();},sec*1000);
 }
-function stopTimer(){if(quizTimer){clearTimeout(quizTimer);quizTimer=null;}if(game&&game.warnT){clearTimeout(game.warnT);game.warnT=null;}const b=document.getElementById('timer-bar');if(b)b.style.display='none';}
+function stopTimer(){if(quizTimer){clearTimeout(quizTimer);quizTimer=null;}if(game&&game.tick){clearInterval(game.tick);game.tick=null;}const b=document.getElementById('timer-bar');if(b)b.style.display='none';const n=document.getElementById('timer-num');if(n)n.style.display='none';}
 function flashFeedback(type,cb){
   const el=document.getElementById('fb-flash');if(!el){if(cb)cb();return;}
   const map={correct:['fb-correct','✓'],wrong:['fb-wrong','✗'],time:['fb-time','⏰']};
