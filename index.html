@@ -250,6 +250,21 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
 .aha-opt:active{transform:scale(.95)}
 .aha-opt.right{background:linear-gradient(160deg,var(--green),#2f9a5c);color:#042;border-color:transparent}
 .aha-opt.wrong{background:#2a1414;border-color:var(--red);opacity:.5}
+/* hint icon + answer frame */
+.hint-ic{position:relative;font-size:20px}
+.hint-badge{position:absolute;top:-5px;right:-5px;background:var(--gold);color:var(--ink);border-radius:999px;
+  font-size:10px;font-weight:800;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 3px;font-family:'Baloo 2'}
+.answer-bar{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;
+  background:rgba(10,24,36,.6);border:1.5px solid rgba(246,198,106,.35);border-radius:20px;backdrop-filter:blur(5px);box-shadow:var(--shadow)}
+.answer-bar:empty{display:none}
+.ans-opt{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;cursor:pointer;
+  border:1px solid rgba(246,198,106,.3);background:rgba(12,27,40,.92);color:var(--cream2);
+  font-family:'Baloo 2';font-weight:700;font-size:20px;transition:.1s}
+.ans-opt:active{transform:scale(.96)}
+.ans-opt .ak{width:28px;height:28px;flex:none;border-radius:8px;background:rgba(246,198,106,.22);color:var(--gold);display:grid;place-items:center;font-size:15px}
+.ans-opt.right{background:linear-gradient(160deg,var(--green),#2f9a5c);color:#042;border-color:transparent}
+.ans-opt.right .ak{background:rgba(0,0,0,.18);color:#042}
+.ans-opt.wrong{background:#2a1414;border-color:var(--red);opacity:.5}
 /* level map */
 .lvl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
 .lvl-grid{background:rgba(6,14,22,.5);border-radius:18px;padding:14px;backdrop-filter:blur(2px)}
@@ -355,6 +370,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
         <button class="iconbtn" onclick="quitGame()">←</button>
         <div class="chip" id="mode-chip"><span id="mode-icon">🧩</span> <span id="mode-label">Luyện tập</span></div>
         <div class="sp"></div>
+        <button class="iconbtn hint-ic" onclick="useHint()" title="Gợi ý">💡<span id="hint-count" class="hint-badge"></span></button>
         <div class="lives" id="lives"></div>
       </div>
       <div class="q-card" id="q-card"></div>
@@ -362,9 +378,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
       <div class="q-hint" id="q-hint"></div>
       <div id="rule-reveal"></div>
       <div class="board" id="board"></div>
-      <div class="game-foot">
-        <button class="btn hint-btn" onclick="useHint()"><span class="em">💡</span> <span data-t="hint">Gợi ý</span> <span id="hint-count"></span></button>
-      </div>
+      <div class="answer-bar" id="answer-bar"></div>
     </div>
     <div class="overlay" id="wow">
       <div class="card">
@@ -776,6 +790,7 @@ function startGame(puz,mode,opts={}){
   document.getElementById('mode-label').textContent=opts.label||t('practiceLabel');
   document.getElementById('mode-icon').textContent=opts.icon||'🧩';
   document.getElementById('rule-reveal').innerHTML='';
+  document.getElementById('answer-bar').innerHTML='';
   let qtext,hint;
   if(opts.question){qtext=opts.question;hint=t('startHint');}
   else if(opts.showRule){qtext=t('findTiles')+' <b>'+(puz.rule[LANG]||puz.rule.vi)+'</b>';hint=t('startHintKnown');}
@@ -789,7 +804,7 @@ function startGame(puz,mode,opts={}){
   renderLives();renderHintCount();renderBoard();go('scr-game');
 }
 function renderLives(){let h='';for(let i=0;i<3;i++)h+=`<span class="${i<game.lives?'':'lost'}">❤️</span>`;document.getElementById('lives').innerHTML=h;}
-function renderHintCount(){document.getElementById('hint-count').textContent=`(${game.maxHints-game.hints})`;}
+function renderHintCount(){document.getElementById('hint-count').textContent=(game.maxHints-game.hints);}
 function renderBoard(){
   const b=document.getElementById('board'),p=game.puz,cols=p.size<=9?3:4;
   b.style.display='grid';b.style.gridTemplateColumns=`repeat(${cols},1fr)`;b.innerHTML='';
@@ -991,23 +1006,25 @@ function renderAha(){
     for(let i=0;i<p.cols*p.rows;i++)html+='<div class="aha-cell'+(p.lit.indexOf(i)>=0?' on':'')+'"></div>';
     html+='</div>';
   }
-  html+='<div class="aha-opts">'+p.options.map(o=>'<button class="aha-opt" onclick="answerAha(\''+o+'\',this)">'+o+'</button>').join('')+'</div>';
   b.innerHTML=html;
+  const KEYS=['A','B','C','D','E','F'];
+  document.getElementById('answer-bar').innerHTML=p.options.map((o,i)=>
+    '<button class="ans-opt" data-v="'+o+'" onclick="answerAha(\''+o+'\',this)"><span class="ak">'+KEYS[i]+'</span><span>'+o+'</span></button>').join('');
 }
 function answerAha(opt,el){
   if(game.answered)return;
   const p=game.ahaP;
   if(opt===p.answer){
     game.answered=true;el.classList.add('right');
-    document.querySelectorAll('.aha-opt').forEach(x=>x.disabled=true);
-    setTimeout(win,520);
+    document.querySelectorAll('.ans-opt').forEach(x=>x.onclick=null);
+    setTimeout(win,560);
   }else{
-    el.classList.add('wrong');el.disabled=true;game.lives--;renderLives();
+    el.classList.add('wrong');el.onclick=null;game.lives--;renderLives();
     document.getElementById('q-hint').textContent=t('ahaWrong');
     if(game.lives<=0){
       game.answered=true;
-      document.querySelectorAll('.aha-opt').forEach(x=>{x.disabled=true;if(x.textContent===p.answer)x.classList.add('right');});
-      setTimeout(win,760);
+      document.querySelectorAll('.ans-opt').forEach(x=>{x.onclick=null;if(x.dataset.v===p.answer)x.classList.add('right');});
+      setTimeout(win,780);
     }
   }
 }
