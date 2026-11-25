@@ -825,6 +825,16 @@ function applyLang(){document.documentElement.lang=LANG;
   document.querySelectorAll('[data-t]').forEach(el=>{el.textContent=t(el.getAttribute('data-t'));});
   const lc=document.getElementById('lang-cur');if(lc)lc.textContent=(LANG==='vi')?'VI':'EN';
   document.getElementById('lang-tag').textContent=LANG==='vi'?'Giải luật ẩn · Cả nhà cùng chơi':'Crack the hidden rule · Play together';}
+/* ===== SFX (Web Audio, khong can file) ===== */
+var AC=null;
+function ac(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();}catch(e){}return AC;}
+function tone(freq,dur,type,vol,when){var c=ac();if(!c)return;var t=c.currentTime+(when||0);var o=c.createOscillator(),g=c.createGain();o.type=type||"sine";o.frequency.setValueAtTime(freq,t);o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol||0.2,t+0.012);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.start(t);o.stop(t+dur+0.03);}
+function sfxClick(){tone(520,0.06,"triangle",0.13);}
+function sfxCorrect(){tone(660,0.12,"sine",0.22);tone(990,0.16,"sine",0.2,0.09);}
+function sfxWrong(){tone(196,0.2,"sawtooth",0.16);tone(150,0.24,"sawtooth",0.12,0.07);}
+function sfxWin(){[523,659,784,1047].forEach(function(f,i){tone(f,0.2,"triangle",0.2,i*0.09);});}
+function sfxTime(){tone(330,0.16,"square",0.14);tone(240,0.22,"square",0.12,0.11);}
+function sfxFeed(){tone(720,0.07,"sine",0.18);tone(1000,0.1,"sine",0.18,0.06);}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1700);}
 function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
 function refreshHome(){
@@ -871,11 +881,11 @@ function remaining(){return game.puz.cells.filter(c=>c.yes&&!c.prelit&&!c.found)
 function tapCell(i,el){
   const c=game.puz.cells[i];if(c.prelit||c.found||c.wrong)return;
   if(c.yes){
-    c.found=true;el.className=el.className.replace(' dim','')+' lit';el.onclick=null;
+    sfxCorrect();c.found=true;el.className=el.className.replace(' dim','')+' lit';el.onclick=null;
     if(remaining()===0){win();return;}
     document.getElementById('q-hint').textContent=t('needMore').replace('{n}',remaining());
   }else{
-    c.wrong=true;game.lives--;el.className+=' wrong';el.onclick=null;renderLives();
+    sfxWrong();c.wrong=true;game.lives--;el.className+=' wrong';el.onclick=null;renderLives();
     document.getElementById('q-hint').textContent=t('wrong');
     if(game.lives<=0)autoHint();
   }
@@ -910,7 +920,7 @@ function revealRule(){const txt=game.puz.rule[LANG]||game.puz.rule.vi;document.g
 
 /* ---------- win ---------- */
 function win(){
-  stopTimer();
+  stopTimer();sfxWin();
   const base=80+game.puz.total*8+(game.puz.size>9?20:0);
   const pts=Math.max(15,base-(game.hints*12+(3-game.lives)*8));
   const xp=Math.round(pts/4);
@@ -1062,10 +1072,10 @@ function revealCorrect(){document.querySelectorAll('.ans-opt').forEach(function(
 function answerQuiz(v,el){
   if(!game||game.answered)return;
   if(v===game.correctVal){
-    game.answered=true;stopTimer();el.classList.add('right');disableOpts();
+    sfxCorrect();game.answered=true;stopTimer();el.classList.add('right');disableOpts();
     flashFeedback('correct',function(){quizSucceed();});
   }else{
-    el.classList.add('wrong');el.onclick=null;flashFeedback('wrong');
+    sfxWrong();el.classList.add('wrong');el.onclick=null;flashFeedback('wrong');
     if(game.mode==='duel'){game.answered=true;stopTimer();revealCorrect();setTimeout(duelAdvance,900);return;}
     game.lives--;renderLives();document.getElementById('q-hint').textContent=t('ahaWrong');
     if(game.lives<=0){game.answered=true;stopTimer();revealCorrect();setTimeout(quizFail,1000);}
@@ -1073,7 +1083,7 @@ function answerQuiz(v,el){
 }
 function onTimeUp(){
   if(!game||game.answered)return;
-  game.answered=true;stopTimer();
+  game.answered=true;stopTimer();sfxTime();
   if(game.mode==='duel'){flashFeedback('time',function(){duelAdvance();});return;}
   revealCorrect();flashFeedback('time',function(){setTimeout(quizFail,700);});
 }
@@ -1160,6 +1170,7 @@ function feedPet(){
   playFeedFx();toast(t('fedPet'));
 }
 function playFeedFx(){
+  sfxFeed();
   const stage=document.querySelector('#scr-pet .pet-stage');if(!stage)return;
   const big=document.querySelector('#scr-pet .pet-big');
   if(big){big.classList.remove('fed');void big.offsetWidth;big.classList.add('fed');}
@@ -1251,7 +1262,7 @@ function duelAsk(){
   showQuiz(q);go('scr-game');
 }
 function duelAdvance(){ duel.turn++; duel.idx=(duel.idx+1)%duel.players.length; setTimeout(duelAsk,350); }
-function duelResult(){
+function duelResult(){sfxWin();
   var ps=duel.players.slice().sort(function(a,b){return b.score-a.score;});
   var tie=ps.length>1&&ps[1].score===ps[0].score;
   duel.players.forEach(function(p){ var m=S.members.filter(function(x){return x.name===p.name;})[0]; if(m)m.pts+=p.score; });
@@ -1280,6 +1291,7 @@ function duoStep(step){
   else{startGame(duoPuz,'duo',{label:t('duoLabel'),icon:'🤝',question:t('duoGo')});}
 }
 
+document.addEventListener('click',function(e){var el=e.target.closest('button,.daily-card,.lvl-chip,.member,.reward');if(el&&!el.classList.contains('ans-opt'))sfxClick();},true);
 /* ---------- boot ---------- */
 applyLang();
 if(S.lang){LANG=S.lang;applyLang();refreshHome();go('scr-home');}
