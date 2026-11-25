@@ -140,7 +140,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
 /* ============ PET SCREEN ============ */
 .pet-stage{text-align:center;margin-top:10px}
 .pet-big{width:min(62vw,260px);height:min(62vw,260px);margin:0 auto;position:relative;display:grid;place-items:center}
-.pet-scale{width:100%;height:100%;display:grid;place-items:center;transition:transform .4s}
+.pet-scale{width:100%;height:100%;display:grid;place-items:center;transition:transform .4s;position:relative}
 .pet-big img{width:90%;height:90%;object-fit:contain;transform-origin:50% 100%;
   filter:drop-shadow(0 12px 26px rgba(0,0,0,.55));will-change:transform}
 @keyframes fx-alive{0%,100%{transform:translateY(0) scale(1,1)}
@@ -152,6 +152,13 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
 @keyframes fx-bouncy{0%,100%{transform:translateY(0) scale(1,1)}
   35%{transform:translateY(-16px) scale(.96,1.06)}55%{transform:translateY(0) scale(1.06,.94)}
   70%{transform:translateY(-5px) scale(.99,1.02)}}
+/* rig (nhiều lớp) — tự bật khi có assets/fox_body.png */
+.rig-layer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  filter:drop-shadow(0 12px 26px rgba(0,0,0,.55));will-change:transform}
+@keyframes rig-breathe{0%,100%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.035) scaleX(.992)}}
+@keyframes rig-tail{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(10deg)}}
+@keyframes rig-head{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-2.5deg)}}
+@keyframes rig-ear{0%,100%{transform:rotate(0)}35%{transform:rotate(-6deg)}65%{transform:rotate(4deg)}}
 .pet-aura{position:absolute;inset:-6%;border-radius:50%;z-index:-1;
   background:radial-gradient(circle,rgba(246,198,106,.35),transparent 65%);animation:pulse 3s infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.08);opacity:1}}
@@ -644,6 +651,29 @@ const FOX_ANIMS=['fx-alive 3.2s ease-in-out infinite','fx-sway 4.2s ease-in-out 
 function foxPlay(){const img=document.getElementById('pet-img');if(!img)return;const a=FOX_ANIMS[Math.floor(Math.random()*FOX_ANIMS.length)];img.style.animation='none';void img.offsetWidth;img.style.animation=a;}
 function startFoxLoop(){stopFoxLoop();foxPlay();foxTimer=setInterval(foxPlay,4500);}
 function stopFoxLoop(){if(foxTimer){clearInterval(foxTimer);foxTimer=null;}}
+/* rig: nhiều lớp cáo rời (z thấp→cao). origin = điểm gắn khớp. Tự bật nếu fox_body.png tồn tại. */
+const FOX_RIG=[
+  {src:'assets/fox_tail.png',origin:'72% 45%',anim:'rig-tail 2.8s ease-in-out infinite'},
+  {src:'assets/fox_body.png',origin:'50% 100%',anim:'rig-breathe 3.2s ease-in-out infinite'},
+  {src:'assets/fox_head.png',origin:'42% 88%',anim:'rig-head 3.6s ease-in-out infinite'},
+  {src:'assets/fox_ear.png', origin:'50% 100%',anim:'rig-ear 4.4s ease-in-out infinite'},
+];
+let petMounted='';
+function mountPet(){
+  const scale=document.getElementById('pet-scale');if(!scale)return;
+  const test=new Image();
+  test.onload=function(){
+    if(petMounted==='rig')return;
+    petMounted='rig';stopFoxLoop();
+    scale.innerHTML=FOX_RIG.map(l=>'<img class="rig-layer" src="'+l.src+'" style="transform-origin:'+l.origin+';animation:'+l.anim+'" onerror="this.style.display=\'none\'">').join('');
+  };
+  test.onerror=function(){
+    petMounted='single';
+    if(!document.getElementById('pet-img'))scale.innerHTML='<img id="pet-img" src="assets/fox.png" alt="pet">';
+    startFoxLoop();
+  };
+  test.src='assets/fox_body.png';
+}
 function setLang(l){LANG=l;S.lang=l;save();applyLang();refreshHome();go('scr-home');}
 function applyLang(){document.documentElement.lang=LANG;
   document.querySelectorAll('[data-t]').forEach(el=>{el.textContent=t(el.getAttribute('data-t'));});
@@ -855,7 +885,7 @@ function renderPet(){
   document.getElementById('pet-name').textContent=st[LANG]+(st.acc?' '+st.acc:'');
   document.getElementById('pet-scale').style.transform=`scale(${st.s})`;
   document.getElementById('pet-aura').style.display=st.aura?'block':'none';
-  startFoxLoop();
+  mountPet();
   document.getElementById('pet-xpfill').style.width=inLv+'%';
   document.getElementById('pet-xptext').textContent=inLv+' / 100 XP';
   const shelf=document.getElementById('reward-shelf');shelf.innerHTML='';
