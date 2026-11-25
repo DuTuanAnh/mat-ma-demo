@@ -195,6 +195,8 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
 .member .mi span{font-size:12px;opacity:.8}
 .member .pts{font-family:'Baloo 2';font-size:20px;color:var(--gold)}
 .member.sel{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.fam-how{background:rgba(10,24,36,.6);border:1px solid rgba(246,198,106,.25);border-radius:14px;padding:12px 14px;margin:8px 0 4px;font-size:13px;line-height:1.75}
+.fam-how b{color:var(--gold)}
 .addrow{display:flex;gap:8px;margin-top:10px}
 .addrow input{flex:1;padding:12px;border-radius:12px;border:1px solid rgba(246,198,106,.3);
   background:rgba(10,24,36,.6);color:var(--cream2);font-family:inherit;font-size:15px}
@@ -411,7 +413,8 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
         <div class="chip">🦊 <span data-t="sharedPet">Pet chung</span> Lv.<span id="fam-petlv">1</span></div>
       </div>
       <div class="sec-ttl" data-t="family">Gia đình cùng chơi</div>
-      <div class="sec-sub" data-t="familySub">Ai chơi cũng nuôi chung 1 pet. Con chơi +2, ba mẹ +1.</div>
+      <div class="sec-sub" data-t="familySub">Chơi chung cả nhà — không phải nhiều màn, mà là cùng nuôi & cùng giải</div>
+      <div class="fam-how" id="fam-how"></div>
       <div class="members" id="members"></div>
       <div class="addrow">
         <input id="new-member" placeholder="Tên thành viên..." maxlength="12">
@@ -449,7 +452,10 @@ const I18N={
     pet:"Thú cưng",family:"Gia đình cùng chơi",hint:"Gợi ý",theRuleWas:"Luật ẩn là:",
     points:"điểm",petXp:"pet XP",continue:"Tiếp tục",level:"Cấp",rewards:"Phần thưởng",
     rewardsSub:"Mở khóa khi pet lớn lên — ba mẹ tự đặt phiếu thưởng thật",
-    sharedPet:"Pet chung",familySub:"Ai chơi cũng nuôi chung 1 pet. Con chơi +2, ba mẹ +1.",
+    sharedPet:"Pet chung",familySub:"Chơi chung cả nhà — không phải nhiều màn, mà là cùng nuôi & cùng giải",
+    famHow1:"🦊 <b>Pet chung</b> — cả nhà cùng nuôi 1 con",
+    famHow2:"🧩 <b>Cùng điểm</b> — ai chơi cũng được (người chơi +2, người khác +1)",
+    famHow3:"🤝 <b>Đề Đôi</b> — 2 người giải 1 câu, mỗi người thấy 1 nửa manh mối",
     playAsSel:"Chơi (người đang chọn)",duo:"Đề Đôi — 2 người cùng ngồi",
     pickDiff:'Chọn độ khó — luật càng khéo càng "trời ơi"',easy:"Dễ",medium:"Vừa",hard:"Khó",
     playNow:"Chơi ngay",ocean:"Gói Đại Dương (tranh AI)",
@@ -472,7 +478,10 @@ const I18N={
     pet:"Pet",family:"Family play",hint:"Hint",theRuleWas:"The hidden rule was:",
     points:"points",petXp:"pet XP",continue:"Continue",level:"Level",rewards:"Rewards",
     rewardsSub:"Unlock as your pet grows — parents set the real-life reward coupons",
-    sharedPet:"Shared pet",familySub:"Everyone feeds one shared pet. Child +2, parent +1.",
+    sharedPet:"Shared pet",familySub:"Play together — not levels, but raising & solving as one",
+    famHow1:"🦊 <b>Shared pet</b> — the whole family raises one",
+    famHow2:"🧩 <b>Shared points</b> — everyone earns (player +2, others +1)",
+    famHow3:"🤝 <b>Duo</b> — two solve one puzzle, each sees half the clue",
     playAsSel:"Play (selected member)",duo:"Duo puzzle — two people together",
     pickDiff:"Pick difficulty — the cleverer the rule, the bigger the aha",easy:"Easy",medium:"Medium",hard:"Hard",
     playNow:"Play now",ocean:"Ocean pack (AI art)",
@@ -1064,6 +1073,7 @@ function renderPet(){
 /* ---------- family ---------- */
 function renderFamily(){
   document.getElementById('fam-petlv').textContent=petLevel();
+  const fh=document.getElementById('fam-how');if(fh)fh.innerHTML=t('famHow1')+'<br>'+t('famHow2')+'<br>'+t('famHow3');
   const box=document.getElementById('members');box.innerHTML='';
   S.members.forEach((m,i)=>{
     const d=document.createElement('div');d.className='member'+(i===S.sel?' sel':'');
