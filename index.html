@@ -321,9 +321,9 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
       <div class="sec-ttl" data-t="practice">Luyện tập</div>
       <div class="sec-sub" data-t="pickMode">Ai chơi?</div>
       <div style="display:flex;flex-direction:column;gap:12px;margin-top:6px">
-        <div class="daily-card" onclick="startKids()">
+        <div class="daily-card" onclick="openKids()">
           <div class="dc-ico">🧒</div>
-          <div class="dc-t"><b data-t="kidsMode">Trẻ em</b><span data-t="kidsSub">Câu hỏi rõ ràng — cho bé tự chơi</span></div>
+          <div class="dc-t"><b data-t="kidsMode">Trẻ em</b><span data-t="kidsSub">10 màn câu hỏi rõ ràng — cho bé</span></div>
           <div class="dc-go">▶</div>
         </div>
         <div class="daily-card" onclick="openAdvanced()">
@@ -334,6 +334,21 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
       </div>
       <!-- Gói Đại Dương (tranh AI) tạm gỡ: 16 tile là ảnh cắt từ mockup, dính khung + badge nung sẵn. Chờ asset tile SẠCH rồi bật lại startOceanPack(). -->
       <div style="margin-top:auto"></div>
+    </div>
+  </section>
+
+  <!-- ===== KIDS LEVEL MAP ===== -->
+  <section id="scr-kidsmap" class="screen" style="background-image:url('assets/bg_fam.png')">
+    <div class="scrim"></div>
+    <div class="wrap">
+      <div class="topbar">
+        <button class="iconbtn" onclick="go('scr-practice')">←</button>
+        <div class="sp"></div>
+        <div class="chip">🧒 <span id="kids-progress">0/10</span></div>
+      </div>
+      <div class="sec-ttl" data-t="kidsMode">Trẻ em</div>
+      <div class="sec-sub" data-t="kidsMapSub">Câu hỏi rõ ràng — giải xong mở màn kế</div>
+      <div class="lvl-grid" id="kids-grid"></div>
     </div>
   </section>
 
@@ -460,7 +475,7 @@ const I18N={
     pickDiff:'Chọn độ khó — luật càng khéo càng "trời ơi"',easy:"Dễ",medium:"Vừa",hard:"Khó",
     playNow:"Chơi ngay",ocean:"Gói Đại Dương (tranh AI)",
     howto:"Vài ô đang sáng theo 1 LUẬT ẨN. Tìm & chạm những ô CÒN LẠI cùng luật.",
-    puzzleLbl:"Câu đố",question:"2 ô đang sáng cùng 1 LUẬT BÍ MẬT. Ô nào CÒN LẠI giống vậy? 👇",startHint:"Nhìn kỹ 2 ô sáng — chúng giống nhau ở điểm gì?",pickMode:"Ai chơi?",kidsMode:"Trẻ em",kidsSub:"Câu hỏi rõ ràng — cho bé tự chơi",advMode:"Nâng cao",advSub:"10 màn trí tuệ — tự tìm cơ chế = WOW",advMapSub:"Câu đố trí tuệ — giải xong mở màn kế tiếp",goalTitle:"Ba mẹ treo thưởng",goalHelp:"Đặt phần thưởng thật cho bé — đủ số câu thì ba mẹ tặng.",goalPh:"VD: Đi nhà banh chơi",goalBtn:"Treo thưởng",goalHung:"Đang treo",goalLeft:"còn {n} câu",goalReached:"Con đạt phần thưởng",goalDone:"Con đã đạt — ba mẹ tặng bé nhé!",goalNew:"Treo thưởng mới",goalChange:"Đổi / Gỡ thưởng",goalSet:"Đã treo thưởng!",goalUnitWord:"câu",ahaStart:"Không có luật nào được nói. Tự tìm ra cơ chế giấu!",ahaWrong:"Chưa đúng — thử nhìn kiểu khác",fedPet:"Pet ăn ngon! +10 XP 🍖",lockedAt:"Mở khoá ở Cấp {n}",findTiles:"Tìm tất cả ô:",startHintKnown:"Chạm hết ô đúng luật — sai mất 1 ❤️",
+    puzzleLbl:"Câu đố",question:"2 ô đang sáng cùng 1 LUẬT BÍ MẬT. Ô nào CÒN LẠI giống vậy? 👇",startHint:"Nhìn kỹ 2 ô sáng — chúng giống nhau ở điểm gì?",pickMode:"Ai chơi?",kidsMode:"Trẻ em",kidsSub:"10 màn câu hỏi rõ ràng — cho bé",kidsMapSub:"Câu hỏi rõ ràng — giải xong mở màn kế",advMode:"Nâng cao",advSub:"10 màn trí tuệ — tự tìm cơ chế = WOW",advMapSub:"Câu đố trí tuệ — giải xong mở màn kế tiếp",goalTitle:"Ba mẹ treo thưởng",goalHelp:"Đặt phần thưởng thật cho bé — đủ số câu thì ba mẹ tặng.",goalPh:"VD: Đi nhà banh chơi",goalBtn:"Treo thưởng",goalHung:"Đang treo",goalLeft:"còn {n} câu",goalReached:"Con đạt phần thưởng",goalDone:"Con đã đạt — ba mẹ tặng bé nhé!",goalNew:"Treo thưởng mới",goalChange:"Đổi / Gỡ thưởng",goalSet:"Đã treo thưởng!",goalUnitWord:"câu",ahaStart:"Không có luật nào được nói. Tự tìm ra cơ chế giấu!",ahaWrong:"Chưa đúng — thử nhìn kiểu khác",fedPet:"Pet ăn ngon! +10 XP 🍖",lockedAt:"Mở khoá ở Cấp {n}",findTiles:"Tìm tất cả ô:",startHintKnown:"Chạm hết ô đúng luật — sai mất 1 ❤️",
     wowTitles:["WOW!","TRỜI ƠI!","XUẤT SẮC!","ĐỈNH!","THÔNG MINH!"],
     wrong:"Chưa đúng — nhìn kỹ các ô đang sáng",needMore:"Còn {n} ô nữa cùng luật",
     noHint:"Hết bước gợi ý — bạn gần ra rồi!",hintDim:"Đã tối bớt vài ô chắc chắn SAI",
@@ -483,7 +498,7 @@ const I18N={
     pickDiff:"Pick difficulty — the cleverer the rule, the bigger the aha",easy:"Easy",medium:"Medium",hard:"Hard",
     playNow:"Play now",ocean:"Ocean pack (AI art)",
     howto:"A few tiles glow by a HIDDEN RULE. Find & tap the OTHERS that follow it.",
-    puzzleLbl:"Puzzle",question:"2 tiles glow by a SECRET RULE. Which OTHER tiles match them? 👇",startHint:"Look at the 2 glowing tiles — what do they have in common?",pickMode:"Who's playing?",kidsMode:"Kids",kidsSub:"Clear question — kids play on their own",advMode:"Advanced",advSub:"10 brain levels — crack the mechanism = WOW",advMapSub:"Brain puzzles — solve to unlock the next",goalTitle:"Parents set a reward",goalHelp:"Set a real reward — reach the target and parents give it.",goalPh:"e.g. Trip to the ball pit",goalBtn:"Set reward",goalHung:"On the line",goalLeft:"{n} to go",goalReached:"Reward earned",goalDone:"Target reached — give the reward!",goalNew:"New reward",goalChange:"Change / Remove",goalSet:"Reward set!",goalUnitWord:"puzzles",ahaStart:"No rule is given. Figure out the hidden mechanism!",ahaWrong:"Not quite — try another angle",fedPet:"Yum! +10 XP 🍖",lockedAt:"Unlocks at Lv.{n}",findTiles:"Find all tiles:",startHintKnown:"Tap every matching tile — a wrong tap costs 1 ❤️",
+    puzzleLbl:"Puzzle",question:"2 tiles glow by a SECRET RULE. Which OTHER tiles match them? 👇",startHint:"Look at the 2 glowing tiles — what do they have in common?",pickMode:"Who's playing?",kidsMode:"Kids",kidsSub:"10 clear-question levels — for kids",kidsMapSub:"Clear question — solve to unlock the next",advMode:"Advanced",advSub:"10 brain levels — crack the mechanism = WOW",advMapSub:"Brain puzzles — solve to unlock the next",goalTitle:"Parents set a reward",goalHelp:"Set a real reward — reach the target and parents give it.",goalPh:"e.g. Trip to the ball pit",goalBtn:"Set reward",goalHung:"On the line",goalLeft:"{n} to go",goalReached:"Reward earned",goalDone:"Target reached — give the reward!",goalNew:"New reward",goalChange:"Change / Remove",goalSet:"Reward set!",goalUnitWord:"puzzles",ahaStart:"No rule is given. Figure out the hidden mechanism!",ahaWrong:"Not quite — try another angle",fedPet:"Yum! +10 XP 🍖",lockedAt:"Unlocks at Lv.{n}",findTiles:"Find all tiles:",startHintKnown:"Tap every matching tile — a wrong tap costs 1 ❤️",
     wowTitles:["WOW!","AHA!","BRILLIANT!","NICE!","SO SMART!"],
     wrong:"Not quite — look at the glowing tiles",needMore:"{n} more tile(s) follow the rule",
     noHint:"No more hints — you're close!",hintDim:"Dimmed a few that are definitely WRONG",
@@ -669,7 +684,7 @@ function buildKids(rule,size,r){
 
 /* ---------- state ---------- */
 const DEF={lang:null,petXp:0,streak:0,best:0,lastDaily:null,solved:0,
-  members:[{name:'Con',pts:0,child:true},{name:'Mẹ',pts:0,child:false}],sel:0,goal:null,advDone:0};
+  members:[{name:'Con',pts:0,child:true},{name:'Mẹ',pts:0,child:false}],sel:0,goal:null,advDone:0,kidsDone:0};
 let S=load();
 function load(){try{return Object.assign({},DEF,JSON.parse(localStorage.getItem('matma_state')||'{}'));}catch(e){return Object.assign({},DEF);}}
 function save(){localStorage.setItem('matma_state',JSON.stringify(S));}
@@ -801,6 +816,7 @@ function win(){
   const xp=Math.round(pts/4);
   S.solved++;
   if(game.mode==='advanced'&&game.advLevel!=null&&game.advLevel>=S.advDone)S.advDone=game.advLevel+1;
+  if(game.mode==='kids'&&game.kidsLevel!=null&&game.kidsLevel>=S.kidsDone)S.kidsDone=game.kidsLevel+1;
   if(game.mode==='daily'&&S.lastDaily!==todayKey()){
     const y=new Date();y.setDate(y.getDate()-1);
     const yk=y.getFullYear()+'-'+(y.getMonth()+1)+'-'+y.getDate();
@@ -833,13 +849,14 @@ function afterWin(){
   const m=game?game.mode:'';game=null;
   if(m==='family'||m==='duo'){renderFamily();go('scr-family');}
   else if(m==='advanced'){renderAdvMap();go('scr-advmap');}
+  else if(m==='kids'){renderKidsMap();go('scr-kidsmap');}
   else if(m==='practice'){go('scr-practice');}
   else{go('scr-home');}
 }
 function quitGame(){
   document.getElementById('wow').classList.remove('active');
   const m=game?game.mode:'';game=null;
-  if(m==='family'||m==='duo')go('scr-family');else if(m==='advanced'){renderAdvMap();go('scr-advmap');}else if(m==='daily')go('scr-home');else go('scr-practice');
+  if(m==='family'||m==='duo')go('scr-family');else if(m==='advanced'){renderAdvMap();go('scr-advmap');}else if(m==='kids'){renderKidsMap();go('scr-kidsmap');}else if(m==='daily')go('scr-home');else go('scr-practice');
 }
 
 /* ---------- entry points ---------- */
@@ -857,6 +874,29 @@ function startKids(){
   const rule=pool[Math.floor(Math.random()*pool.length)];
   const size=rule.diff==='easy'?9:12;
   startGame(buildPuzzle(rule,size,Math.random,2),'practice',{label:t('kidsMode'),icon:'🧒',showRule:true});
+}
+const KIDS_LEVELS=[
+ {r:'animal',s:9},{r:'fruit',s:9},{r:'edible',s:9},{r:'bird',s:12},{r:'yellow',s:12},
+ {r:'red',s:12},{r:'canFly',s:12},{r:'manmade',s:12},{r:'aquatic',s:12},{r:'selfLit',s:16}
+];
+function openKids(){renderKidsMap();go('scr-kidsmap');}
+function renderKidsMap(){
+  document.getElementById('kids-progress').textContent=S.kidsDone+'/'+KIDS_LEVELS.length;
+  const g=document.getElementById('kids-grid');g.innerHTML='';
+  KIDS_LEVELS.forEach((lv,i)=>{
+    const done=i<S.kidsDone,cur=i===S.kidsDone,lock=i>S.kidsDone;
+    const d=document.createElement('div');
+    d.className='lvl-chip'+(done?' done':'')+(cur?' cur':'')+(lock?' lock':'');
+    d.textContent=lock?'🔒':(i+1);
+    if(!lock)d.onclick=()=>startKidsLevel(i);
+    g.appendChild(d);
+  });
+}
+function startKidsLevel(i){
+  const L=KIDS_LEVELS[i],rule=RULES.find(x=>x.id===L.r);
+  const puz=KIDS_ART_READY?buildKids(rule,L.s,Math.random):buildPuzzle(rule,L.s,Math.random,2);
+  startGame(puz,'kids',{label:t('kidsMode'),icon:'🧒',showRule:true});
+  game.kidsLevel=i;
 }
 function openAdvanced(){renderAdvMap();go('scr-advmap');}
 function renderAdvMap(){
