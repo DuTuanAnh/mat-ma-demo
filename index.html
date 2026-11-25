@@ -1056,6 +1056,7 @@ function quizFail(){
   else go('scr-home');
 }
 function ahaDisplay(p){
+  if(p.kind==='text')return '';
   if(p.kind==='seq')return '<div class="aha-seq">'+p.items.map(function(x){return '<div class="aha-tok'+(x==='?'?' q':'')+'">'+x+'</div>';}).join('')+'</div>';
   var s='<div class="aha-grid" style="grid-template-columns:repeat('+p.cols+',1fr)">';
   for(var i=0;i<p.cols*p.rows;i++)s+='<div class="aha-cell'+(p.lit.indexOf(i)>=0?' on':'')+'"></div>';
@@ -1064,7 +1065,7 @@ function ahaDisplay(p){
 function ahaQuiz(p,dur){
   return {prompt:(LANG==='vi'?p.pv:p.pe),displayHtml:ahaDisplay(p),
     options:p.options.map(function(o){return {html:'<span>'+o+'</span>',v:o};}),
-    correctVal:p.answer,hintStart:t('ahaStart'),dur:dur||35};
+    correctVal:p.answer,hintStart:(p.kind==='text'?'':t('ahaStart')),dur:dur||35};
 }
 function kidsPicQuiz(L){
   const all=KIDS.map(function(k){return k.id;});
