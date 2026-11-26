@@ -178,6 +178,16 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
   margin:14px 0 6px;border:1px solid rgba(246,198,106,.3)}
 .xpbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));transition:width .6s}
 .shelf{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;justify-content:center}
+.pet-emoji{font-size:148px;line-height:1;filter:drop-shadow(0 8px 18px rgba(0,0,0,.5))}
+.zoo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.zoo-card{background:linear-gradient(160deg,#14334c,#0d2435);border:1px solid rgba(246,198,106,.18);border-radius:16px;padding:14px 6px;text-align:center;cursor:pointer;transition:transform .12s}
+.zoo-card:active{transform:scale(.95)}
+.zoo-card.active{border-color:var(--gold);box-shadow:0 0 16px rgba(246,198,106,.45)}
+.zoo-card.locked{opacity:.6;filter:grayscale(.55);cursor:default}
+.zoo-pet{font-size:46px;line-height:1.1}
+.zoo-name{font-family:'Baloo 2';font-size:15px;color:var(--cream2);margin-top:4px}
+.zoo-lv{font-size:12px;color:var(--gold);opacity:.9}
+.zoo-cond{font-size:10.5px;opacity:.82;margin-top:3px;line-height:1.25}
 .reward{background:rgba(10,24,36,.6);border:1px solid rgba(246,198,106,.3);border-radius:14px;
   padding:10px 12px;font-size:13px;min-width:92px;text-align:center;cursor:pointer;transition:.1s}
 .reward:active{transform:scale(.94)}
@@ -346,7 +356,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
           <button class="btn sec" onclick="openAdvanced()"><div class="btncol"><span class="em">🧠</span><span data-t="advMode">Nâng cao</span></div></button>
         </div>
         <div class="grid2">
-          <button class="btn sec" onclick="renderPet();go('scr-pet')"><div class="btncol"><span class="em">🦊</span><span data-t="pet">Thú cưng</span><span class="sub" id="pet-lvl-sub">Lv.1</span></div></button>
+          <button class="btn sec" onclick="openZoo()"><div class="btncol"><span class="em">🦊</span><span data-t="pet">Thú cưng</span><span class="sub" id="pet-lvl-sub">Lv.1</span></div></button>
           <button class="btn" onclick="renderFamily();go('scr-family')"><div class="btncol"><span class="em">👨‍👩‍👧</span><span data-t="famShort">Gia đình</span></div></button>
         </div>
       </div>
@@ -427,7 +437,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
     <div class="scrim"></div>
     <div class="wrap">
       <div class="topbar">
-        <button class="iconbtn" onclick="go('scr-home')">←</button>
+        <button class="iconbtn" onclick="openZoo()">←</button>
         <div class="sp"></div>
         <div class="chip">⭐ <span class="big" id="pet-totalxp">0</span></div>
       </div>
@@ -441,6 +451,21 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
       <div class="sec-ttl" style="margin-top:18px" data-t="rewards">Phần thưởng</div>
       <div class="sec-sub" data-t="rewardsSub">Mở khóa khi pet lớn lên — ba mẹ tự đặt phiếu thưởng thật</div>
       <div class="shelf" id="reward-shelf"></div>
+    </div>
+  </section>
+
+  <!-- ===== ZOO / VƯỜN THÚ ===== -->
+  <section id="scr-zoo" class="screen" style="background-image:url('assets/bg_adv.png')">
+    <div class="scrim"></div>
+    <div class="wrap">
+      <div class="topbar">
+        <button class="iconbtn" onclick="go('scr-home')">←</button>
+        <div class="sp"></div>
+        <div class="chip">🏛️ <span data-t="zoo">Vườn thú</span></div>
+      </div>
+      <div class="sec-ttl" data-t="zoo">Vườn thú</div>
+      <div class="sec-sub" data-t="zooSub">Sưu tầm & nuôi cả nhà thú cưng</div>
+      <div class="zoo-grid" id="zoo-grid"></div>
     </div>
   </section>
 
@@ -490,7 +515,7 @@ h1,h2,h3,.ttl{font-family:'Baloo 2',cursive;font-weight:800}
 const I18N={
   vi:{daily:"Đề của hôm nay",dailySub:"Một câu đố mỗi ngày — cả thế giới cùng đề",
     dailyDone:"✅ Hôm nay xong! Chuỗi: ",practice:"Luyện tập",practiceSub:"Chơi vô tận",
-    pet:"Thú cưng",family:"Gia đình cùng chơi",hint:"Gợi ý",theRuleWas:"Luật ẩn là:",
+    pet:"Thú cưng",family:"Gia đình cùng chơi",zoo:"Vườn thú",zooSub:"Sưu tầm & nuôi cả nhà thú cưng",hint:"Gợi ý",theRuleWas:"Luật ẩn là:",
     points:"điểm",petXp:"pet XP",continue:"Tiếp tục",level:"Cấp",rewards:"Phần thưởng",
     rewardsSub:"Mở khóa khi pet lớn lên — ba mẹ tự đặt phiếu thưởng thật",
     sharedPet:"Pet chung",familySub:"Chơi chung cả nhà — không phải nhiều màn, mà là cùng nuôi & cùng giải",
@@ -516,7 +541,7 @@ const I18N={
     reward4:"Tranh AI mới",reward5:"Phòng bí mật",reward6:"Pet tiến hóa"},
   en:{daily:"Today's puzzle",dailySub:"One puzzle a day — same for the whole world",
     dailyDone:"✅ Done today! Streak: ",practice:"Practice",practiceSub:"Endless play",
-    pet:"Pet",family:"Family play",hint:"Hint",theRuleWas:"The hidden rule was:",
+    pet:"Pet",family:"Family play",zoo:"Sanctuary",zooSub:"Collect & raise a whole crew",hint:"Hint",theRuleWas:"The hidden rule was:",
     points:"points",petXp:"pet XP",continue:"Continue",level:"Level",rewards:"Rewards",
     rewardsSub:"Unlock as your pet grows — parents set the real-life reward coupons",
     sharedPet:"Shared pet",familySub:"Play together — not levels, but raising & solving as one",
@@ -781,9 +806,13 @@ function buildKids(rule,size,r){
 
 /* ---------- state ---------- */
 const DEF={lang:null,petXp:0,streak:0,best:0,lastDaily:null,solved:0,
-  members:[{name:'Con',pts:0,child:true},{name:'Mẹ',pts:0,child:false}],sel:0,goal:null,advDone:0,kidsDone:0};
+  members:[{name:'Con',pts:0,child:true},{name:'Mẹ',pts:0,child:false}],sel:0,goal:null,advDone:0,kidsDone:0,activePet:'fox'};
 let S=load();
-function load(){try{return Object.assign({},DEF,JSON.parse(localStorage.getItem('matma_state')||'{}'));}catch(e){return Object.assign({},DEF);}}
+function load(){let s;try{s=Object.assign({},DEF,JSON.parse(localStorage.getItem('matma_state')||'{}'));}catch(e){s=Object.assign({},DEF);}
+  if(!Array.isArray(s.unlocked)||!s.unlocked.length)s.unlocked=['fox'];
+  if(!s.activePet)s.activePet='fox';
+  if(!s.petBank||typeof s.petBank!=='object')s.petBank={};
+  return s;}
 function save(){localStorage.setItem('matma_state',JSON.stringify(S));}
 function petLevel(){return Math.floor(S.petXp/100)+1;}
 const PET_STAGES=[
@@ -793,7 +822,33 @@ const PET_STAGES=[
   {min:7,vi:'Cáo Lửa',en:'Ember Fox',s:1.08,aura:1,acc:'✨'},
   {min:9,vi:'Cáo Thần',en:'Mystic Fox',s:1.16,aura:1,acc:'👑'},
 ];
-function petStage(){const lv=petLevel();let st=PET_STAGES[0];for(const p of PET_STAGES)if(lv>=p.min)st=p;return st;}
+function makeStages(vi,en){return[
+  {min:1,vi:vi+' Con',en:en+' Cub',s:.72,aura:0,acc:''},
+  {min:3,vi:vi+' Nhỏ',en:'Young '+en,s:.84,aura:0,acc:''},
+  {min:5,vi:vi+' Trưởng Thành',en:'Grown '+en,s:1,aura:1,acc:''},
+  {min:7,vi:vi+' Lửa',en:'Ember '+en,s:1.08,aura:1,acc:'✨'},
+  {min:9,vi:vi+' Thần',en:'Mystic '+en,s:1.16,aura:1,acc:'👑'},
+];}
+/* ===== VƯỜN THÚ: danh sách loài. fox = rig thật (3 lớp); loài khác = emoji tới khi có ảnh (assets/pets/<id>/full.png) ===== */
+const PETS=[
+  {id:'fox',    vi:'Cáo',      en:'Fox',    emoji:'🦊', art:'assets/fox_rig/',     rig:true,  stages:PET_STAGES,                      unlock:null},
+  {id:'cat',    vi:'Mèo',      en:'Cat',    emoji:'🐱', art:'assets/pets/cat/',    rig:false, stages:makeStages('Mèo','Cat'),         unlock:{req:'streak',  n:3}},
+  {id:'rabbit', vi:'Thỏ',      en:'Rabbit', emoji:'🐰', art:'assets/pets/rabbit/', rig:false, stages:makeStages('Thỏ','Rabbit'),      unlock:{req:'solved',  n:5}},
+  {id:'owl',    vi:'Cú',       en:'Owl',    emoji:'🦉', art:'assets/pets/owl/',    rig:false, stages:makeStages('Cú','Owl'),          unlock:{req:'advDone', n:5}},
+  {id:'panda',  vi:'Gấu Trúc', en:'Panda',  emoji:'🐼', art:'assets/pets/panda/',  rig:false, stages:makeStages('Gấu Trúc','Panda'),  unlock:{req:'solved',  n:15}},
+  {id:'dragon', vi:'Rồng',     en:'Dragon', emoji:'🐉', art:'assets/pets/dragon/', rig:false, stages:makeStages('Rồng','Dragon'),     unlock:{req:'streak',  n:7}},
+  {id:'tiger',  vi:'Hổ',       en:'Tiger',  emoji:'🐯', art:'assets/pets/tiger/',  rig:false, stages:makeStages('Hổ','Tiger'),        unlock:{req:'advDone', n:15}},
+];
+function activePetDef(){return PETS.find(p=>p.id===S.activePet)||PETS[0];}
+function xpOf(id){return id===S.activePet?S.petXp:((S.petBank&&S.petBank[id])||0);}
+function petLevelOf(id){return Math.floor(xpOf(id)/100)+1;}
+function petStage(){const lv=petLevel();const stages=activePetDef().stages;let st=stages[0];for(const p of stages)if(lv>=p.min)st=p;return st;}
+function unlockMet(u){if(!u)return true;const v={streak:Math.max(S.streak||0,S.best||0),advDone:S.advDone||0,solved:S.solved||0}[u.req];return (v||0)>=u.n;}
+function unlockText(u){if(!u)return'';const vi={streak:'🔥 Chuỗi '+u.n+' ngày',advDone:'🧠 Xong '+u.n+' màn Nâng cao',solved:'✅ Giải '+u.n+' câu'};const en={streak:'🔥 '+u.n+'-day streak',advDone:'🧠 Clear '+u.n+' Advanced',solved:'✅ Solve '+u.n+' puzzles'};return (LANG==='vi'?vi:en)[u.req]||'';}
+function checkPetUnlocks(){let got=null;PETS.forEach(p=>{if(p.unlock&&S.unlocked.indexOf(p.id)<0&&unlockMet(p.unlock)){S.unlocked.push(p.id);got=p;}});if(got){save();toast('🎉 '+(LANG==='vi'?'Mở khoá thú mới: ':'New pet: ')+got[LANG]+' '+got.emoji);}}
+function selectPet(id){if(S.unlocked.indexOf(id)<0)return;if(id!==S.activePet){S.petBank[S.activePet]=S.petXp;S.activePet=id;S.petXp=(S.petBank[id]||0);petMounted='';save();}renderPet();go('scr-pet');}
+function openZoo(){checkPetUnlocks();renderZoo();go('scr-zoo');}
+function renderZoo(){const grid=document.getElementById('zoo-grid');if(!grid)return;grid.innerHTML='';PETS.forEach(p=>{const unlocked=S.unlocked.indexOf(p.id)>=0;if(unlocked){const active=S.activePet===p.id;grid.innerHTML+='<div class="zoo-card'+(active?' active':'')+'" onclick="selectPet(\''+p.id+'\')"><div class="zoo-pet">'+p.emoji+'</div><div class="zoo-name">'+p[LANG]+'</div><div class="zoo-lv">Lv.'+petLevelOf(p.id)+'</div></div>';}else{grid.innerHTML+='<div class="zoo-card locked"><div class="zoo-pet">❓</div><div class="zoo-name">???</div><div class="zoo-cond">'+unlockText(p.unlock)+'</div></div>';}});}
 
 /* ---------- nav ---------- */
 function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id!=='scr-pet')stopFoxLoop();}
@@ -811,18 +866,27 @@ const FOX_RIG=[
 let petMounted='';
 function mountPet(){
   const scale=document.getElementById('pet-scale');if(!scale)return;
-  const test=new Image();
-  test.onload=function(){
-    if(petMounted==='rig')return;
-    petMounted='rig';stopFoxLoop();
-    scale.innerHTML=FOX_RIG.map(l=>'<img class="rig-layer" src="'+l.src+'" style="transform-origin:'+l.origin+';animation:'+l.anim+'" onerror="this.style.display=\'none\'">').join('');
-  };
-  test.onerror=function(){
-    petMounted='single';
-    if(!document.getElementById('pet-img'))scale.innerHTML='<img id="pet-img" src="assets/fox_rig/fox_full.png" alt="pet">';
-    startFoxLoop();
-  };
-  test.src='assets/fox_rig/fox_body.png';
+  const pet=activePetDef();
+  if(petMounted===pet.id)return;
+  petMounted=pet.id;
+  if(pet.rig){
+    const test=new Image();
+    test.onload=function(){
+      if(petMounted!==pet.id)return;stopFoxLoop();
+      scale.innerHTML=FOX_RIG.map(l=>'<img class="rig-layer" src="'+l.src+'" style="transform-origin:'+l.origin+';animation:'+l.anim+'" onerror="this.style.display=\'none\'">').join('');
+    };
+    test.onerror=function(){
+      scale.innerHTML='<img id="pet-img" src="'+pet.art+'fox_full.png" alt="pet">';
+      startFoxLoop();
+    };
+    test.src=pet.art+'fox_body.png';
+  }else{
+    stopFoxLoop();
+    scale.innerHTML='<div class="pet-emoji">'+pet.emoji+'</div>';
+    const test=new Image();
+    test.onload=function(){if(S.activePet===pet.id)scale.innerHTML='<img id="pet-img" src="'+pet.art+'full.png" alt="pet">';};
+    test.src=pet.art+'full.png';
+  }
 }
 function setLang(l){LANG=l;S.lang=l;save();applyLang();refreshHome();go('scr-home');}
 function toggleLang(){LANG=(LANG==='vi')?'en':'vi';S.lang=LANG;save();applyLang();}
@@ -951,7 +1015,7 @@ function win(){
     if(S.goal.progress>=S.goal.target)goalHtml=`<div class="wow-rule" style="color:var(--gold)">🎉 ${t('goalReached')}: <b>${S.goal.text}</b></div>`;
     else goalHtml=`<div class="wow-rule">🎁 ${t('goalHung')}: ${S.goal.text} — ${t('goalLeft').replace('{n}',S.goal.target-S.goal.progress)}</div>`;
   }
-  S.petXp+=xp;save();
+  S.petXp+=xp;save();checkPetUnlocks();
   const titles=I18N[LANG].wowTitles;
   document.getElementById('wow-title').textContent=titles[Math.floor(Math.random()*titles.length)];
   document.getElementById('wow-rule-txt').textContent=game.puz.rule[LANG]||game.puz.rule.vi;
@@ -1292,7 +1356,7 @@ function duelResult(){sfxWin();var _wn=document.getElementById('wow-next');if(_w
   var ps=duel.players.slice().sort(function(a,b){return b.score-a.score;});
   var tie=ps.length>1&&ps[1].score===ps[0].score;
   duel.players.forEach(function(p){ var m=S.members.filter(function(x){return x.name===p.name;})[0]; if(m)m.pts+=p.score; });
-  var sum=duel.players.reduce(function(s,p){return s+p.score;},0); S.petXp+=sum*3; S.solved+=duel.maxTurns; save();
+  var sum=duel.players.reduce(function(s,p){return s+p.score;},0); S.petXp+=sum*3; S.solved+=duel.maxTurns; save(); checkPetUnlocks();
   document.getElementById('wow-title').textContent=tie?t('duelTie'):('🏆 '+ps[0].name);
   document.getElementById('wow-rule-txt').textContent=t('duelResult');
   document.getElementById('wow-pts').textContent=ps[0].score;
